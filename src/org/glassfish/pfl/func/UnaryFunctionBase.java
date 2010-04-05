@@ -48,17 +48,21 @@ public abstract class UnaryFunctionBase<S,R>
 
     @Override
     public R evaluate( S arg1 ) {
-	if (mop != null) {
-	    mop.enter( this, arg1 ) ;
-	}
-	R result = null ;
-	try {
-	    result = eval( arg1 ) ;
-	} finally {
-	    if (mop != null) {
-		mop.exit( this, result ) ;
-	    }
-	}
-	return result ;
+        if (USE_MOP) {
+            if (mop != null) {
+                mop.enter( this, arg1 ) ;
+            }
+            R result = null ;
+            try {
+                result = eval( arg1 ) ;
+            } finally {
+                if (mop != null) {
+                    mop.exit( this, result ) ;
+                }
+            }
+            return result ;
+        } else {
+            return eval( arg1 ) ;
+        }
     }
 }

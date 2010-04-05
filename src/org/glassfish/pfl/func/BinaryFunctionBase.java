@@ -48,17 +48,21 @@ public abstract class BinaryFunctionBase<S,T,R>
 
     @Override
     public R evaluate( S arg1, T arg2 ) {
-	if (mop != null) {
-	    mop.enter( this, arg1, arg2 ) ;
-	}
-	R result = null ;
-	try {
-	    result = eval( arg1, arg2 ) ;
-	} finally {
-	    if (mop != null) {
-		mop.exit( this, result ) ;
-	    }
-	}
-	return result ;
+        if (USE_MOP) {
+            if (mop != null) {
+                mop.enter( this, arg1, arg2 ) ;
+            }
+            R result = null ;
+            try {
+                result = eval( arg1, arg2 ) ;
+            } finally {
+                if (mop != null) {
+                    mop.exit( this, result ) ;
+                }
+            }
+            return result ;
+        } else {
+            return eval( arg1, arg2 ) ;
+        }
     }
 }

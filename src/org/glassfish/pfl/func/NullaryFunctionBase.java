@@ -48,17 +48,21 @@ public abstract class NullaryFunctionBase<R>
 
     @Override
     public R evaluate() {
-	if (mop != null) {
-	    mop.enter( this) ;
-	}
-	R result = null ;
-	try {
-	    result = eval() ;
-	} finally {
-	    if (mop != null) {
-		mop.exit( this, result ) ;
-	    }
-	}
-	return result ;
+        if (USE_MOP) {
+            if (mop != null) {
+                mop.enter( this) ;
+            }
+            R result = null ;
+            try {
+                result = eval() ;
+            } finally {
+                if (mop != null) {
+                    mop.exit( this, result ) ;
+                }
+            }
+            return result ;
+        } else {
+            return eval() ;
+        }
     }
 }

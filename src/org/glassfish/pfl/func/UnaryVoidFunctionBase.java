@@ -48,15 +48,19 @@ public abstract class UnaryVoidFunctionBase<S>
 
     @Override
     public void evaluate( S arg1 ) {
-	if (mop != null) {
-	    mop.enter( this, arg1 ) ;
-	}
-	try {
-	    eval( arg1 ) ;
-	} finally {
-	    if (mop != null) {
-		mop.exit( this ) ;
-	    }
-	}
+        if (USE_MOP) {
+            if (mop != null) {
+                mop.enter( this, arg1 ) ;
+            }
+            try {
+                eval( arg1 ) ;
+            } finally {
+                if (mop != null) {
+                    mop.exit( this ) ;
+                }
+            }
+        } else {
+            eval( arg1 ) ;
+        }
     }
 }

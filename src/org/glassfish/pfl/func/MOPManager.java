@@ -40,9 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MOPManager {
-    private MOPManager() {}  
-
-    // Needs to be a weak reference to objects
+    // XXX Needs to be a weak reference to objects
     List<SupportsMOP> objList = new ArrayList<SupportsMOP>() ;
 
     public void register( SupportsMOP mop ) {

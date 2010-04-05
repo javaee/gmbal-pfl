@@ -48,15 +48,19 @@ public abstract class BinaryVoidFunctionBase<S,T>
 
     @Override
     public void evaluate( S arg1, T arg2 ) {
-	if (mop != null) {
-	    mop.enter( this, arg1, arg2 ) ;
-	}
-	try {
-	    eval( arg1, arg2 ) ;
-	} finally {
-	    if (mop != null) {
-		mop.exit( this ) ;
-	    }
-	}
+        if (USE_MOP) {
+            if (mop != null) {
+                mop.enter( this, arg1, arg2 ) ;
+            }
+            try {
+                eval( arg1, arg2 ) ;
+            } finally {
+                if (mop != null) {
+                    mop.exit( this ) ;
+                }
+            }
+        } else {
+            eval( arg1, arg2 ) ;
+        }
     }
 }

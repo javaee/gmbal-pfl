@@ -22,165 +22,103 @@ import java.lang.reflect.Field;
  * @author ken_admin
  */
 public class Factory {
-    private static final MOPManager mm = null ;
+    private Factory() {}
+
+    private static MOPManager mm = null ;
+
+    public static void setMOPManager( MOPManager lmm ) {
+	mm = lmm ;
+    }
 
     // constant functions
-    public static final NullaryPredicate c_false = 
-	new NullaryPredicateBase( "c_false", mm ) {
-	    @Override
-	    public boolean eval() { return false ; 
-	} 
+    public static NullaryPredicate FALSE() {
+	return new NullaryPredicateConstantImpl( false )  ;
+    }
+
+    public static NullaryPredicate TRUE() {
+	return new NullaryPredicateConstantImpl( true )  ;
     } ;
 
-    public static final NullaryPredicate c_true = 
-	new NullaryPredicateBase( "c_true", mm ) {
-	    @Override
-	    public boolean eval() { return true ; 
-	} 
-    } ;
+    public static NullaryFunction<Long> NUM( int value ) {
+        return new NullaryFunctionConstantImpl<Long>( (long)value ) ;
+    }
 
-    public static <T> NullaryFunction<T> object( final T value ) {
-	return new NullaryFunctionBase<T>( "object", mm ) {
-	    @Override
-	    public T eval() { return value ; }
-	} ;
+    public static <T> NullaryFunction<T> OBJ( final T value ) {
+        return new NullaryFunctionConstantImpl<T>( value ) ;
     }
 
     // Drop the result
     public static <T> NullaryVoidFunction drop( final NullaryFunction<T> func ) {
-        return new NullaryVoidFunctionBase( "drop", mm ) {
-            @Override
-            public void eval() {
-                func.evaluate() ;
-            }
-        } ;
+        return new NullaryFunctionDropImpl( func) ;
     }
     
     public static NullaryVoidFunction drop( final NullaryPredicate func ) {
-        return new NullaryVoidFunctionBase( "drop", mm ) {
-            @Override
-            public void eval() {
-                func.evaluate() ;
-            }
-        } ;
+        return new NullaryPredicateDropImpl( func ) ;
+    }
+
+    public static <S,R> UnaryVoidFunction<S> drop( final UnaryFunction<S,R> func ) {
+        return new UnaryFunctionDropImpl( func) ;
+    }
+
+    public static <S> UnaryVoidFunction<S> drop( final UnaryPredicate<S> func ) {
+        return new UnaryPredicateDropImpl<S>( func ) ;
     }
 
     public static <S,T,R> BinaryVoidFunction<S,T> drop( final BinaryFunction<S,T,R> func ) {
-        return new BinaryVoidFunctionBase<S,T>( "drop", mm ) {
-            @Override
-            public void eval( S arg1, T arg2 ) {
-                func.evaluate( arg1, arg2 ) ;
-            }
-        } ;
+        return new BinaryFunctionDropImpl( func) ;
     }
 
     public static <S,T> BinaryVoidFunction<S,T> drop( final BinaryPredicate<S,T> func ) {
-        return new BinaryVoidFunctionBase<S,T>( "drop", mm ) {
-            @Override
-            public void eval( S arg1, T arg2 ) {
-                func.evaluate( arg1, arg2 ) ;
-            }
-        } ;
+        return new BinaryPredicateDropImpl<S, T>( func ) ;
     }
 
     // bind argument (higher arity to lower arity)
     public static <S,T,R> UnaryFunction<T,R> bind1( final S value,
         final BinaryFunction<S,T,R> func ) {
-
-	return new UnaryFunctionBase<T,R>( "bind1", mm ) {
-	    @Override
-	    public R eval( T arg ) {
-		return func.evaluate( value, arg ) ;
-	    }
-	} ;
+	return new BinaryFunctionBind1Impl<S,T,R>( func, value) ;
     }
 
-    public static <S,T,R> UnaryVoidFunction<T> bind1( final S value,
+    public static <S,T> UnaryVoidFunction<T> bind1( final S value,
         final BinaryVoidFunction<S,T> func ) {
-
-	return new UnaryVoidFunctionBase<T>( "bind1", mm ) {
-	    @Override
-	    public void eval( T arg ) {
-		func.evaluate( value, arg ) ;
-	    }
-	} ;
+        return new BinaryVoidFunctionBind1Impl<S,T>( func, value ) ;
     }
 
     public static <S,T> UnaryPredicate<T> bind1( final S value,
         final BinaryPredicate<S,T> func ) {
-
-	return new UnaryPredicateBase<T>( "bind1", mm ) {
-	    @Override
-	    public boolean eval( T arg ) {
-		return func.evaluate( value, arg ) ;
-	    }
-	} ;
+        return new BinaryPredicateBind1Impl<S,T>( func, value ) ;
     }
 
     public static <S,T,R> UnaryFunction<S,R> bind2( final T value,
         final BinaryFunction<S,T,R> func ) {
-
-	return new UnaryFunctionBase<S,R>( "bind2", mm ) {
-	    @Override
-	    public R eval( S arg ) {
-		return func.evaluate( arg, value ) ;
-	    }
-	} ;
+        return new BinaryFunctionBind2Impl<S,T,R>( func, value ) ;
     }
 
-    public static <S,T,R> UnaryVoidFunction<S> bind2( final T value,
+    public static <S,T> UnaryVoidFunction<S> bind2( final T value,
         final BinaryVoidFunction<S,T> func ) {
-
-	return new UnaryVoidFunctionBase<S>( "bind2", mm ) {
-	    @Override
-	    public void eval( S arg ) {
-		func.evaluate( arg, value ) ;
-	    }
-	} ;
+        return new BinaryVoidFunctionBind2Impl<S,T>( func, value ) ;
     }
 
     public static <S,T> UnaryPredicate<S> bind2( final T value,
         final BinaryPredicate<S,T> func ) {
-
-	return new UnaryPredicateBase<S>( "bind2", mm ) {
-	    @Override
-	    public boolean eval( S arg ) {
-		return func.evaluate( arg, value ) ;
-	    }
-	} ;
+        return new BinaryPredicateBind2Impl<S,T>( func, value ) ;
     }
 
     public static <S,R> NullaryFunction<R> bind( final S value,
         final UnaryFunction<S,R> func ) {
 
-	return new NullaryFunctionBase<R>( "bind", mm ) {
-	    @Override
-	    public R eval() {
-		return func.evaluate( value ) ;
-	    }
-	} ;
+	return new UnaryFunctionBindImpl( func, value) ;
     }
 
     public static <S> NullaryVoidFunction bind( final S value,
         final UnaryVoidFunction<S> func ) {
 
-	return new NullaryVoidFunctionBase( "bind", mm ) {
-	    @Override
-	    public void eval() {
-		func.evaluate( value ) ;
-	    }
-	} ;
+        return new UnaryVoidFunctionBindImpl( func, value ) ;
     }
 
     public static <S> NullaryPredicate bind( final S value,
         final UnaryPredicate<S> func ) {
 
-	return new NullaryPredicateBase( "bind", mm ) {
-	    @Override
-	    public boolean eval() {
-		return func.evaluate( value ) ;
-	    }
-	} ;
+	return new UnaryPredicateBindImpl( func, value) ;
     }
 
     // inject (lower arity into higher arity)
@@ -217,15 +155,21 @@ public class Factory {
         } ;
     }
 
+    public static <S,R> UnaryFunction<S,R> inject(
+        final R val, Class<S> cls ) {
+
+        return new UnaryFunctionBase<S,R>( "inject", mm ) {
+            @Override
+            public R eval( S arg ) {
+                return val ;
+            }
+        } ;
+    }
+
     // compose
     public static <S,T,R> UnaryFunction<S,R> comp(
 	final UnaryFunction<S,T> first, final UnaryFunction<T,R> second ) {
-	return new UnaryFunctionBase<S,R>( "comp", mm ) {
-            @Override
-	    public R eval( S arg ) {
-		return second.evaluate( first.evaluate( arg ) ) ;
-	    }
-	} ;
+	return new UnaryFunctionCompImpl( second, first) ;
     }
 
     public static <S,T,U,V,R> BinaryFunction<S,T,R> comp(
@@ -452,18 +396,23 @@ public class Factory {
 	    }
 	} ;
 
-    private static final UnaryFunctionAlias<Long,Long> fib =
-        new UnaryFunctionAlias<Long,Long>() ;
-    private static final BinaryPredicate<Long,Long> lequ = new Equal<Long,Long>() ;
+    private static final UnaryFunctionAlias<Long,Long> fib ;
+    private static final BinaryPredicate<Long,Long> lequ ;
+    private static final MOPManager lmm ;
+
     static {
+	lmm = new MOPManager() ;
+	setMOPManager( lmm ) ;
+
+        fib = new UnaryFunctionAlias<Long,Long>() ;
+        lequ = new Equal<Long,Long>() ;
+        UnaryFunction<Long,Long> c1 = inject( 1L, Long.class ) ;
         fib.set(
-            cond( bind2( 0L, lequ ),
-                inject( object(1L), Long.class ),
-                cond( bind2( 1L, lequ ),
-                    inject( object(1L), Long.class ),
+            cond( bind2( 0L, lequ ), c1,
+                cond( bind2( 1L, lequ ), c1,
                     combine( comp(
-                        comp( fib, bind2( 1L, minus )),
-                        comp( fib, bind2( 2L, minus )),
+                        comp( bind2( 1L, minus ), fib ),
+                        comp( bind2( 2L, minus ), fib ),
                         plus ) ) ) ) ) ;
     }
 
@@ -484,9 +433,345 @@ public class Factory {
     }
 
     public static void main( String[] args ) {
+        // lmm.setMOP(MOP.tracer);
+        System.out.println( "jfib(20) = " + jfib.evaluate(20L) ) ;
+        System.out.println( "fib(20)  = " + fib.evaluate(20L) ) ;
 	final Long jfibTime = time( drop( bind( 20L, jfib ))) ;
 	final Long fibTime = time( drop( bind( 20L, fib ))) ;
-	System.out.println( "Time for normal Java fib implementation = " + jfibTime ) ;
-	System.out.println( "Time for pfl fib implementation         = " + fibTime ) ;
+	System.out.println( "Time for normal Java fib implementation = "
+            + jfibTime ) ;
+	System.out.println( "Time for pfl fib implementation         = "
+            + fibTime ) ;
     }
+
+//========================= Implementation classes ========================//
+
+    // Constants
+    public static class NullaryPredicateConstantImpl
+        extends NullaryPredicateBase {
+        private final boolean value ;
+
+        public NullaryPredicateConstantImpl(boolean value) {
+            super("NullaryPredicateConstant", mm);
+            this.value = value ;
+        }
+
+        @Override
+        public boolean eval() {
+            return value;
+        }
+
+        public boolean value() { return value ; }
+    }
+
+    public static class NullaryFunctionConstantImpl<T>
+        extends NullaryFunctionBase<T> {
+        private final T value ;
+
+        public NullaryFunctionConstantImpl(T value) {
+            super("NullaryFunctionConstant", mm);
+            this.value = value ;
+        }
+
+        @Override
+        public T eval() {
+            return value;
+        }
+
+        public T value() { return value ; }
+    }
+
+    // Drop result
+    public static class NullaryFunctionDropImpl<T> extends NullaryVoidFunctionBase {
+        private final NullaryFunction<T> func;
+
+        public NullaryFunctionDropImpl( final NullaryFunction<T> func) {
+            super("NullaryFunctionDrop", mm);
+            this.func = func;
+        }
+
+        @Override
+        public void eval() {
+            func.evaluate();
+        }
+
+        public NullaryFunction<T> func() { return func ; }
+    }
+
+    public static class NullaryPredicateDropImpl extends NullaryVoidFunctionBase {
+        private final NullaryPredicate func;
+
+        public NullaryPredicateDropImpl( final NullaryPredicate func) {
+            super("NullaryPredicateDrop", mm);
+            this.func = func;
+        }
+
+        @Override
+        public void eval() {
+            func.evaluate();
+        }
+
+        public NullaryPredicate func() { return func ; }
+    }
+
+    private static class UnaryFunctionDropImpl<S,R>
+        extends UnaryVoidFunctionBase<S> {
+
+        private final UnaryFunction<S,R> func;
+
+        public UnaryFunctionDropImpl( UnaryFunction<S,R> func) {
+            super("UnaryFunctionDrop", mm);
+            this.func = func;
+        }
+
+        @Override
+        public void eval(S arg1 ) {
+            func.evaluate(arg1);
+        }
+
+        public UnaryFunction<S,R> func() { return func ; }
+    }
+
+    private static class UnaryPredicateDropImpl<S>
+        extends UnaryVoidFunctionBase<S> {
+
+        private final UnaryPredicate<S> func;
+
+        public UnaryPredicateDropImpl( UnaryPredicate<S> func) {
+            super("UnaryPredicateDrop", mm);
+            this.func = func;
+        }
+
+        @Override
+        public void eval(S arg1) {
+            func.evaluate(arg1);
+        }
+
+        public UnaryPredicate<S> func() { return func ; }
+    }
+
+    private static class BinaryFunctionDropImpl<S,T,R>
+        extends BinaryVoidFunctionBase<S, T> {
+
+        private final BinaryFunction<S, T, R> func;
+
+        public BinaryFunctionDropImpl( BinaryFunction<S, T, R> func) {
+            super("BinaryFunctionDrop", mm);
+            this.func = func;
+        }
+
+        @Override
+        public void eval(S arg1, T arg2) {
+            func.evaluate(arg1, arg2);
+        }
+
+        public BinaryFunction<S,T,R> func() { return func ; }
+    }
+
+    private static class BinaryPredicateDropImpl<S,T>
+        extends BinaryVoidFunctionBase<S, T> {
+
+        private final BinaryPredicate<S, T> func;
+
+        public BinaryPredicateDropImpl( BinaryPredicate<S, T> func) {
+            super("BinaryPredicateDrop", mm);
+            this.func = func;
+        }
+
+        @Override
+        public void eval(S arg1, T arg2) {
+            func.evaluate(arg1, arg2);
+        }
+
+        public BinaryPredicate<S,T> func() { return func ; }
+    }
+
+    // Bind argument
+    public static class UnaryVoidFunctionBindImpl<S>
+        extends NullaryVoidFunctionBase {
+
+        private final UnaryVoidFunction<S> func;
+        private final S value;
+
+        public UnaryVoidFunctionBindImpl( UnaryVoidFunction<S> func, S value) {
+            super("UnaryPredicateBind", mm);
+            this.func = func;
+            this.value = value;
+        }
+
+        @Override
+        public void eval() {
+            func.evaluate(value);
+        }
+    }
+
+    public static class UnaryPredicateBindImpl<S>
+        extends NullaryPredicateBase {
+
+        private final UnaryPredicate<S> func;
+        private final S value;
+
+        public UnaryPredicateBindImpl( UnaryPredicate<S> func, S value) {
+            super("UnaryPredicateBind", mm);
+            this.func = func;
+            this.value = value;
+        }
+
+        @Override
+        public boolean eval() {
+            return func.evaluate(value);
+        }
+    }
+
+    public static class UnaryFunctionBindImpl<S,R>
+        extends NullaryFunctionBase {
+
+        private final UnaryFunction<S,R> func;
+        private final S value;
+
+        public UnaryFunctionBindImpl( UnaryFunction<S,R> func, S value) {
+            super("UnaryFunctionBind", mm);
+            this.func = func;
+            this.value = value;
+        }
+
+        @Override
+        public R eval() {
+            return func.evaluate(value);
+        }
+    }
+
+    private static class BinaryFunctionBind1Impl<S,T,R>
+        extends UnaryFunctionBase<T, R> {
+
+        private final BinaryFunction<S, T, R> func;
+        private final S value;
+
+        public BinaryFunctionBind1Impl( BinaryFunction<S, T, R> func, S value) {
+            super("BinaryFunctionBind1", mm);
+            this.func = func;
+            this.value = value;
+        }
+
+        @Override
+        public R eval(T arg) {
+            return func.evaluate(value, arg);
+        }
+    }
+
+    private static class BinaryVoidFunctionBind1Impl<S,T>
+        extends UnaryVoidFunctionBase<T> {
+
+        private final BinaryVoidFunction<S, T> func;
+        private final S value;
+
+        public BinaryVoidFunctionBind1Impl( final BinaryVoidFunction<S, T> func,
+            S value) {
+            super("BinaryVoidFunctionBind1", mm);
+            this.func = func;
+            this.value = value;
+        }
+
+        @Override
+        public void eval(T arg) {
+            func.evaluate(value, arg);
+        }
+    }
+
+
+    private static class BinaryPredicateBind1Impl<S,T>
+        extends UnaryPredicateBase<T> {
+
+        private final BinaryPredicate<S, T> func;
+        private final S value;
+
+        public BinaryPredicateBind1Impl( final BinaryPredicate<S, T> func,
+            S value) {
+            super("BinaryVoidFunctionBind1", mm);
+            this.func = func;
+            this.value = value;
+        }
+
+        @Override
+        public boolean eval(T arg) {
+            return func.evaluate(value, arg);
+        }
+    }
+
+
+    private static class BinaryFunctionBind2Impl<S,T,R>
+        extends UnaryFunctionBase<S, R> {
+
+        private final BinaryFunction<S, T, R> func;
+        private final T value;
+
+        public BinaryFunctionBind2Impl( BinaryFunction<S, T, R> func, T value) {
+            super("BinaryFunctionBind2", mm);
+            this.func = func;
+            this.value = value;
+        }
+
+        @Override
+        public R eval(S arg) {
+            return func.evaluate(arg, value);
+        }
+    }
+
+    private static class BinaryVoidFunctionBind2Impl<S,T>
+        extends UnaryVoidFunctionBase<S> {
+
+        private final BinaryVoidFunction<S, T> func;
+        private final T value;
+
+        public BinaryVoidFunctionBind2Impl( final BinaryVoidFunction<S, T> func,
+            T value) {
+            super("BinaryVoidFunctionBind2", mm);
+            this.func = func;
+            this.value = value;
+        }
+
+        @Override
+        public void eval(S arg) {
+            func.evaluate(arg, value);
+        }
+    }
+
+
+    private static class BinaryPredicateBind2Impl<S,T>
+        extends UnaryPredicateBase<S> {
+
+        private final BinaryPredicate<S, T> func;
+        private final T value;
+
+        public BinaryPredicateBind2Impl( final BinaryPredicate<S, T> func,
+            T value) {
+            super("BinaryVoidFunctionBind2", mm);
+            this.func = func;
+            this.value = value;
+        }
+
+        @Override
+        public boolean eval(S arg) {
+            return func.evaluate(arg, value);
+        }
+    }
+
+    private static class UnaryFunctionCompImpl<S,T,R> extends UnaryFunctionBase<S, R> {
+
+        private final UnaryFunction<T, R> second;
+        private final UnaryFunction<S, T> first;
+
+        public UnaryFunctionCompImpl( UnaryFunction<T, R> second,
+            UnaryFunction<S, T> first) {
+            super("UnaryFunctionComp", mm);
+            this.second = second;
+            this.first = first;
+        }
+
+        @Override
+        public R eval(S arg) {
+            return second.evaluate(first.evaluate(arg));
+        }
+    }
+
 }

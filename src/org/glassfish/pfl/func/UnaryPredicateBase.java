@@ -48,17 +48,21 @@ public abstract class UnaryPredicateBase<S>
 
     @Override
     public boolean evaluate( S arg1 ) {
-	if (mop != null) {
-	    mop.enter( this, arg1 ) ;
-	}
-	boolean result = false ;
-	try {
-	    result = eval( arg1 ) ;
-	} finally {
-	    if (mop != null) {
-		mop.exit( this, result ) ;
-	    }
-	}
-	return result ;
+        if (USE_MOP) {
+            if (mop != null) {
+                mop.enter( this, arg1 ) ;
+            }
+            boolean result = false ;
+            try {
+                result = eval( arg1 ) ;
+            } finally {
+                if (mop != null) {
+                    mop.exit( this, result ) ;
+                }
+            }
+            return result ;
+        } else {
+            return eval( arg1 ) ;
+        }
     }
 }

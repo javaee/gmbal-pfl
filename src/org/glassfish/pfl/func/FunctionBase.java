@@ -37,12 +37,16 @@
 package org.glassfish.pfl.func ;
 
 public abstract class FunctionBase implements SupportsMOP {
+    protected static final boolean USE_MOP = false ;
+
     private final String name ;
-    protected MOP mop = null ;
+    protected MOP mop ;
 
     public FunctionBase( final String name, final MOPManager mm ) {
 	this.name = name ;
-	mm.register( this ) ;
+        if (mm != null) {
+            mm.register( this ) ;
+        }
     }
 
     @Override

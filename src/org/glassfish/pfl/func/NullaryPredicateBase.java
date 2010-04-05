@@ -48,17 +48,21 @@ public abstract class NullaryPredicateBase
 
     @Override
     public boolean evaluate() {
-	if (mop != null) {
-	    mop.enter( this ) ;
-	}
-	boolean result = false ;
-	try {
-	    result = eval() ;
-	} finally {
-	    if (mop != null) {
-		mop.exit( this, result ) ;
-	    }
-	}
-	return result ;
+        if (USE_MOP) {
+            if (mop != null) {
+                mop.enter( this ) ;
+            }
+            boolean result = false ;
+            try {
+                result = eval() ;
+            } finally {
+                if (mop != null) {
+                    mop.exit( this, result ) ;
+                }
+            }
+            return result ;
+        } else {
+            return eval() ;
+        }
     }
 }
