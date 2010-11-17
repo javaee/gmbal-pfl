@@ -62,10 +62,12 @@ public abstract class ControllableBase extends NamedBaseImpl
 	isEnabled = false ;
     }
 
+    @Override
     public int id() {
 	return id ;
     }
 
+    @Override
     public String description() {
 	return description ;
     }
@@ -76,6 +78,7 @@ public abstract class ControllableBase extends NamedBaseImpl
 	this.description = description ;
     }
 
+    @Override
     public final boolean isEnabled() {
 	return isEnabled ;
     }
@@ -84,10 +87,12 @@ public abstract class ControllableBase extends NamedBaseImpl
     // other Controllables.
     // covariant return type: Set<ControllableBase> is a 
     // subtype of Set<? extends ControllableBase>
+    @Override
     public Set<ControllableBase> contents() {
 	return emptyContent ;
     }
 
+    @Override
     public void enable() {
 	synchronized( factory() ) {
 	    if (!isEnabled()) {
@@ -97,6 +102,7 @@ public abstract class ControllableBase extends NamedBaseImpl
 	}
     }
 
+    @Override
     public void disable() {
 	synchronized( factory() ) {
 	    if (isEnabled()) {

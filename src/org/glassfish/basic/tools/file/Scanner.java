@@ -39,7 +39,7 @@
  */
 package org.glassfish.basic.tools.file ;
 
-import org.glassfish.basic.pfl.func.UnaryPredicate;
+import org.glassfish.basic.func.UnaryPredicate;
 import java.io.File ;
 import java.io.IOException ;
 
@@ -152,14 +152,17 @@ public class Scanner {
     private boolean match( final String pattern, final String fname ) {
 	final String separator = File.separator ;
 
-	// Don't use String.split here because its argument is a regular expression, 
-	// and some file separator characters could be confused with regex meta-characters.
+	// Don't use String.split here because its argument is a regular
+        // expression, and some file separator characters could be confused
+        // with regex meta-characters.
+
 	final StringTokenizer st = new StringTokenizer( fname, separator ) ;
 	while (st.hasMoreTokens()) {
 	    final String token = st.nextToken() ;
 	    if (pattern.equals( token )) {
 		if (verbose > 1) {
-                    System.out.println("fname " + fname + " matched on pattern " + pattern);
+                    System.out.println("fname " + fname
+                        + " matched on pattern " + pattern);
                 }
 		return true ;
 	    }

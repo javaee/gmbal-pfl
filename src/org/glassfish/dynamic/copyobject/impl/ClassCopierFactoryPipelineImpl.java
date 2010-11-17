@@ -183,6 +183,7 @@ public class ClassCopierFactoryPipelineImpl implements
         }
     }
 
+    @Override
     public boolean reflectivelyCopyable( Class<?> cls ) 
     {
 	for (Class<?> cl : notCopyable) {
@@ -197,6 +198,7 @@ public class ClassCopierFactoryPipelineImpl implements
     /** Look for cls only in the cache; do not create a ClassCopier
      * if there isn't one already in the cache.
      */
+    @Override
     public ClassCopier lookupInCache( Class<?> cls ) {
 	try {
 	    // TIME enter_lookupInCache
@@ -211,6 +213,7 @@ public class ClassCopierFactoryPipelineImpl implements
     /** Register an immutable class, so that it will not be copied, but just
      * passed by reference.
      */
+    @Override
     public synchronized final void registerImmutable( Class<?> cls ) {
 	factoryCache.put( cls, DefaultClassCopiers.getIdentityClassCopier() ) ;
     }
@@ -218,26 +221,26 @@ public class ClassCopierFactoryPipelineImpl implements
     /** Set a special ClassCopierFactory to handle some application specific 
      * needs.
      */
+    @Override
     public void setSpecialClassCopierFactory( ClassCopierFactory ccf ) {
 	specialFactory = ccf ;
     }
 
     // Issue 14455: introduce read/write lock to reduce contention
     // on getClassCopier.
-    public ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock() ;
+    private ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock() ;
 
 
      /** Analyze cls to determine the appropriate ClassCopier
      * and return the ClassCopier instance.  Will only create
      * a ClassCopier for a given Class once.
      */
+    @Override
     public ClassCopier getClassCopier( 
 	// TIME enter_getClassCopier
 	Class<?> cls ) throws ReflectiveCopyException {
 	if (cls.isInterface()) {
-            // XXX use Exceptions class here
-            throw new IllegalArgumentException(
-                "Cannot create a ClassCopier for an interface.");
+            throw Exceptions.self.cannotCopyInterface( cls ) ;
         }
 
         rwlock.readLock().lock() ;
@@ -260,9 +263,7 @@ public class ClassCopierFactoryPipelineImpl implements
                     result = ordinaryFactory.getClassCopier(cls);
                 }
                 if (result == null) {
-                    // XXX use Exceptions
-                    throw new IllegalStateException(
-                        "Could not find ClassCopier for " + cls.getClass());
+                    throw Exceptions.self.couldNotFindClassCopier( cls ) ;
                 }
 
                 // Result was not cached, so update the cache
@@ -279,8 +280,7 @@ public class ClassCopierFactoryPipelineImpl implements
             }
 
             if (result == errorCopier) {
-                // Throw the exception early, since there is
-                throw new ReflectiveCopyException( "Cannot copy class " + cls ) ;
+                throw Exceptions.self.cannotCopyClass( cls ) ;
             }
 
             // TIME exit_getClassCopier

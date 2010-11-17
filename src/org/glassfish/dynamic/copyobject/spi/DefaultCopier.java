@@ -41,6 +41,7 @@
 package org.glassfish.dynamic.copyobject.spi ;
 
 
+import org.glassfish.dynamic.copyobject.impl.Exceptions;
 import org.glassfish.dynamic.copyobject.impl.ObjectCopierImpl ;
 import org.glassfish.dynamic.copyobject.impl.JavaStreamObjectCopierImpl ;
 import org.glassfish.dynamic.copyobject.impl.FallbackObjectCopierImpl ;
@@ -56,7 +57,7 @@ public class DefaultCopier {
 	try {
 	    return copier.copy( obj ) ;
 	} catch (ReflectiveCopyException exc) {
-	    throw new IllegalArgumentException( "Could not copy " + obj, exc ) ;
+            throw Exceptions.self.couldNotCopy( obj, exc ) ;
 	}
     }
 

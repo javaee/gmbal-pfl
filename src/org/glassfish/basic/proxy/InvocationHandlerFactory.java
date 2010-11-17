@@ -51,6 +51,6 @@ public interface InvocationHandlerFactory
     /** Get the interfaces that InvocationHandler instances
      * produced by this InvocationHandlerFactory support.
      */
-    Class[] getProxyInterfaces() ;
+    Class<?>[] getProxyInterfaces() ;
 }
 

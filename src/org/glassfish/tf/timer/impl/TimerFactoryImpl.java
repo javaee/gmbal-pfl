@@ -181,7 +181,8 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
     }
 
     @ManagedObject
-    @Description( "A simple TimerEventHandler that just displays TimerEvents as they occur" ) 
+    @Description( "A simple TimerEventHandler that just displays TimerEvents "
+        + "as they occur" )
     public static class TracingEventHandler 
 	extends NamedBase 
 	implements TimerEventHandler {
@@ -191,13 +192,6 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
 	}
 
 	public void notify( TimerEvent event ) {
-	    // Note that we CANNOT use ORBUtility.dprint here, 
-	    // because ORBUtility drags in much of the ORB, and 
-	    // TimerFactoryImpl MUST be buildable in the
-	    // ORB library.
-	    //
-	    // XXX When we clean up dprint, make sure that the dprint facility
-	    // is available in the ORB library.
 	    System.out.println( Thread.currentThread().getName() 
 		+ " TRACE " + event ) ;
 	}

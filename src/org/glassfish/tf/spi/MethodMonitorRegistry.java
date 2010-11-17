@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import org.glassfish.basic.pfl.contain.SynchronizedHolder;
+import org.glassfish.basic.contain.SynchronizedHolder;
 import org.glassfish.tf.spi.annotation.MethodMonitorGroup;
 
 /** Main class for registering MethodMonitorFactories against particular

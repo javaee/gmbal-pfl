@@ -41,7 +41,6 @@
 package org.glassfish.dynamic.copyobject.impl ;
 
 import java.io.InputStream ;
-import java.io.OutputStream ;
 import java.io.ByteArrayInputStream ;
 import java.io.ByteArrayOutputStream ;
 import java.io.ObjectInputStream ;
@@ -50,10 +49,7 @@ import java.io.ObjectOutputStream ;
 import org.glassfish.dynamic.copyobject.spi.ObjectCopier ;
 
 public class JavaStreamObjectCopierImpl implements ObjectCopier {
-    public Object copy(Object obj, boolean debug ) {
-	return copy( obj ) ;
-    }
-
+    @Override
     public Object copy(Object obj) {
 	try {
 	    ByteArrayOutputStream os = new ByteArrayOutputStream( 10000 ) ;

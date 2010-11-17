@@ -40,7 +40,7 @@
 
 package org.glassfish.dynamic.codegen.impl ;
 
-import org.glassfish.basic.pfl.func.UnaryVoidFunction;
+import org.glassfish.basic.func.UnaryVoidFunction;
 import java.util.BitSet ;
 import java.util.List ;
 import java.util.ArrayList ;

@@ -45,7 +45,7 @@ import java.util.Iterator;
 import org.glassfish.tf.timer.impl.TimingInfoProcessor;
 import org.glassfish.tf.timer.spi.TimerFactoryBuilder;
 import org.glassfish.tf.timer.spi.TimingPointType;
-import org.glassfish.basic.pfl.func.UnaryFunction;
+import org.glassfish.basic.func.UnaryFunction;
 import org.glassfish.tf.spi.EnhancedClassData;
 import org.glassfish.tf.spi.EnhancedClassDataASMImpl;
 import org.glassfish.tf.spi.TraceEnhancementException;

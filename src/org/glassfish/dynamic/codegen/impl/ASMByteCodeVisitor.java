@@ -49,7 +49,7 @@ import org.objectweb.asm.ClassWriter ;
 
 import org.glassfish.dynamic.codegen.spi.Type ;
 import org.glassfish.dynamic.codegen.spi.Variable ;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 
 /** Visitor that is used to generate byte code for a class.

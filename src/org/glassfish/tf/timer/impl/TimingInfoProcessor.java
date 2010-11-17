@@ -49,7 +49,7 @@ import org.glassfish.tf.timer.spi.Controllable;
 import org.glassfish.tf.timer.spi.TimerFactory;
 import org.glassfish.tf.timer.spi.TimerFactoryBuilder;
 import org.glassfish.tf.timer.spi.TimerGroup;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 public class TimingInfoProcessor {
     private boolean done = false ;

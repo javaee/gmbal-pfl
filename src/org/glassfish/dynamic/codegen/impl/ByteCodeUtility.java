@@ -95,8 +95,10 @@ public final class ByteCodeUtility {
 
 	String[] interfaces = new String[cg.impls().size()] ;
 	int ctr=0 ;
-	for (Type impl : cg.impls())
-	    interfaces[ctr++] = ASMUtil.bcName( impl ) ;
+	for (Type impl : cg.impls()) {
+            interfaces[ctr++] =
+                ASMUtil.bcName(impl);
+        }
 
 	int modifiers = cg.modifiers() ;
 	if (cg.isInterface())
@@ -105,7 +107,7 @@ public final class ByteCodeUtility {
 	    ASMUtil.bcName( Type._Object() ) :
 	    ASMUtil.bcName( cg.superType() ) ;
 
-	cw.visit( V1_5, cg.modifiers(), ASMUtil.bcName( cg.thisType() ), 
+	cw.visit( V1_5, modifiers, ASMUtil.bcName( cg.thisType() ), 
 	    null, superType, interfaces ) ;
 	cw.visitSource( cg.name().replace( '.', '/' ) + ".java", null ) ;
     }
@@ -152,8 +154,9 @@ public final class ByteCodeUtility {
 	mv = cw.visitMethod( mg.modifiers(), methodName, methodSignature, null,
 	    strs ) ;
 
-	if (debug)
-	    mv = new TraceMethodVisitor( mv ) ;
+	if (debug) {
+            mv = new TraceMethodVisitor(mv);
+        }
 
 	mv.visitCode() ;
     }
@@ -164,6 +167,7 @@ public final class ByteCodeUtility {
 	    List<MyLabel> labels = new ArrayList( lnt.keySet() ) ;
 	    Collections.sort( labels, 
 		new Comparator<MyLabel>() {
+                    @Override
 		    public int compare( MyLabel l1, MyLabel l2 ) {
 			return l1.getOffset() - l2.getOffset() ;
 		    }
@@ -171,7 +175,7 @@ public final class ByteCodeUtility {
 	    ) ;
 
 	    int currentLineNum = -1 ;
-	    for (Label label : labels) {
+	    for (MyLabel label : labels) {
 		int lineNum = lnt.get( label ) ;
 		if (lineNum != currentLineNum) {
 		    currentLineNum = lineNum ;
@@ -251,8 +255,9 @@ public final class ByteCodeUtility {
 	mv.visitMaxs(0,0) ;
 	mv.visitEnd() ;
 
-	if (dump)
-	    dump() ;
+	if (dump) {
+            dump();
+        }
 
 	mv = null ;
     }
@@ -306,56 +311,60 @@ public final class ByteCodeUtility {
 	    mv.visitLdcInsn( value ) ;
 	} else if (type.equals( Type._float() )) {
 	    float val = Float.class.cast( value ).floatValue() ;
-	    if (val == 0.0)
-		mv.visitInsn( FCONST_0 ) ;
-	    else if (val == 1.0)
-		mv.visitInsn( FCONST_1 ) ;
-	    else if (val == 2.0)
-		mv.visitInsn( FCONST_2 ) ;
-	    else 
-		mv.visitLdcInsn( value ) ;
+	    if (val == 0.0) {
+                mv.visitInsn(FCONST_0);
+            } else if (val == 1.0) {
+                mv.visitInsn(FCONST_1);
+            } else if (val == 2.0) {
+                mv.visitInsn(FCONST_2);
+            } else {
+                mv.visitLdcInsn(value);
+            }
 	} else if (type.equals( Type._double() )) {
 	    double val = Double.class.cast( value ).doubleValue() ;
-	    if (val == 0.0)
-		mv.visitInsn( DCONST_0 ) ;
-	    else if (val == 1.0)
-		mv.visitInsn( DCONST_1 ) ;
-	    else 
-		mv.visitLdcInsn( value ) ;
+	    if (val == 0.0) {
+                mv.visitInsn(DCONST_0);
+            } else if (val == 1.0) {
+                mv.visitInsn(DCONST_1);
+            } else {
+                mv.visitLdcInsn(value);
+            }
 	} else if (type.equals( Type._long() )) {
 	    long val = Long.class.cast( value ).longValue() ;
-	    if (val == 0)
-		mv.visitInsn( LCONST_0 ) ;
-	    else if (val == 1)
-		mv.visitInsn( LCONST_1 ) ;
-	    else 
-		mv.visitLdcInsn( value ) ;
+	    if (val == 0) {
+                mv.visitInsn(LCONST_0);
+            } else if (val == 1) {
+                mv.visitInsn(LCONST_1);
+            } else {
+                mv.visitLdcInsn(value);
+            }
 	} else if (type.equals( Type._boolean() )) {
 	    mv.visitInsn(  
 		Boolean.class.cast( value ).booleanValue() 
 		    ? ICONST_1 : ICONST_0 ) ;
 	} else { // byte, char, short, or int
 	    int val = Integer.class.cast( value ).intValue() ;
-	    if (val == -1)
-		mv.visitInsn( ICONST_M1 ) ;
-	    else if (val == 0)
+	    if (val == -1) {
+                mv.visitInsn(ICONST_M1);
+            } else if (val == 0) {
 		mv.visitInsn( ICONST_0);
-	    else if (val == 1)
+            } else if (val == 1) {
 		mv.visitInsn( ICONST_1);
-	    else if (val == 2)
+            } else if (val == 2) {
 		mv.visitInsn( ICONST_2);
-	    else if (val == 3)
+            } else if (val == 3) {
 		mv.visitInsn( ICONST_3);
-	    else if (val == 4)
+            } else if (val == 4) {
 		mv.visitInsn( ICONST_4);
-	    else if (val == 5)
+            } else if (val == 5) {
 		mv.visitInsn( ICONST_5);
-	    else if ((val >= Byte.MIN_VALUE) && (val <= Byte.MAX_VALUE))
+            } else if ((val >= Byte.MIN_VALUE) && (val <= Byte.MAX_VALUE)) {
 		mv.visitIntInsn( BIPUSH, val ) ;
-	    else if ((val >= Short.MIN_VALUE) && (val <= Short.MAX_VALUE))
+            } else if ((val >= Short.MIN_VALUE) && (val <= Short.MAX_VALUE)) {
 		mv.visitIntInsn( SIPUSH, val ) ;
-	    else
+            } else {
 		mv.visitLdcInsn( value ) ;
+            }
 	}
     }
 
@@ -385,9 +394,10 @@ public final class ByteCodeUtility {
 	    MyLabel label = attr.get( node ) ;
 
 	    if (label.emitted()) {
-		if (debug)
-		    TraceMethodVisitor.class.cast( mv ).getText().add( 
-			"    Already emitted label " + label ) ;
+		if (debug) {
+                    TraceMethodVisitor.class.cast(mv).getText().
+                        add("    Already emitted label " + label);
+                }
 	    } else {
 		int lineNumber = CodegenPrinter.lineNumberAttribute.get( node ) ;
 		if (lineNumber > 0) {
@@ -428,12 +438,12 @@ public final class ByteCodeUtility {
 	
 	if (from.isPrimitive()) {
 	    if (to.isPrimitive()) {
-		if (from.isNumber() && to.isNumber())
-		    emitConversion( from, to ) ;
-		else
-		    throw new IllegalArgumentException( 
-			"No conversion is possible from " + from.name() 
-			+ " to " + to.name() ) ;
+		if (from.isNumber() && to.isNumber()) {
+                    emitConversion(from, to);
+                } else {
+                    throw new IllegalArgumentException("No conversion is possible from " +
+                        from.name() + " to " + to.name());
+                }
 	    } else {
 		throw new IllegalArgumentException( "Type " + from.name() +
 		    " is a primitive type, but type " + to.name() +
@@ -466,39 +476,42 @@ public final class ByteCodeUtility {
     // return the type code for a primitive type in a
     // NEWARRAY instruction.
     public int typeCode( Type type ) {
-	if (type.equals(Type._boolean()))
-	    return T_BOOLEAN ;
-
-	if (type.equals(Type._byte()))
-	    return T_BYTE ;
-
-	if (type.equals(Type._char()))
-	    return T_CHAR ;
-
-	if (type.equals(Type._short()))
-	    return T_SHORT ;
-
-	if (type.equals(Type._int()))
-	    return T_INT ;
-
-	if (type.equals(Type._long()))
-	    return T_LONG ;
-
-	if (type.equals(Type._float()))
-	    return T_FLOAT ;
-
-	if (type.equals(Type._double()))
-	    return T_DOUBLE ;
+	if (type.equals(Type._boolean())) {
+            return T_BOOLEAN;
+        }
+	if (type.equals(Type._byte())) {
+            return T_BYTE;
+        }
+	if (type.equals(Type._char())) {
+            return T_CHAR;
+        }
+	if (type.equals(Type._short())) {
+            return T_SHORT;
+        }
+	if (type.equals(Type._int())) {
+            return T_INT;
+        }
+	if (type.equals(Type._long())) {
+            return T_LONG;
+        }
+	if (type.equals(Type._float())) {
+            return T_FLOAT;
+        }
+	if (type.equals(Type._double())) {
+            return T_DOUBLE;
+        }
 
 	throw new IllegalArgumentException( 
 	    "Can only get a NEWARRAY typecode for a primitive type" ) ;
     }
 
     public void emitNewArrayCall( Type type ) {
-	if (type.isPrimitive())
-	    mv.visitIntInsn( NEWARRAY, typeCode(type) ) ;
-	else
-	    mv.visitTypeInsn( ANEWARRAY, ASMUtil.bcName(type) ) ;
+	if (type.isPrimitive()) {
+            mv.visitIntInsn(NEWARRAY, typeCode(type));
+        } else {
+            mv.visitTypeInsn(ANEWARRAY,
+                ASMUtil.bcName(type));
+        }
     }
 
     /** Emit a static INVOKE instruction. 
@@ -525,21 +538,23 @@ public final class ByteCodeUtility {
 	targetInfo = type.classInfo() ;
 
 	MethodInfo minfo = targetInfo.findMethodInfo( name, sig ) ;
-	if (minfo == null)
-	    throw new IllegalArgumentException( 
-		"Could not find a method " + name + " with signature " +
-		sig + " in class " + targetInfo.name() ) ;
+	if (minfo == null) {
+            throw new IllegalArgumentException("Could not find a method "
+                + name +
+                " with signature " + sig + " in class " + targetInfo.name());
+        }
 
 	ClassInfo mcinfo = minfo.myClassInfo() ;
 	boolean privateMethod = Modifier.isPrivate( minfo.modifiers() ) ;
 
 	int opcode ;
-	if (mcinfo.isInterface())
-	    opcode = INVOKEINTERFACE ;
-	else if (privateMethod) 
-	    opcode = INVOKESPECIAL ;
-	else
-	    opcode = INVOKEVIRTUAL ;
+	if (mcinfo.isInterface()) {
+            opcode = INVOKEINTERFACE;
+        } else if (privateMethod) {
+            opcode = INVOKESPECIAL;
+        } else {
+            opcode = INVOKEVIRTUAL;
+        }
 
 	String typeName = ASMUtil.bcName(mcinfo.thisType()) ;
 
@@ -657,12 +672,14 @@ public final class ByteCodeUtility {
 	{ E_D2B,    E_D2S,	E_D2C,	    E_D2I,	E_D2L,	    E_D2F,	E_NOP }} ; // from double
 
     public void emitConversion( Type from, Type to ) {
-	if (!from.isNumber())
-	    throw new IllegalArgumentException( "From type " + from.name() 
-		+ " is not a numeric type" ) ;
-	if (!to.isNumber())
-	    throw new IllegalArgumentException( "To type " + to.name() 
-		+ " is not a numeric type" ) ;
+	if (!from.isNumber()) {
+            throw new IllegalArgumentException("From type " + from.name() +
+                " is not a numeric type");
+        }
+	if (!to.isNumber()) {
+            throw new IllegalArgumentException("To type " + to.name() +
+                " is not a numeric type");
+        }
 
 	int fromIndex = typeIndex.get( from ) ; 
 	int toIndex = typeIndex.get( to ) ; 
@@ -742,10 +759,11 @@ public final class ByteCodeUtility {
     private void emitBooleanCodeForPrimitive( ExpressionFactory.BinaryOperatorExpression arg ) {
 	MyLabel internalLabel = new MyLabel() ;
 	MyLabel exitLabel = ASMByteCodeVisitor.nextLabel( arg ) ;
-	if (!ifOpInstructions.containsKey( arg.operator() )) 
-	    throw new IllegalStateException( 
-		"emitBooleanCode called with operator " + arg 
-		+ ", which is not a relational operator" ) ;
+	if (!ifOpInstructions.containsKey( arg.operator() )) {
+            throw new IllegalStateException(
+                "emitBooleanCode called with operator " +
+                arg + ", which is not a relational operator");
+        }
 	mv.visitJumpInsn( ifOpInstructions.get(arg.operator()), internalLabel ) ;
 	mv.visitInsn( ICONST_0 ) ;
 	mv.visitJumpInsn( GOTO, exitLabel ) ;

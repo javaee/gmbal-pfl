@@ -89,6 +89,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
      */
     private static final Bridge BRIDGE_REF = AccessController.doPrivileged(
         new PrivilegedAction<Bridge>() {
+            @Override
             public Bridge run() {
                 return Bridge.get() ;
             }
@@ -125,6 +126,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
     {
 	return AccessController.doPrivileged(
 	    new PrivilegedAction<Method>() {
+                @Override
 		public Method run() {
 		    Method meth = null;
 		    Class<?> defCl = cl;
@@ -164,7 +166,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
             try {
                 return readResolveMethod.invoke(obj);
             } catch (Throwable t) {
-                throw new RuntimeException(t);
+                throw Exceptions.self.exceptionInReadResolve( obj, t ) ;
             }
         } else {
             return obj;
@@ -279,6 +281,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static Constructor<?> makeConstructor( final Class<?> cls ) {
 	    return AccessController.doPrivileged(
 		new PrivilegedAction<Constructor<?>>() {
+                    @Override
 		    public Constructor<?> run() {
 			Constructor constructor ;
 
@@ -324,7 +327,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	 * super class.  
 	 */
 	void copy( Map<Object,Object> oldToNew,
-	    Object src, Object dest, boolean debug ) throws ReflectiveCopyException ;
+	    Object src, Object dest ) throws ReflectiveCopyException ;
     }
 
     // Utilities for ClassFieldCopier instances.
@@ -370,6 +373,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	    try {
 		copier = AccessController.doPrivileged( 
 		    new PrivilegedExceptionAction<ClassFieldCopier>() {
+                        @Override
 			public ClassFieldCopier run()
                             throws ReflectiveCopyException {
 			    // Note that we can NOT generate a copier for 
@@ -413,10 +417,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	    // should not be copied by reflection.
 	    if ((cachedCopier != null)
                 && (!cachedCopier.isReflectiveClassCopier())) {
-                throw new ReflectiveCopyException(
-                    "Cannot create ClassFieldCopier for superclass "
-                        + superClass.getName()
-                            + ": This class already has a ClassCopier.");
+                throw Exceptions.self.noClassCopierForSuperclass( superClass ) ;
             }
 
 	    // Return an error immediately, rather than waiting until the
@@ -443,8 +444,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
      * suppressAccessChecks that supports writing to final fields.
      * This copier also supports @Copy annotations on fields.
      */
-    private static class ClassFieldCopierUnsafeImpl implements ClassFieldCopier
-    {
+    private static class ClassFieldCopierUnsafeImpl implements ClassFieldCopier {
 	private Class<?> myClass ;
 
 	// Note that fieldOffsets and fieldCopiers must always be the 
@@ -478,7 +478,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	    }
 
 	    abstract void copy( Map<Object,Object> oldToNew, long offset,
-                Object src, Object dest, boolean debug )
+                Object src, Object dest )
                 throws ReflectiveCopyException ;
 	}
 
@@ -486,8 +486,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier byteUnsafeFieldInitializer = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putByte( dest, offset, (byte)0 ) ;
 	    }
 
@@ -500,8 +501,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier charUnsafeFieldInitializer = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putChar( dest, offset, (char)0 ) ;
 	    }
 
@@ -514,8 +516,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier shortUnsafeFieldInitializer = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putShort( dest, offset, (short)0 ) ;
 	    }
 
@@ -528,8 +531,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier intUnsafeFieldInitializer = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putInt( dest, offset, 0 ) ;
 	    }
 
@@ -542,8 +546,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier longUnsafeFieldInitializer = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putLong( dest, offset, 0 ) ;
 	    }
 
@@ -556,8 +561,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier booleanUnsafeFieldInitializer = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putBoolean( dest, offset, false ) ;
 	    }
 
@@ -570,8 +576,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier floatUnsafeFieldInitializer = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putFloat( dest, offset, 0 ) ;
 	    }
 
@@ -584,8 +591,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier doubleUnsafeFieldInitializer = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putDouble( dest, offset, 0 ) ;
 	    }
 
@@ -624,8 +632,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier byteUnsafeFieldCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		byte value = bridge.getByte( src, offset ) ;
 		bridge.putByte( dest, offset, value ) ;
 	    }
@@ -639,8 +648,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier charUnsafeFieldCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		char value = bridge.getChar( src, offset ) ;
 		bridge.putChar( dest, offset, value ) ;
 	    }
@@ -654,8 +664,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier shortUnsafeFieldCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		short value = bridge.getShort( src, offset ) ;
 		bridge.putShort( dest, offset, value ) ;
 	    }
@@ -669,8 +680,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier intUnsafeFieldCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		int value = bridge.getInt( src, offset ) ;
 		bridge.putInt( dest, offset, value ) ;
 	    }
@@ -684,8 +696,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier longUnsafeFieldCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		long value = bridge.getLong( src, offset ) ;
 		bridge.putLong( dest, offset, value ) ;
 	    }
@@ -699,8 +712,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier booleanUnsafeFieldCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		boolean value = bridge.getBoolean( src, offset ) ;
 		bridge.putBoolean( dest, offset, value ) ;
 	    }
@@ -714,8 +728,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier floatUnsafeFieldCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		float value = bridge.getFloat( src, offset ) ;
 		bridge.putFloat( dest, offset, value ) ;
 	    }
@@ -729,8 +744,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier doubleUnsafeFieldCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		double value = bridge.getDouble( src, offset ) ;
 		bridge.putDouble( dest, offset, value ) ;
 	    }
@@ -776,43 +792,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	// ClassCopierFactory, so it cannot be static.
 	private UnsafeFieldCopier objectUnsafeFieldCopier =
             new UnsafeFieldCopier( BRIDGE_REF ) {
-	    /*
-	    private void debugCopy( Map oldToNew, long offset, Object src, 
-		Object dest ) throws ReflectiveCopyException
-	    {
-		System.out.println( "START objectUnsafeFieldCopier: src = " + src ) ;
 
-		try {
-		    Object obj = bridge.getObject( src, offset ) ;
-
-		    Object result = null ;
-
-		    if (obj != null) {
-			// This lookup must be based on the actual type, not the
-			// declared type to allow for polymorphism.
-			ClassCopier copier = classCopierFactory.getClassCopier( 
-			    obj.getClass()) ;
-
-			result = copier.copy( oldToNew, obj, true ) ;
-		    }
-
-		    System.out.println( "IN    objectUnsafeFieldCopier: src = " + src 
-			+ " successful copy" ) ;
-
-		    bridge.putObject( dest, offset, result ) ;
-		} catch (ReflectiveCopyException exc) {
-		    System.out.println( "IN    objectUnsafeFieldCopier: src = " + src 
-			+ " Exception " + exc ) ;
-		    exc.printStackTrace() ;
-
-		    throw exc ;
-		} finally {
-		    System.out.println( "END   objectUnsafeFieldCopier: src = " + src ) ;
-		}
-	    }
-	    */
-
-	    private void noDebugCopy( Map<Object,Object> oldToNew, long offset,
+            @Override
+	    public void copy( Map<Object,Object> oldToNew, long offset,
                 Object src, Object dest ) throws ReflectiveCopyException
 	    {
 		Object obj = bridge.getObject( src, offset ) ;
@@ -831,18 +813,6 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 		bridge.putObject( dest, offset, result ) ;
 	    }
 
-	    public void copy( Map<Object,Object> oldToNew, long offset,
-                Object src, Object dest, boolean debug )
-                throws ReflectiveCopyException
-	    {
-		/*
-		if (debug)
-		    debugCopy( oldToNew, offset, src, dest ) ;
-		else
-		*/
-		    noDebugCopy( oldToNew, offset, src, dest ) ;
-	    }
-
             @Override
 	    public String toString() {
 		return "objectUnsafeFieldCopier" ;
@@ -852,8 +822,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier objectUnsafeFieldInitializer = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putObject( dest, offset, null ) ;
 	    }
 
@@ -866,8 +837,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier objectUnsafeFieldSourceCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putObject( dest, offset, src ) ;
 	    }
 
@@ -880,8 +852,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier objectUnsafeFieldResultCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		bridge.putObject( dest, offset, src ) ;
 	    }
 
@@ -894,8 +867,9 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	private static UnsafeFieldCopier objectUnsafeFieldIdentityCopier = 
 	    new UnsafeFieldCopier( BRIDGE_REF ) {
 
+            @Override
 	    public void copy( Map oldToNew, long offset, Object src, 
-		Object dest, boolean debug ) {
+		Object dest ) {
 		Object value = bridge.getObject( src, offset ) ;
 		bridge.putObject( dest, offset, value ) ;
 	    }
@@ -1021,54 +995,19 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	    return sb.toString() ;
 	}
 
-	/*
-	private void debugCopy( Map oldToNew, Object source,
-	    Object result ) throws ReflectiveCopyException
-	{
-	    System.out.println( "START " + this + " : source = " + source ) ;
-
-	    try {
-		if (superCopier != null)
-		    ((ClassFieldCopierUnsafeImpl)superCopier).debugCopy( 
-			oldToNew, source, result ) ;
-
-		for (int ctr=0; ctr<fieldOffsets.length; ctr++ ) {
-		    System.out.println( "IN    " + this + " Field " + ctr 
-			+ " to be copied by " + fieldCopiers[ctr] ) ;
-
-		    fieldCopiers[ctr].copy( oldToNew, fieldOffsets[ctr],
-			source, result, true ) ;
-		}
-	    } finally {
-		System.out.println( "END   ClassFieldCopierUnsafeImpl(" + myClass.getName() 
-		    + "): source = " + source ) ;
-	    }
-	}
-	*/
-
-	public void noDebugCopy( Map<Object,Object> oldToNew, Object source,
+        @Override
+	public void copy( Map<Object,Object> oldToNew, Object source,
 	    Object result ) throws ReflectiveCopyException
 	{
 	    if (superCopier != null) {
-                ((ClassFieldCopierUnsafeImpl) superCopier).noDebugCopy(
+                ((ClassFieldCopierUnsafeImpl) superCopier).copy(
                     oldToNew, source, result);
             }
 
 	    for (int ctr=0; ctr<fieldOffsets.length; ctr++ ) {
 		fieldCopiers[ctr].copy( oldToNew, fieldOffsets[ctr],
-		    source, result, false ) ;
+		    source, result ) ;
 	    }
-	}
-
-	public void copy( Map<Object,Object> oldToNew, Object source,
-	    Object result, boolean debug ) throws ReflectiveCopyException 
-	{
-	    /* Commented out to avoid overhead of testing debug
-	    if (debug)
-		debugCopy( oldToNew, source, result ) ;
-	    else
-	    */
-		noDebugCopy( oldToNew, source, result ) ;
 	}
     }
 
@@ -1133,9 +1072,6 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 // private data of ClassCopierOrdinaryImpl
 //******************************************************************************
 
-    // The full class copier factory, which is needed inside this class.
-    private PipelineClassCopierFactory classCopierFactory ; 
-
     // Actually copies the declared fields in this class.
     private ClassFieldCopier classFieldCopier ;	    
 
@@ -1155,7 +1091,6 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
     {
 	super( cls.getName(), true ) ;
 
-	classCopierFactory = ccf ;
 	classFieldCopier = getClassFieldCopier( cls, ccf ) ;
 	constructor = ConstructorFactory.makeConstructor( cls ) ;
 	readResolveMethod = getInheritableMethod( cls, 
@@ -1164,7 +1099,8 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	// XXX handle custom marshalled objects.
     }
 
-    public Object createCopy( Object source, boolean debug ) throws ReflectiveCopyException
+    @Override
+    public Object createCopy( Object source ) throws ReflectiveCopyException
     {
 	try { 
 	    return constructor.newInstance() ;
@@ -1179,17 +1115,17 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
     // java.lang.Object.
     @Override
     public Object doCopy( Map<Object,Object> oldToNew, Object source,
-	Object result, boolean debug ) throws ReflectiveCopyException
+	Object result ) throws ReflectiveCopyException
     {
 	if (source instanceof CopyInterceptor) {
 	    // Note that result will also be an instance of CopyInterceptor in this case.
 	    ((CopyInterceptor)source).preCopy() ;
-	    classFieldCopier.copy( oldToNew, source, result, debug ) ;
+	    classFieldCopier.copy( oldToNew, source, result ) ;
 	    ((CopyInterceptor)result).postCopy() ;
 
 	    return resolve( result ) ;
 	} else {
-	    classFieldCopier.copy( oldToNew, source, result, debug ) ;
+	    classFieldCopier.copy( oldToNew, source, result ) ;
 
 	    return resolve( result ) ;
 	}

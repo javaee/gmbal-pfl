@@ -40,6 +40,8 @@
 package org.glassfish.dynamic.copyobject.spi ;
 
 public class ReflectiveCopyException extends RuntimeException {
+    private static final long serialVersionUID = 8451419413210965395L;
+
     public ReflectiveCopyException()
     {
 	super() ;

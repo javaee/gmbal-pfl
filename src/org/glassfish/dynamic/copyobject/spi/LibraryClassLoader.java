@@ -49,7 +49,7 @@ package org.glassfish.dynamic.copyobject.spi ;
  */
 public class LibraryClassLoader
 {
-    public static Class loadClass(String className) 
+    public static Class<?> loadClass(String className)
         throws ClassNotFoundException
     {
         return getClassLoader().loadClass(className);
@@ -58,9 +58,10 @@ public class LibraryClassLoader
     public static ClassLoader getClassLoader() 
     {
 	ClassLoader ccl = Thread.currentThread().getContextClassLoader() ;
-        if (ccl != null)
-            return ccl; 
-        else
+        if (ccl != null) {
+            return ccl;
+        } else {
             return ClassLoader.getSystemClassLoader();
+        }
     }
 }

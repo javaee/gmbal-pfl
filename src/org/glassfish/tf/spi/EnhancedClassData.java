@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.glassfish.gmbal.Description;
-import org.glassfish.basic.pfl.contain.SynchronizedHolder;
+import org.glassfish.basic.contain.SynchronizedHolder;
 import org.glassfish.tf.spi.annotation.InfoMethod;
 import org.objectweb.asm.Type;
 

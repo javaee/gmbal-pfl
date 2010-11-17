@@ -11,24 +11,24 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
-import org.glassfish.basic.pfl.func.BinaryFunction;
-import org.glassfish.basic.pfl.func.BinaryFunctionBase;
-import org.glassfish.basic.pfl.func.BinaryPredicate;
-import org.glassfish.basic.pfl.func.BinaryPredicateBase;
-import org.glassfish.basic.pfl.func.BinaryVoidFunction;
-import org.glassfish.basic.pfl.func.BinaryVoidFunctionBase;
-import org.glassfish.basic.pfl.func.NullaryFunction;
-import org.glassfish.basic.pfl.func.NullaryFunctionBase;
-import org.glassfish.basic.pfl.func.NullaryPredicate;
-import org.glassfish.basic.pfl.func.NullaryPredicateBase;
-import org.glassfish.basic.pfl.func.NullaryVoidFunction;
-import org.glassfish.basic.pfl.func.NullaryVoidFunctionBase;
-import org.glassfish.basic.pfl.func.UnaryFunction;
-import org.glassfish.basic.pfl.func.UnaryFunctionBase;
-import org.glassfish.basic.pfl.func.UnaryPredicate;
-import org.glassfish.basic.pfl.func.UnaryPredicateBase;
-import org.glassfish.basic.pfl.func.UnaryVoidFunction;
-import org.glassfish.basic.pfl.func.UnaryVoidFunctionBase;
+import org.glassfish.basic.func.BinaryFunction;
+import org.glassfish.basic.func.BinaryFunctionBase;
+import org.glassfish.basic.func.BinaryPredicate;
+import org.glassfish.basic.func.BinaryPredicateBase;
+import org.glassfish.basic.func.BinaryVoidFunction;
+import org.glassfish.basic.func.BinaryVoidFunctionBase;
+import org.glassfish.basic.func.NullaryFunction;
+import org.glassfish.basic.func.NullaryFunctionBase;
+import org.glassfish.basic.func.NullaryPredicate;
+import org.glassfish.basic.func.NullaryPredicateBase;
+import org.glassfish.basic.func.NullaryVoidFunction;
+import org.glassfish.basic.func.NullaryVoidFunctionBase;
+import org.glassfish.basic.func.UnaryFunction;
+import org.glassfish.basic.func.UnaryFunctionBase;
+import org.glassfish.basic.func.UnaryPredicate;
+import org.glassfish.basic.func.UnaryPredicateBase;
+import org.glassfish.basic.func.UnaryVoidFunction;
+import org.glassfish.basic.func.UnaryVoidFunctionBase;
 
 /** Factory for constructing very simple functions.
  * Note that this does not deal with tail-call elimination, or any

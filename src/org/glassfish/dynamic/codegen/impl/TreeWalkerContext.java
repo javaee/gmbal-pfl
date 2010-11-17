@@ -41,7 +41,7 @@
 package org.glassfish.dynamic.codegen.impl;
 
 import java.util.List ;
-import org.glassfish.basic.pfl.contain.MarkStack;
+import org.glassfish.basic.contain.MarkStack;
 
 public class TreeWalkerContext {
     private MarkStack<Visitor> visitors = new MarkStack<Visitor>() ;

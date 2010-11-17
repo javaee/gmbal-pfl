@@ -77,6 +77,7 @@ public class FastCache<K,V> extends AbstractMap<K,V> {
 	this.map = map ;
     }
 
+    @Override
     public Set<Map.Entry<K,V>> entrySet() {
 	return map.entrySet() ;
     }
@@ -87,9 +88,12 @@ public class FastCache<K,V> extends AbstractMap<K,V> {
 	return hv & (TABLE_SIZE-1) ;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public V get( Object key ) {
 	totalCount++ ;
 	int slot = hash( key ) ;
+        @SuppressWarnings("unchecked")
 	K ckey = (K)keys[slot] ;
 	if (ckey == key ) {
 	    cacheCount++ ;
@@ -108,6 +112,7 @@ public class FastCache<K,V> extends AbstractMap<K,V> {
      * written as required, because that makes it easier
      * to preserve the correct behavior of the map.
      */
+    @Override
     public V put( K key, V value ) {
 	int slot = hash( key ) ;
 	keys[slot] = key ;

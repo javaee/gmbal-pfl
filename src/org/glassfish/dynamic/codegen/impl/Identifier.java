@@ -40,7 +40,7 @@
 
 package org.glassfish.dynamic.codegen.impl ;
 
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 /** Some utilities for dealing with Java identifiers.
  *

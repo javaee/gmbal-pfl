@@ -182,8 +182,9 @@ public class FastCacheTest {
 
     static {
 	int increment = WORD_LIST.length / PATTERN.length ;
-	for (int ctr=0; ctr<PATTERN.length; ctr++)
-	    PATTERN[ctr] = ctr*increment ;
+	for (int ctr=0; ctr<PATTERN.length; ctr++) {
+            PATTERN[ctr] = ctr * increment;
+        }
     }
 
     private static Map<String,Integer> map = new HashMap<String,Integer>() ;
@@ -192,8 +193,9 @@ public class FastCacheTest {
     private static int NUM_LOOPS = 100 ;
 
     private static void warmUp() {
-	for ( String str : WORD_LIST ) 
-	    cache.put( str, str.length() ) ;
+	for ( String str : WORD_LIST ) {
+            cache.put(str, str.length());
+        }
 
 	timeTest( true ) ;
     }
@@ -204,24 +206,30 @@ public class FastCacheTest {
 	System.out.println( "useFastCache = " + useFastCache ) ;
 
 	if (useFastCache) {
-	    for (int ctr1 = 0; ctr1 < NUM_LOOPS; ctr1++) 
-		for (int ctr2 = 0; ctr2 < PATTERN.length; ctr2++)
-		    sum += cache.get( WORD_LIST[PATTERN[ctr2]] ) ;
+	    for (int ctr1 = 0; ctr1 < NUM_LOOPS; ctr1++) {
+                for (int ctr2 = 0; ctr2 < PATTERN.length;
+                    ctr2++) {
+                    sum += cache.get(WORD_LIST[PATTERN[ctr2]]);
+                }
+            }
 	    long tc = cache.getTotalCount() ;
 	    long cc = cache.getCacheCount() ;
 	    System.out.println( "Total Calls    = " + tc ) ;
 	    System.out.println( "Cache Calls    = " + cc ) ;
 	    System.out.println( "Hit Ratio      = " + (cc*100.0)/tc + "%" ) ;
 	} else {
-	    for (int ctr1 = 0; ctr1 < NUM_LOOPS; ctr1++) 
-		for (int ctr2 = 0; ctr2 < PATTERN.length; ctr2++)
-		    sum += map.get( WORD_LIST[PATTERN[ctr2]] ) ;
+	    for (int ctr1 = 0; ctr1 < NUM_LOOPS; ctr1++) {
+                for (int ctr2 = 0; ctr2 < PATTERN.length;
+                    ctr2++) {
+                    sum += map.get(WORD_LIST[PATTERN[ctr2]]);
+                }
+            }
 	}
 
 	System.out.println( sum ) ;
     }
 
-    public static final void main( String[] args ) {
+    public static void main( String[] args ) {
 	warmUp() ;
 
 	long startTime = System.nanoTime() ;	

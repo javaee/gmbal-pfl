@@ -40,7 +40,7 @@
 
 package org.glassfish.tf.tools.enhancer;
 
-import org.glassfish.basic.pfl.contain.SynchronizedHolder;
+import org.glassfish.basic.contain.SynchronizedHolder;
 import java.util.HashSet;
 import java.util.Set;
 import org.glassfish.tf.spi.EnhancedClassData;
@@ -79,6 +79,7 @@ public class ClassTracer extends TFEnhanceAdapter {
 
     public enum State {
         NULL1() {
+            @Override
             public State transition( final Util util, final MethodVisitor mv,
                 final Input input ) {
 
@@ -99,6 +100,7 @@ public class ClassTracer extends TFEnhanceAdapter {
         },
 
         NULL2() {
+            @Override
             public State transition( final Util util, final MethodVisitor mv,
                 final Input input ) {
 
@@ -119,6 +121,7 @@ public class ClassTracer extends TFEnhanceAdapter {
         },
 
         NORMAL() {
+            @Override
             public State transition( final Util util, final MethodVisitor mv,
                 final Input input ) {
 

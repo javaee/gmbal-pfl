@@ -60,9 +60,6 @@ public interface ClassCopier {
     Object copy( Map<Object,Object> oldToNew,
 	Object source ) throws ReflectiveCopyException  ;
 
-    Object copy( Map<Object,Object> oldToNew,
-	Object source, boolean debug ) throws ReflectiveCopyException  ;
-
     /** We need to know whether this class copier operates via reflection
      * or not, as the reflective class copier must be able to tell 
      * when a super class is copied by an incompatible copier.

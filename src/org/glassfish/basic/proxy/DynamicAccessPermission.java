@@ -50,7 +50,7 @@ import java.security.*;
  */
 
 public final class DynamicAccessPermission extends BasicPermission {
-    //private static final long serialVersionUID = -8343910153355041693L;
+    private static final long serialVersionUID = -8343910153355041693L;
 
     /**
      * Creates a new DynamicAccessPermission with the specified name.

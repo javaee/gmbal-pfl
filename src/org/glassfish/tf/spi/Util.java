@@ -42,7 +42,7 @@
 package org.glassfish.tf.spi;
 
 import java.io.PrintWriter;
-import org.glassfish.basic.pfl.func.UnaryFunction;
+import org.glassfish.basic.func.UnaryFunction;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;

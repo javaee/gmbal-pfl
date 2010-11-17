@@ -196,6 +196,7 @@ public class FileWrapper implements Closeable {
     /** Close the file, and set its state to CLOSED.
      * This method does not throw any exceptions.
      */
+    @Override
     public void close() {
 	try {
 	    // Ignore if already closed

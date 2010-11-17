@@ -117,30 +117,25 @@ public abstract class ClassCopierBase implements ClassCopier {
      * and then do the copy, as otherwise self-references would cause 
      * infinite recursion.
      */
+    @Override
     public final Object copy( Map<Object,Object> oldToNew,
-	Object source ) throws ReflectiveCopyException 
-    {
-	return copy( oldToNew, source, false ) ;
-    }
-
-    public final Object copy( Map<Object,Object> oldToNew,
-	Object source, boolean debug ) throws ReflectiveCopyException
+	Object source ) throws ReflectiveCopyException
     {
 	Object result = oldToNew.get( source ) ;
 	if (result == null) {
             try {
-                result = createCopy( source, debug ) ;
+                result = createCopy( source ) ;
                 oldToNew.put( source, result ) ;
-                result = doCopy( oldToNew, source, result, debug ) ;
+                result = doCopy( oldToNew, source, result ) ;
             } catch (StackOverflowError ex) {
-                throw new ReflectiveCopyException( 
-                    "Stack overflow in copy object", ex ) ; 
+                throw Exceptions.self.stackOverflow( source, ex ) ;
             }
 	}
 
 	return result ;
     }
 
+    @Override
     public boolean isReflectiveClassCopier()
     {
 	return isReflective ;
@@ -151,7 +146,7 @@ public abstract class ClassCopierBase implements ClassCopier {
      * subclass.
      */
     protected abstract Object createCopy( 
-	Object source, boolean debug ) throws ReflectiveCopyException ;
+	Object source ) throws ReflectiveCopyException ;
 
     /** Do the copying of data from source to result.
      * This just returns the result by default, but it may be overrideden 
@@ -159,7 +154,7 @@ public abstract class ClassCopierBase implements ClassCopier {
      * initialized.
      */
     protected Object doCopy( Map<Object,Object> oldToNew,
-	Object source, Object result, boolean debug ) throws ReflectiveCopyException
+	Object source, Object result ) throws ReflectiveCopyException
     {
 	return result ;
     }

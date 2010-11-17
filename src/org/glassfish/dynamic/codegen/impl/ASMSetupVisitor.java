@@ -147,6 +147,7 @@ public class ASMSetupVisitor extends TreeWalker {
 	    return result ;
 	}
 
+        @Override
 	public String toString() {
 	    return "SlotAllocator(" + myId + ")[current=" + current + "]" ;
 	}
@@ -164,9 +165,10 @@ public class ASMSetupVisitor extends TreeWalker {
     @Override
     public boolean preMethodGenerator( MethodGenerator arg ) {
 	slotAllocator = new SlotAllocator() ;
-	for (Variable var : arg.arguments())
-	    ASMUtil.requiredEmitterType.set( (VariableInternal)var,
-		ASMUtil.RequiredEmitterType.NONE ) ;
+	for (Variable var : arg.arguments()) {
+            ASMUtil.requiredEmitterType.set((VariableInternal) var,
+                ASMUtil.RequiredEmitterType.NONE);
+        }
 	return !Modifier.isAbstract( arg.modifiers() ) ;
     }
 
@@ -261,14 +263,14 @@ public class ASMSetupVisitor extends TreeWalker {
     @Override
     public void blockStatementBeforeBodyStatement( BlockStatement arg, Statement stmt ) {
 	Statement lastStatement = ASMUtil.lastStatement.get( arg ) ;
-	if (lastStatement != null)
-	    ASMUtil.next.set( lastStatement, stmt ) ;
+	if (lastStatement != null) {
+            ASMUtil.next.set(lastStatement, stmt);
+        }
 	ASMUtil.lastStatement.set( arg, stmt ) ;
     }
 
     @Override
     public void postBlockStatement( BlockStatement arg ) {
-	Statement lastStatement = ASMUtil.lastStatement.get( arg ) ;
     }
     
     // DefinitionStatement
@@ -280,9 +282,11 @@ public class ASMSetupVisitor extends TreeWalker {
 		ASMUtil.RequiredEmitterType.SETTER ) ; 
 	} else {
 	    if (ASMUtil.requiredEmitterType.get( (VariableInternal)arg.var()) !=
-		ASMUtil.RequiredEmitterType.SETTER )
-		verificationError( arg, 
-		    "Variable of definition statement should have requiredEmitterType true" ) ;
+		ASMUtil.RequiredEmitterType.SETTER ) {
+                verificationError(arg,
+                    "Variable of definition statement should have "
+                    + "requiredEmitterType true");
+            }
 	}
 	return true ;
     }
@@ -342,16 +346,17 @@ public class ASMSetupVisitor extends TreeWalker {
     public boolean preAssignmentStatement( AssignmentStatement arg ) {
 	ExpressionInternal left = arg.left() ;
 	assert left.isAssignable() ;
-	ExpressionInternal right = arg.right() ;
 
 	if (preparing()) {
 	    ASMUtil.requiredEmitterType.set( left,
 		ASMUtil.RequiredEmitterType.SETTER ) ; 
 	} else {
 	    if (ASMUtil.requiredEmitterType.get(left) != 
-		ASMUtil.RequiredEmitterType.SETTER )
-		verificationError( arg, 
-		    "Left side of assignment statement should have requiredEmitterType SETTER" ) ;
+		ASMUtil.RequiredEmitterType.SETTER ) {
+                verificationError(arg,
+                    "Left side of assignment statement should have "
+                    + "requiredEmitterType SETTER");
+            }
 	}
 
 	return true ;
@@ -387,9 +392,10 @@ public class ASMSetupVisitor extends TreeWalker {
 	ASMUtil.RequiredEmitterType ret = 
 	    ASMUtil.requiredEmitterType.get( arg ) ;
 	EmitterFactory.Emitter em = null ;
-	if (ret != ASMUtil.RequiredEmitterType.NONE)
-	    em = EmitterFactory.makeEmitter( arg, 
-		ret == ASMUtil.RequiredEmitterType.SETTER ) ;
+	if (ret != ASMUtil.RequiredEmitterType.NONE) {
+            em = EmitterFactory.makeEmitter(arg,
+                ret == ASMUtil.RequiredEmitterType.SETTER);
+        }
 	handleEmitter( arg, em ) ;
     }
 
@@ -398,9 +404,10 @@ public class ASMSetupVisitor extends TreeWalker {
 	ASMUtil.RequiredEmitterType ret = 
 	    ASMUtil.requiredEmitterType.get( arg ) ;
 	EmitterFactory.Emitter em = null ;
-	if (ret != ASMUtil.RequiredEmitterType.NONE)
-	    em = EmitterFactory.makeEmitter( arg, 
-		ret == ASMUtil.RequiredEmitterType.SETTER ) ;
+	if (ret != ASMUtil.RequiredEmitterType.NONE) {
+            em = EmitterFactory.makeEmitter(arg,
+                ret == ASMUtil.RequiredEmitterType.SETTER);
+        }
 	handleEmitter( arg, em ) ;
     }
 
@@ -409,9 +416,10 @@ public class ASMSetupVisitor extends TreeWalker {
 	ASMUtil.RequiredEmitterType ret = 
 	    ASMUtil.requiredEmitterType.get( arg ) ;
 	EmitterFactory.Emitter em = null ;
-	if (ret != ASMUtil.RequiredEmitterType.NONE)
-	    em = EmitterFactory.makeEmitter( arg, 
-		ret == ASMUtil.RequiredEmitterType.SETTER ) ;
+	if (ret != ASMUtil.RequiredEmitterType.NONE) {
+            em = EmitterFactory.makeEmitter(arg,
+                ret == ASMUtil.RequiredEmitterType.SETTER);
+        }
 	handleEmitter( arg, em ) ;
     }
 
@@ -419,14 +427,16 @@ public class ASMSetupVisitor extends TreeWalker {
 	EmitterFactory.Emitter expected, EmitterFactory.Emitter actual ) {
 
 	boolean error ;
-	if (actual == null)
-	    error = expected != null ;
-	else
-	    error = !(actual.equals( expected )) ;
+	if (actual == null) {
+            error = expected != null;
+        } else {
+            error = !(actual.equals(expected));
+        }
 
-	if (error)
-	    verificationError( arg, "Incorrect " + nodeType + ": expected " +
-		expected + ", but found " + actual ) ;
+	if (error) {
+            verificationError(arg, "Incorrect " + nodeType + ": expected "
+                + expected + ", but found " + actual);
+        }
     }
 
     private void handleEmitter( Node arg, EmitterFactory.Emitter em ) {
@@ -475,9 +485,10 @@ public class ASMSetupVisitor extends TreeWalker {
 	    ASMUtil.stackFrameSlot.set( arg, sfs ) ;
 	} else {
 	    int slot = ASMUtil.stackFrameSlot.get( arg ) ;
-	    if (slot != sfs)
-		verificationError( arg, "Expected stackFrameSlot to be " +
-		    sfs + ", was " + slot ) ;
+	    if (slot != sfs) {
+                verificationError(arg, "Expected stackFrameSlot to be " + sfs
+                    + ", was " + slot);
+            }
 	}
     }
 

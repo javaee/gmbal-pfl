@@ -43,7 +43,7 @@ import java.util.List ;
 import java.util.ArrayList ;
 
 import java.io.IOException ;
-import org.glassfish.basic.pfl.func.BinaryFunction;
+import org.glassfish.basic.func.BinaryFunction;
 
 /** Utility class used to convert FileWrappers into (lists of) Blocks.
  */
@@ -93,13 +93,18 @@ public class BlockParser {
 
 	    BinaryFunction<List<String>,String,List<String>> newBlock = 
 		new BinaryFunction<List<String>,String,List<String>>() {
-		    public List<String> evaluate( List<String> data, String tag ) {
-			if (data.size() == 0)
-			    return data ;
+                    @Override
+		    public List<String> evaluate( List<String> data, 
+                        String tag ) {
+
+			if (data.isEmpty()) {
+                            return data;
+                        }
 
 			final Block bl = new Block( data ) ;
-			if (tag != null)
-			    bl.addTag( tag ) ;
+			if (tag != null) {
+                            bl.addTag(tag);
+                        }
 			result.add( bl ) ;
 			return new ArrayList<String>() ;
 		    }
@@ -125,8 +130,9 @@ public class BlockParser {
 
 	    // Create last block!
 	    Block bl = new Block( data ) ;
-	    if (inComment)
-		bl.addTag( COMMENT_BLOCK_TAG ) ;
+	    if (inComment) {
+                bl.addTag(COMMENT_BLOCK_TAG);
+            }
 	    result.add( bl ) ;
 	    
 	    return result ;
@@ -156,13 +162,16 @@ public class BlockParser {
 
 	    BinaryFunction<List<String>,String,List<String>> newBlock = 
 		new BinaryFunction<List<String>,String,List<String>>() {
+                    @Override
 		    public List<String> evaluate( List<String> data, String tag ) {
-			if (data.size() == 0)
-			    return data ;
+			if (data.isEmpty()) {
+                            return data;
+                        }
 
 			final Block bl = new Block( data ) ;
-			if (tag != null)
-			    bl.addTag( tag ) ;
+			if (tag != null) {
+                            bl.addTag(tag);
+                        }
 			result.add( bl ) ;
 			return new ArrayList<String>() ;
 		    }
@@ -197,8 +206,9 @@ public class BlockParser {
 
 	    // Create last block!
 	    Block bl = new Block( data ) ;
-	    if (inComment)
-		bl.addTag( COMMENT_BLOCK_TAG ) ;
+	    if (inComment) {
+                bl.addTag(COMMENT_BLOCK_TAG);
+            }
 	    result.add( bl ) ;
 	    
 	    return result ;

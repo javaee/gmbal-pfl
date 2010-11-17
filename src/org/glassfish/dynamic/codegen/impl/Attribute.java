@@ -44,7 +44,7 @@ import java.util.Set ;
 import java.util.HashSet ;
 import java.util.List ;
 import java.util.ArrayList ;
-import org.glassfish.basic.pfl.func.NullaryFunction;
+import org.glassfish.basic.func.NullaryFunction;
 
 /** Class used to define dynamic attributes on AttributedObject instances.
  * Note that T cannot be a generic type, due to problems with

@@ -53,7 +53,7 @@ import org.glassfish.dynamic.copyobject.spi.Immutable ;
 import org.glassfish.dynamic.codegen.impl.Identifier ;
 import org.glassfish.dynamic.codegen.impl.ClassInfoReflectiveImpl ;
 import org.glassfish.dynamic.codegen.impl.CurrentClassLoader ;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 /** Representation of Types (no generic support) used for
  * codegen API.

@@ -49,22 +49,24 @@ import java.lang.reflect.Constructor ;
 import java.lang.reflect.Type ;
 import java.lang.reflect.ParameterizedType ;
 import java.lang.reflect.InvocationTargetException ;
-import org.glassfish.basic.pfl.contain.Pair;
-import org.glassfish.basic.pfl.func.UnaryFunction;
+import org.glassfish.basic.contain.Pair;
+import org.glassfish.basic.func.UnaryFunction;
 
 public class ElementParserImpl implements ElementParser {
     private UnaryFunction<String,Object> func ;
     private String[] description ;
 
+    @Override
     public Object evaluate( String str ) {
 	return func.evaluate( str ) ;
     }
 
+    @Override
     public String[] describe() {
 	return description ;
     }
 
-    private class ResultData extends Pair<UnaryFunction<String,Object>,String[]> {
+    private static class ResultData extends Pair<UnaryFunction<String,Object>,String[]> {
 	public ResultData( UnaryFunction<String,Object> func, String[] desc ) {
 	    super( func, desc ) ;
 	}
@@ -89,18 +91,19 @@ public class ElementParserImpl implements ElementParser {
 
     // Used for complex data types like List and arrays.
     private ResultData getData( Method meth ) {
-	UnaryFunction<String,Object> func = null ;
-	String[] description = null ;
-	Class type = meth.getReturnType() ;
+	UnaryFunction<String,Object> myFunc = null ;
+	String[] myDescription = null ;
+	Class<?> type = meth.getReturnType() ;
 
 	if (type.isArray()) {
 	    final String sep = getSeparator( meth ) ;
-	    final Class elementClass = type.getComponentType() ;
+	    final Class<?> elementClass = type.getComponentType() ;
 	    final ResultData elementResultData = getSimpleData( elementClass ) ;
-	    description = append( "A " + sep + "-separated list of ",
+	    myDescription = append( "A " + sep + "-separated list of ",
 		elementResultData.second() ) ;
 	    
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String value ) {
 		    String[] elements = value.split( sep ) ;
 		    Object result = Array.newInstance( elementClass, 
@@ -116,12 +119,14 @@ public class ElementParserImpl implements ElementParser {
 	    } ;
 	} else if (type.equals( List.class )) {
 	    final String sep = getSeparator( meth ) ;
-	    Class elementClass = getListElementClass( meth ) ;
+	    Class<?> elementClass = getListElementClass( meth ) ;
 	    final ResultData elementResultData = getSimpleData( elementClass ) ;
-	    description = append( "A " + sep + "-separated list of ",
+	    myDescription = append( "A " + sep + "-separated list of ",
 		elementResultData.second() ) ;
 
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
+                @SuppressWarnings("unchecked")
 		public Object evaluate( String value ) {
 		    String[] elements = value.split( sep ) ;
 		    List result = new ArrayList( elements.length ) ;
@@ -137,33 +142,36 @@ public class ElementParserImpl implements ElementParser {
 	    return getSimpleData( type ) ;    
 	}
 
-	return new ResultData( func,
-	    description ) ;
+	return new ResultData( myFunc,
+	    myDescription ) ;
     }
 
     // Used for all types that take a single element.  This does 
     // not include List<Type> or Type[].  
     private ResultData getSimpleData( final Class type ) {
-	UnaryFunction<String,Object> func = null ;
-	String[] description = null ;
+	UnaryFunction<String,Object> myFunc = null ;
+	String[] myDescription = null ;
 
 	if (type.isPrimitive()) {
-	    description = new String[] { "A valid " + type.getName() } ;
+	    myDescription = new String[] { "A valid " + type.getName() } ;
 
-	    func = getPrimitiveParser( type ) ;
+	    myFunc = getPrimitiveParser( type ) ;
 	} else if (type == String.class){
-	    description = new String[] { "A String" } ;
+	    myDescription = new String[] { "A String" } ;
 
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String str ) {
 		    return str ;
 		} 
 	    } ;
 	} else if (type.isEnum()) {
-	    description = new String[] { 
+	    myDescription = new String[] {
 		"One of: " + getEnumElements( type ) } ;
 
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
+                @SuppressWarnings("unchecked")
 		public Object evaluate( String str ) {
 		    try {
 			return Enum.valueOf( type, str ) ;
@@ -174,17 +182,17 @@ public class ElementParserImpl implements ElementParser {
 		} 
 	    };
 	} else { // Anything else: must be a class that supports <init>(String)
-	    description = new String[] { 
+	    myDescription = new String[] {
 		"A string that can create a " + type.getName() } ;
 
-	    func = makeClassConverter( type ) ;
+	    myFunc = makeClassConverter( type ) ;
 	} 
 	
-	return new ResultData( func,
-	    description ) ;
+	return new ResultData( myFunc,
+	    myDescription ) ;
     }
 
-    private String getEnumElements( Class cls ) {
+    private String getEnumElements( Class<?> cls ) {
 	boolean isFirst = true ;
 	StringBuilder sb = new StringBuilder() ;
 	for (Object obj : cls.getEnumConstants()) {
@@ -199,68 +207,77 @@ public class ElementParserImpl implements ElementParser {
     }
 
     private UnaryFunction<String,Object> getPrimitiveParser( Class type ) {
-	UnaryFunction<String,Object> func = null ;
+	UnaryFunction<String,Object> myFunc = null ;
 
 	if (type == boolean.class) {
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String str ) {
 		    return Boolean.valueOf( str ) ;
 		}
 	    } ;
 	} else if (type == byte.class) {
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String str ) {
 		    return Byte.valueOf( str ) ;
 		}
 	    } ;
 	} else if (type == char.class) {
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String str ) {
-		    if (str.length() != 1)
-			throw new RuntimeException( "String \"" + str 
-			    + "\" cannot be converted to a Character" ) ;
+		    if (str.length() != 1) {
+                        throw new RuntimeException("String \"" + str +
+                            "\" cannot be converted to a Character");
+                    }
 		    return Character.valueOf( str.charAt(0) ) ;
 		}
 	    } ;
 	} else if (type == short.class) {
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String str ) {
 		    return Short.valueOf( str ) ;
 		}
 	    } ;
 	} else if (type == int.class) {
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String str ) {
 		    return Integer.valueOf( str ) ;
 		}
 	    } ;
 	} else if (type == long.class) {
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String str ) {
 		    return Long.valueOf( str ) ;
 		}
 	    } ;
 	} else if (type == float.class) {
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String str ) {
 		    return Float.valueOf( str ) ;
 		}
 	    } ;
 	} else if (type == double.class) {
-	    func = new UnaryFunction<String,Object>() {
+	    myFunc = new UnaryFunction<String,Object>() {
+                @Override
 		public Object evaluate( String str ) {
 		    return Double.valueOf( str ) ;
 		}
 	    } ;
 	} 
 
-	return func ;
+	return myFunc ;
     }
 
     private UnaryFunction<String,Object> makeClassConverter( 
-	final Class type ) {
+	final Class<?> type ) {
 
-	Constructor cons = null ;
+	Constructor<?> cons = null ;
 
 	try {
 	    cons = type.getConstructor( String.class ) ;
@@ -272,9 +289,10 @@ public class ElementParserImpl implements ElementParser {
 		+ " constructor (String) is not accessible" ) ;
 	}
     
-	final Constructor fcons = cons ;
+	final Constructor<?> fcons = cons ;
 
 	return new UnaryFunction<String,Object>() {
+            @Override
 	    public Object evaluate( String str ) {
 		try {
 		    return fcons.newInstance( str ) ;
@@ -314,8 +332,9 @@ public class ElementParserImpl implements ElementParser {
     private String getSeparator( Method meth ) {
 	Separator sep = meth.getAnnotation( Separator.class ) ;
 	String result = "," ;
-	if (sep != null)
-	    result = (String)sep.value() ;
+	if (sep != null) {
+            result = sep.value();
+        }
 
 	return result ;
     }

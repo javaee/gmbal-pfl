@@ -49,21 +49,25 @@ import java.lang.reflect.InvocationHandler ;
 public class CompositeInvocationHandlerImpl implements 
     CompositeInvocationHandler
 {
+    private static final long serialVersionUID = -5206426596331848271L;
     private Map<Class<?>,InvocationHandler> classToInvocationHandler =
         new LinkedHashMap<Class<?>,InvocationHandler>() ;
     private InvocationHandler defaultHandler = null ;
 
+    @Override
     public void addInvocationHandler( Class<?> interf,
 	InvocationHandler handler ) 
     {
 	classToInvocationHandler.put( interf, handler ) ;
     }
 
+    @Override
     public void setDefaultHandler( InvocationHandler handler ) 
     {
 	defaultHandler = handler ;
     }
 
+    @Override
     public Object invoke( Object proxy, Method method, Object[] args )
 	throws Throwable
     {

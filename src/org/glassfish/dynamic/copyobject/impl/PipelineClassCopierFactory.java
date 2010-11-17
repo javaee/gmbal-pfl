@@ -40,8 +40,6 @@
 
 package org.glassfish.dynamic.copyobject.impl;
 
-import org.glassfish.dynamic.copyobject.spi.ReflectiveCopyException ;
-
 /** A factory used for creating ClassCopier instances.  
  */
 public interface PipelineClassCopierFactory extends ClassCopierFactory 

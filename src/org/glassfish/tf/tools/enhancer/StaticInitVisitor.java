@@ -41,7 +41,7 @@
 
 package org.glassfish.tf.tools.enhancer;
 
-import org.glassfish.basic.pfl.contain.SynchronizedHolder;
+import org.glassfish.basic.contain.SynchronizedHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;

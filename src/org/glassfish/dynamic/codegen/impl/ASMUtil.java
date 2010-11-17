@@ -65,8 +65,8 @@ import org.glassfish.dynamic.codegen.spi.Type ;
 import org.glassfish.dynamic.codegen.spi.Variable ;
 import org.glassfish.dynamic.codegen.spi.Wrapper ;
 import java.io.PrintWriter;
-import org.glassfish.basic.pfl.contain.Pair;
-import org.glassfish.basic.pfl.func.NullaryFunction;
+import org.glassfish.basic.contain.Pair;
+import org.glassfish.basic.func.NullaryFunction;
 
 /** Simple class containing a few ASM-related utilities 
  * and dynamic attributes needs for the byte code generator.

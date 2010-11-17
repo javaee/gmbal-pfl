@@ -48,7 +48,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
-import org.glassfish.basic.pfl.contain.SynchronizedHolder ;
+import org.glassfish.basic.contain.SynchronizedHolder ;
 import org.glassfish.tf.spi.EnhancedClassData;
 import org.glassfish.tf.spi.Util;
 import org.glassfish.tf.spi.annotation.TraceEnhanceLevel;
@@ -57,7 +57,6 @@ public class ClassEnhancer extends TFEnhanceAdapter {
     private final Util util ;
     private final EnhancedClassData ecd ;
     private boolean hasStaticInitializer = false ;
-    private boolean hasTFAnnotation = false ;
 
     public ClassEnhancer( Util util, EnhancedClassData ecd,
         ClassVisitor cv ) {

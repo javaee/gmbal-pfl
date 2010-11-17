@@ -55,8 +55,8 @@ import java.util.Set;
 import org.glassfish.tf.timer.impl.TimerPointSourceGenerator;
 import org.glassfish.tf.timer.impl.TimingInfoProcessor;
 import org.glassfish.tf.timer.spi.TimerFactory;
-import org.glassfish.basic.pfl.contain.Pair;
-import org.glassfish.basic.pfl.func.UnaryFunction;
+import org.glassfish.basic.contain.Pair;
+import org.glassfish.basic.func.UnaryFunction;
 import org.glassfish.tf.spi.Util;
 
 /** Tool for enhancing classes annotated with tracing facility annotations.

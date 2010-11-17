@@ -42,7 +42,7 @@ package org.glassfish.dynamic.copyobject.impl ;
 
 import org.glassfish.dynamic.copyobject.spi.ObjectCopier ;
 import org.glassfish.dynamic.copyobject.spi.ReflectiveCopyException ;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 /** Trys a first ObjectCopier.  If the first throws a ReflectiveCopyException,
  * falls back and tries a second ObjectCopier.
@@ -54,18 +54,14 @@ public class FallbackObjectCopierImpl extends Pair<ObjectCopier,ObjectCopier>
 	super( first, second ) ;
     }
 
+    @Override
     public Object copy( Object src ) throws ReflectiveCopyException {
-	return copy( src, false ) ;
-    }
-
-    public Object copy( Object src, 
-	boolean debug ) throws ReflectiveCopyException {
 
 	try {
-	    return first().copy( src, debug ) ;
+	    return first().copy( src ) ;
 	} catch (ReflectiveCopyException rce ) {
             Exceptions.self.failureInFallback( rce, src, src.getClass() ) ;
-	    return second().copy( src, debug ) ;
+	    return second().copy( src ) ;
 	}
     }
 }

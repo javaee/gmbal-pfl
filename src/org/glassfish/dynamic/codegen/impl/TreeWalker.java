@@ -47,7 +47,7 @@ import java.lang.reflect.Modifier ;
 import org.glassfish.dynamic.codegen.spi.Type ;
 import org.glassfish.dynamic.codegen.spi.Expression;
 import org.glassfish.dynamic.codegen.spi.Variable ;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 /** This is a general purpose utility that does a complete traversal
  * of a Node tree.  A stack of Visitors is maintained.  The current

@@ -1004,22 +1004,25 @@ public class WeakHashMapSafeReadLock<K,V>
         }
 
         public boolean contains(Object o) {
-            if (!(o instanceof Map.Entry))
+            if (!(o instanceof Map.Entry)) {
                 return false;
+            }
             Map.Entry e = (Map.Entry)o;
-            Object k = e.getKey();
             Entry candidate = getEntry(e.getKey());
             return candidate != null && candidate.equals(e);
         }
 
+        @Override
         public boolean remove(Object o) {
             return removeMapping(o) != null;
         }
 
+        @Override
         public int size() {
             return WeakHashMapSafeReadLock.this.size();
         }
 
+        @Override
         public void clear() {
             WeakHashMapSafeReadLock.this.clear();
         }

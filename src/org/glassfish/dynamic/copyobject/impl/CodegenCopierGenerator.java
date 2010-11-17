@@ -40,7 +40,7 @@
 
 package org.glassfish.dynamic.copyobject.impl ;
 
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 import org.glassfish.dynamic.codegen.spi.Expression;
 
 import java.lang.reflect.Modifier ;
@@ -72,6 +72,7 @@ public class CodegenCopierGenerator {
 
     private static final Bridge bridge = AccessController.doPrivileged(
 	new PrivilegedAction<Bridge>() {
+        @Override
 	    public Bridge run() {
 		return Bridge.get() ;
 	    }

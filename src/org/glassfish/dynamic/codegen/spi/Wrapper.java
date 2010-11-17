@@ -55,12 +55,12 @@ import java.security.PrivilegedAction ;
 
 import org.glassfish.dynamic.copyobject.impl.ClassCopierOrdinaryImpl ;
 
-import org.glassfish.basic.fsm.spi.State ;
-import org.glassfish.basic.fsm.spi.Input ;
-import org.glassfish.basic.fsm.spi.FSM ;
-import org.glassfish.basic.fsm.spi.FSMImpl ;
-import org.glassfish.basic.fsm.spi.Runner ;
-import org.glassfish.basic.fsm.spi.StateEngine ;
+import org.glassfish.basic.fsm.State ;
+import org.glassfish.basic.fsm.Input ;
+import org.glassfish.basic.fsm.FSM ;
+import org.glassfish.basic.fsm.FSMImpl ;
+import org.glassfish.basic.fsm.Runner ;
+import org.glassfish.basic.fsm.StateEngine ;
 
 import org.glassfish.dynamic.codegen.impl.BlockStatement ;
 import org.glassfish.dynamic.codegen.impl.ClassGeneratorImpl ;
@@ -78,7 +78,7 @@ import org.glassfish.dynamic.codegen.impl.Util ;
 import org.glassfish.dynamic.codegen.impl.FieldGenerator ;
 import org.glassfish.dynamic.codegen.impl.VariableInternal;
 import org.glassfish.dynamic.codegen.impl.WhileStatement ;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 /** Main API for runtime code generation.
  * This API generates bytecode dynamically at runtime, allowing direct construction

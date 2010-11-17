@@ -52,8 +52,9 @@ public abstract class DefaultClassCopiers
     private static ClassCopier identityClassCopier = 
 	new ClassCopierBase( "identity" ) 
 	{
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		return source ;
 	    }
@@ -71,8 +72,9 @@ public abstract class DefaultClassCopiers
 	// Set isReflective true to get better error messages.
 	new ClassCopierBase( "error", true ) 
 	{
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		throw new ReflectiveCopyException( 
 		    "Cannot copy class " + source.getClass() ) ;
@@ -96,7 +98,8 @@ public abstract class DefaultClassCopiers
     {
 	return new ClassCopierBase( "map" ) 
 	{
-	    public Object createCopy( Object source, boolean debug ) 
+            @Override
+	    public Object createCopy( Object source ) 
 		throws ReflectiveCopyException
 	    {
 		try {
@@ -122,7 +125,7 @@ public abstract class DefaultClassCopiers
 
             @Override
 	    public Object doCopy( Map<Object,Object> oldToNew,
-		Object source, Object result, boolean debug ) throws ReflectiveCopyException
+		Object source, Object result ) throws ReflectiveCopyException
 	    {
 		Map sourceMap = (Map)source ;
 		Map resultMap = (Map)result ;

@@ -68,8 +68,9 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
     // need to reference classCopierFactory.
     private ClassCopier arrayClassCopier = 
 	new ClassCopierBase( "array" ) {
+        @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		int alen = Array.getLength( source ) ;
 		Object result = Array.newInstance( 
@@ -79,7 +80,7 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
 
             @Override
 	    public Object doCopy( Map<Object,Object> oldToNew, Object source,
-		Object result, boolean debug ) throws ReflectiveCopyException 
+		Object result ) throws ReflectiveCopyException 
 	    {
 		int alen = Array.getLength( source ) ;
 		for (int ctr=0; ctr<alen; ctr++) {
@@ -102,8 +103,9 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
 
     private static ClassCopier booleanArrayClassCopier =
 	new ClassCopierBase( "boolean" ) {
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		boolean[] obj = (boolean[])source ;
 		return obj.clone() ;
@@ -112,8 +114,9 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
 
     private static ClassCopier byteArrayClassCopier =
 	new ClassCopierBase( "byte" ) {
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		byte[] obj = (byte[])source ;
 		return obj.clone() ;
@@ -122,8 +125,9 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
 
     private static ClassCopier charArrayClassCopier =
 	new ClassCopierBase( "char" ) {
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		char[] obj = (char[])source ;
 		return obj.clone() ;
@@ -132,8 +136,9 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
 
     private static ClassCopier shortArrayClassCopier =
 	new ClassCopierBase( "short" ) {
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		short[] obj = (short[])source ;
 		return obj.clone() ;
@@ -142,8 +147,9 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
 
     private static ClassCopier intArrayClassCopier =
 	new ClassCopierBase( "int" ) {
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		int[] obj = (int[])source ;
 		return obj.clone() ;
@@ -152,8 +158,9 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
 
     private static ClassCopier longArrayClassCopier =
 	new ClassCopierBase( "long" ) {
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		long[] obj = (long[])source ;
 		return obj.clone() ;
@@ -162,8 +169,9 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
 
     private static ClassCopier floatArrayClassCopier =
 	new ClassCopierBase( "float" ) {
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		float[] obj = (float[])source ;
 		return obj.clone() ;
@@ -172,14 +180,16 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
 
     private static ClassCopier doubleArrayClassCopier =
 	new ClassCopierBase( "double" ) {
+            @Override
 	    public Object createCopy( 
-		Object source, boolean debug ) throws ReflectiveCopyException 
+		Object source ) throws ReflectiveCopyException 
 	    {
 		double[] obj = (double[])source ;
 		return obj.clone() ;
 	    } 
 	} ;
 
+    @Override
     public ClassCopier getClassCopier( Class<?> cls )
     {
 	Class<?> compType = cls.getComponentType() ;
@@ -218,7 +228,6 @@ public class ClassCopierFactoryArrayImpl implements ClassCopierFactory {
                 return doubleArrayClassCopier;
             }
 
-	    // XXX log an internal error
 	    return null ;
 	} else {
 	    return arrayClassCopier ; 

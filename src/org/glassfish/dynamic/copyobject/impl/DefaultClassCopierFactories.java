@@ -78,10 +78,11 @@ public abstract class DefaultClassCopierFactories
     public static ClassCopierFactory makeOrdinaryClassCopierFactory( 
 	final PipelineClassCopierFactory ccf )
     {
-	return new ClassCopierFactory() 
-	{
-	    public ClassCopier getClassCopier( Class<?> cls ) throws ReflectiveCopyException
-	    {
+	return new ClassCopierFactory() {
+            @Override
+	    public ClassCopier getClassCopier( Class<?> cls ) 
+                throws ReflectiveCopyException {
+
 		if (notCopyable( cls )) {
 		    return DefaultClassCopiers.getErrorClassCopier() ;
 		} else {
@@ -142,11 +143,13 @@ public abstract class DefaultClassCopierFactories
                     new WeakHashMapSafeReadLock<Class<?>,ClassCopier>() ) :
 		new WeakHashMapSafeReadLock<Class<?>,ClassCopier>() ;
 
+            @Override
 	    public void put( Class<?> cls, ClassCopier copier )
 	    {
 		cache.put( cls, copier ) ;
 	    }
 
+            @Override
 	    public ClassCopier getClassCopier( Class<?> cls )
 	    {
 		return cache.get(cls) ;
@@ -158,6 +161,7 @@ public abstract class DefaultClassCopierFactories
     {
 	return new ClassCopierFactory()
 	{
+            @Override
 	    public ClassCopier getClassCopier( Class cls ) 
 	    {
 		return null ;

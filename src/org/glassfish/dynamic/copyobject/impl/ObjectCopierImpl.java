@@ -65,52 +65,47 @@ public class ObjectCopierImpl implements ObjectCopier {
     static {
 	ccf.setSpecialClassCopierFactory(
 	    new ClassCopierFactory() {
-		public ClassCopier getClassCopier( Class cls ) 
+            @Override
+		public ClassCopier getClassCopier( Class<?> cls )
 		    throws ReflectiveCopyException 
 		{
-		    if (cls.isAnnotationPresent( Immutable.class ))
-			return DefaultClassCopiers.getIdentityClassCopier() ;
-		    else
-			return null ;
+		    if (cls.isAnnotationPresent( Immutable.class )) {
+                        return DefaultClassCopiers.getIdentityClassCopier();
+                    } else {
+                        return null;
+                    }
 		}
 	    }
 	) ;
     }
 
-    private Map oldToNew ;
+    private Map<Object,Object> oldToNew ;
 
     public ObjectCopierImpl()
     {
-	if (DefaultClassCopierFactories.USE_FAST_CACHE)
-	    oldToNew = new FastCache( new IdentityHashMap() ) ;
-	else
-	    oldToNew = new IdentityHashMap() ;
+	if (DefaultClassCopierFactories.USE_FAST_CACHE) {
+            oldToNew =
+                new FastCache<Object,Object>(
+                    new IdentityHashMap<Object,Object>());
+        } else {
+            oldToNew = new IdentityHashMap<Object,Object>();
+        }
     }
 
     /** Return a deep copy of obj.  Aliasing is preserved within
      * obj and between objects passed in multiple calls to the
      * same instance of ReflectObjectCopierImpl.
      */
+    @Override
     public Object copy( Object obj ) throws ReflectiveCopyException
     {
-	return copy( obj, false ) ;
-    }
+	if (obj == null) {
+            return null;
+        }
 
-    public Object copy( Object obj, boolean debug ) throws ReflectiveCopyException
-    {
-	if (obj == null)
-	    return null ;
-
-	Class cls = obj.getClass() ;
+	Class<?> cls = obj.getClass() ;
 	ClassCopier copier = ccf.getClassCopier( cls ) ;
 
-	/* too much detail!
-	if (debug) {
-	    System.out.println( "Contents of ClassCopier:" +
-		ObjectUtility.defaultObjectToString( copier ) ) ; 
-	}
-	*/
-
-	return copier.copy( oldToNew, obj, debug ) ;
+	return copier.copy( oldToNew, obj ) ;
     }
 }

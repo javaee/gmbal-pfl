@@ -52,9 +52,4 @@ public interface ObjectCopier {
     /** copy the object.  Equivalent to copy( obj, false ).
      */
     Object copy( Object obj ) throws ReflectiveCopyException ;
-
-    /** Prints out useful debugging information when debug is
-     * true.
-     */
-    Object copy( Object obj, boolean debug ) throws ReflectiveCopyException ;
 }

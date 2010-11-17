@@ -40,17 +40,9 @@
 
 package org.glassfish.basic.proxy ;
 
-import java.io.Serializable ;
-
-import java.util.Map ;
-import java.util.LinkedHashMap ;
-  
-import java.lang.reflect.Proxy ;
 import java.lang.reflect.Method ;
 import java.lang.reflect.InvocationHandler ;
 import java.lang.reflect.InvocationTargetException ;
-
-import org.glassfish.basic.proxy.DynamicAccessPermission ;
 
 public abstract class DelegateInvocationHandlerImpl 
 {
@@ -63,6 +55,7 @@ public abstract class DelegateInvocationHandlerImpl
  	    s.checkPermission(new DynamicAccessPermission("access"));
  	}
 	return new InvocationHandler() {
+            @Override
 	    public Object invoke( Object proxy, Method method, Object[] args )
 		throws Throwable
 	    {

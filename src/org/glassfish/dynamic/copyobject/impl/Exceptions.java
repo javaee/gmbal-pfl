@@ -40,12 +40,12 @@
 
 package org.glassfish.dynamic.copyobject.impl;
 
-import org.glassfish.logex.Chain;
-import org.glassfish.logex.ExceptionWrapper;
-import org.glassfish.logex.Log;
-import org.glassfish.logex.LogLevel;
-import org.glassfish.logex.Message;
-import org.glassfish.logex.WrapperGenerator;
+import org.glassfish.basic.logex.Chain;
+import org.glassfish.basic.logex.ExceptionWrapper;
+import org.glassfish.basic.logex.Log;
+import org.glassfish.basic.logex.LogLevel;
+import org.glassfish.basic.logex.Message;
+import org.glassfish.basic.logex.WrapperGenerator;
 
 import org.glassfish.dynamic.copyobject.spi.ReflectiveCopyException ;
 
@@ -61,7 +61,7 @@ import org.glassfish.dynamic.copyobject.spi.ReflectiveCopyException ;
  *
  * @author ken
  */
-@ExceptionWrapper( idPrefix="ORBOCOPY" )
+@ExceptionWrapper( idPrefix="OBJCOPY" )
 public interface Exceptions {
     static final Exceptions self = WrapperGenerator.makeWrapper(
         Exceptions.class) ;
@@ -75,7 +75,47 @@ public interface Exceptions {
     @Message( "Object copy failed on copy of {0} which has type {1}" )
     @Log( id = FB_START + 0, level=LogLevel.FINE )
     void failureInFallback(
-        @Chain ReflectiveCopyException exc, Object obj, Class cls );
+        @Chain ReflectiveCopyException exc, Object obj, Class<?> cls );
 
-// XXX possibly add more logging elsewhere in the object copier
+// ClassCopierBase
+    static final int CCB_START = FB_START + EXCEPTIONS_PER_CLASS ;
+
+    @Message( "Stack overflow while copying {0}" )
+    @Log( id = CCB_START + 0, level=LogLevel.WARNING )
+    ReflectiveCopyException stackOverflow(Object source,
+        @Chain StackOverflowError ex);
+
+// DefaultCopier
+    static final int DC_START = CCB_START + EXCEPTIONS_PER_CLASS ;
+
+    @Message( "Could not copy {0}" )
+    @Log( id = DC_START + 0, level=LogLevel.WARNING )
+    ReflectiveCopyException couldNotCopy(Object obj, ReflectiveCopyException exc);
+
+// ClassCopierFactoryPipelineImpl
+    static final int CCFPI_START = DC_START + EXCEPTIONS_PER_CLASS ;
+
+    @Log( id = CCFPI_START + 0, level=LogLevel.WARNING )
+    @Message( "Cannot copy interface (attempt was for {0})")
+    ReflectiveCopyException cannotCopyInterface( Class<?> cls ) ;
+
+    @Log( id = CCFPI_START + 1, level=LogLevel.WARNING )
+    @Message( "Could not find ClassCopier for {0}")
+    IllegalStateException couldNotFindClassCopier( Class<?> cls ) ;
+
+    @Log( id = CCFPI_START + 2, level=LogLevel.WARNING )
+    @Message( "Could not copy class {0}")
+    ReflectiveCopyException cannotCopyClass( Class<?> cls ) ;
+
+// ClassCopierOrdinaryImpl
+    static final int CCOI_START = CCFPI_START + EXCEPTIONS_PER_CLASS ;
+
+    @Message( "Exception in readResolve() for {0}")
+    @Log( id = CCOI_START + 0, level=LogLevel.WARNING )
+    RuntimeException exceptionInReadResolve(Object obj, @Chain Throwable t);
+
+    @Message( "Cannot create ClassFieldCopier for superclass {0} "
+        + ": This class already has a ClassCopier" )
+    @Log( id = CCOI_START + 0, level=LogLevel.WARNING )
+    ReflectiveCopyException noClassCopierForSuperclass( Class<?> superClass ) ;
 }

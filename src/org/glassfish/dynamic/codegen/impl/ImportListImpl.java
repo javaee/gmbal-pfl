@@ -48,8 +48,8 @@ import java.util.HashMap ;
 
 import org.glassfish.dynamic.codegen.spi.Type ;
 import org.glassfish.dynamic.codegen.spi.ImportList ;
-import org.glassfish.basic.pfl.contain.Pair;
-import org.glassfish.basic.pfl.func.UnaryVoidFunction;
+import org.glassfish.basic.contain.Pair;
+import org.glassfish.basic.func.UnaryVoidFunction;
 
 public class ImportListImpl implements ImportList {
     private Map<String,Type> imports ;

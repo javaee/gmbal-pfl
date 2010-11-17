@@ -54,8 +54,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.basic.pfl.Algorithms;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.algo.Algorithms;
+import org.glassfish.basic.contain.Pair;
 
 /**
  *

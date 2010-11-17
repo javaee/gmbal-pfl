@@ -41,7 +41,7 @@
 package org.glassfish.dynamic.codegen.spi ;
 
 import java.util.List ;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 public interface ImportList {
     /** Return a copy of this ImportList.

@@ -48,7 +48,7 @@ import java.util.HashSet ;
 import java.util.StringTokenizer ;
 
 import java.io.IOException ;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 /** Represents a range of Strings, typically read from a file, that are in some sense
  * related and contiguous.  Blocks may also be tagged as an aid in transforming
@@ -70,6 +70,7 @@ public class Block {
 	this.tags = new HashSet<String>() ;
     }
 
+    @Override
     public String toString() {
 	final StringBuilder sb = new StringBuilder() ;
 	sb.append( "Block[" ) ;
@@ -87,12 +88,15 @@ public class Block {
 	return sb.toString() ;
     }
 
+    @Override
     public boolean equals( Object obj ) {
-	if (obj == this)
-	    return true ;
+	if (obj == this) {
+            return true;
+        }
 
-	if (!(obj instanceof Block))
-	    return false ;
+	if (!(obj instanceof Block)) {
+            return false;
+        }
 
 	Block block = (Block)obj ;
 
@@ -102,17 +106,20 @@ public class Block {
 	while (iter1.hasNext() && iter2.hasNext()) {
 	    String str1 = iter1.next() ;
 	    String str2 = iter2.next() ;
-	    if (!str1.equals( str2 ))
-		return false ;
+	    if (!str1.equals( str2 )) {
+                return false;
+            }
 	}
 
 	return iter1.hasNext() == iter2.hasNext() ;
     }
 
+    @Override
     public int hashCode() {
 	int hash = 0 ;
-	for (String str : data) 
-	    hash ^= data.hashCode() ;
+	for (String str : data) {
+            hash ^= data.hashCode();
+        }
 	return hash ;
     }
 
@@ -179,8 +186,9 @@ public class Block {
      */
     public String find( final String search ) {
 	for (String str : data) {
-	    if (str.contains( search ))
-		return str ;
+	    if (str.contains( search )) {
+                return str;
+            }
 	}
 
 	return null ;
@@ -274,7 +282,7 @@ public class Block {
 	List<String> first = new ArrayList<String>() ;
 	List<String> rest = new ArrayList<String>() ;
 	for (String str : data) {
-	    if (first.size() == 0) {
+	    if (first.isEmpty()) {
 		first.add( str ) ;
 	    } else {
 		rest.add( str ) ;

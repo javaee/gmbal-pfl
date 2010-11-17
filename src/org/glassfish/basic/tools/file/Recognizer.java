@@ -68,6 +68,7 @@ public class Recognizer implements Scanner.Action {
 		return "Built-in Default Action" ;
 	    }
 
+            @Override
 	    public boolean evaluate( FileWrapper fw ) {
 		System.out.println( "No action defined for " + fw ) ;
 		return false ;
@@ -135,6 +136,7 @@ public class Recognizer implements Scanner.Action {
      * @param file The file to act upon.
      * @return result of matching action.
      */
+    @Override
     public boolean evaluate( final FileWrapper file ) {
 	final String name = file.getName() ;
 	Scanner.Action action = nameActions.get( name ) ;

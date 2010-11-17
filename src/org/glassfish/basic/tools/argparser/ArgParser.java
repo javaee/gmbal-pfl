@@ -54,7 +54,7 @@ import java.lang.reflect.Proxy ;
 import java.lang.reflect.InvocationHandler ;
 
 import java.net.URL ;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 
 /** A general purpose argument parser that uses annotations, reflection,
@@ -187,8 +187,9 @@ public class ArgParser<T> {
      * The name of the method is the name of the keyword.
      */
     public ArgParser( Class<T> cls ) {
-	if (!cls.isInterface())
-	    error( cls.getName() + " is not an interface" ) ;
+	if (!cls.isInterface()) {
+            error(cls.getName() + " is not an interface");
+        }
 	interfaceClass = cls ;
 
 	// Construct the list of ParserData entries for the methods in cls, and
@@ -204,14 +205,16 @@ public class ArgParser<T> {
 	    
 	    DefaultValue dv = m.getAnnotation( DefaultValue.class ) ;
 	    if (dv == null) {
-		error( "Method " + m.getName() + " does not have a DefaultValue annotation" ) ;
+		error( "Method " + m.getName()
+                    + " does not have a DefaultValue annotation" ) ;
 	    } else {
 		defaultValueData.put( keyword, dv.value() ) ;
 	    }
 
 	    Help help = m.getAnnotation( Help.class ) ;
-	    if (help != null)
-		helpText.put( keyword, help.value() ) ;
+	    if (help != null) {
+                helpText.put(keyword, help.value());
+            }
 	}
 
 	defaultValues = internalParse( defaultValueData ) ; 
@@ -260,26 +263,27 @@ public class ArgParser<T> {
 	Collections.sort( keyList ) ;
 	for (String keyword : keyList) {
 	    ElementParser ep = parserData.get( keyword ) ;
-	    sb.append( "\t-" + keyword 
-		+ " <" ) ;
+	    sb.append("\t-").append(keyword).append( " <") ;
 	    boolean first = true ;
 	    for (String str : ep.describe() ) {
-		if (first)
-		    first = false ;
-		else 
-		    sb.append( "\n\t    " ) ;
+		if (first) {
+                    first = false;
+                }
+		else {
+                    sb.append("\n\t    ");
+                }
 
 		sb.append( str ) ;
 	    }
 	    sb.append( ">\n" ) ;
 
 	    String defaultValue = display(defaultValues.get(keyword)) ;
-	    sb.append( "\t    "
-		+ "(default " + defaultValue + ")\n" ) ;
+	    sb.append("\t    " + "(default ").append(defaultValue)
+                .append( ")\n") ;
 
 	    String help = helpText.get( keyword ) ;
 	    if (help != null) {
-		sb.append( "\t    " + help + "\n" ) ;
+		sb.append("\t    ").append(help).append( "\n") ;
 	    }
 
 	    sb.append( "\n" ) ;
@@ -305,10 +309,11 @@ public class ArgParser<T> {
 
     // Check that method has no arguments 
     private String checkMethod( Method m ) {
-	if (m.getParameterTypes().length == 0)
-	    return m.getName() ;
-	else
-	    error( "Method " + m.getName() + " must not have any parameters" ) ;
+	if (m.getParameterTypes().length == 0) {
+            return m.getName();
+        } else {
+            error("Method " + m.getName() + " must not have any parameters");
+        }
 
 	return null ;
     }
@@ -318,8 +323,9 @@ public class ArgParser<T> {
 	for (Map.Entry<String,String> entry : data.entrySet()) {
 	    String keyword = entry.getKey() ;
 	    ElementParser ep = parserData.get( keyword ) ;
-	    if (ep == null)
-		error( keyword + " is not a valid keyword" ) ;
+	    if (ep == null) {
+                error(keyword + " is not a valid keyword");
+            }
 	    Object val = ep.evaluate( entry.getValue() ) ;
 	    result.put( keyword, val ) ;
 	}
@@ -327,10 +333,11 @@ public class ArgParser<T> {
     }
 
     private String getKeyword( String arg ) {
-	if (arg.charAt(0) == '-')
-	    return arg.substring(1) ;
-	else
-	    error( arg + " is not a valid keyword" ) ;
+	if (arg.charAt(0) == '-') {
+            return arg.substring(1);
+        } else {
+            error(arg + " is not a valid keyword");
+        }
 	return null ; // not reachable
     }
 
@@ -339,15 +346,16 @@ public class ArgParser<T> {
 	Map<String,String> result = new HashMap<String,String>() ;
 	String keyword = null ;
 	for (String arg : args) {
-	    if (keyword == null) 
-		keyword = getKeyword( arg ) ;
-	    else {
+	    if (keyword == null) {
+                keyword = getKeyword(arg);
+            } else {
 		result.put( keyword, arg ) ;
 		keyword = null ;
 	    }
 	}
-	if (keyword != null)
-	    error( "No argument supplied for keyword " + keyword ) ;
+	if (keyword != null) {
+            error("No argument supplied for keyword " + keyword);
+        }
 	return result ;
     }
 
@@ -360,8 +368,9 @@ public class ArgParser<T> {
 	final InvocationHandler ih = new InvocationHandler() {
 	    private Object getValue( final String keyword ) {
 		Object result = data.get( keyword ) ;
-		if (result == null)
-		    result = defaultData.get( keyword ) ;
+		if (result == null) {
+                    result = defaultData.get(keyword);
+                }
 		return result ;
 	    }
 
@@ -386,11 +395,12 @@ public class ArgParser<T> {
 		}
 	    }
 
+            @Override
 	    public Object invoke( final Object proxy, final Method method, 
                 final Object[] args ) {
 
 		final String name = method.getName() ;
-		if (name == "toString") {
+		if (name.equals("toString")) {
 		    final StringBuilder sb = new StringBuilder() ;
 		    for (String keyword : parserData.keySet()) {
 			sb.append( keyword ) ;
@@ -431,9 +441,10 @@ public class ArgParser<T> {
 	public StringPair( String data ) {
 	    super( null, null ) ;
 	    int index = data.indexOf( ':' ) ;
-	    if (index < 0)
-		throw new IllegalArgumentException( data
-                    + " does not contain a :" ) ;
+	    if (index < 0) {
+                throw new IllegalArgumentException(data
+                    + " does not contain a :");
+            }
 	    _first = data.substring( 0, index ) ;
 	    _second = data.substring( index + 1 ) ;
 	}
@@ -468,7 +479,8 @@ public class ArgParser<T> {
     }
 
     public static void main( String[] args ) {
-	ArgParser<TestInterface> ap = new ArgParser( TestInterface.class ) ;
+	ArgParser<TestInterface> ap = new ArgParser<TestInterface>(
+            TestInterface.class ) ;
 	System.out.println( "Help text for this parser:\n" + ap.getHelpText() ) ;
 	TestInterface result = ap.parse( args ) ;
 	System.out.println( "Result is:\n" + result ) ;

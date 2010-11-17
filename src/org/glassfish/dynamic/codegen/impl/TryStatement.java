@@ -47,7 +47,7 @@ import org.glassfish.dynamic.codegen.spi.Type ;
 import org.glassfish.dynamic.codegen.spi.Variable ;
 
 import org.glassfish.dynamic.codegen.impl.StatementBase ;
-import org.glassfish.basic.pfl.contain.Pair;
+import org.glassfish.basic.contain.Pair;
 
 /**
  *
