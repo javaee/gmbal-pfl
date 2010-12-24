@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>org.glassfish.dynamic.generator package</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+      This package defines a facility that can be used to enhance Java interfaces
+      and abstract classes with properties and delegation.  Delegation only
+      applies to abstract classes, since a class must contain non-static
+      data members to support delegation.
+
+      An interface or abstract class that contains at least one abstract method
+      annotated @Value or at least one field annotated @Delegate is a client
+      class.  The resulting implementation produced automatically as described
+      below is the enhanced class.
+
+      All properties are read-only and all delegates are set in the constructor.
+      Writable properties are generally a bad idea, and indicate a poor design.
+      Dynamic delegation is potentially very useful, but not really in keeping
+      with the static nature of Java interfaces.  It also raises complex
+      synchronization questions which probably cannot be handled by a general
+      framework.
+
+      Annotations used:
+        @Value: defines a property accessor method (optional value representing
+            ID, default is derived from method name)
+        @Delegate: defines a data member used to handle all methods on an
+            implemented interface (optional value representing ID,
+            default is field name)
+        @Factory: used on a class that contains abstract methods that
+            are annotated as @Builder with return type matching the
+            value of the @Factory annotation (required Class value that
+            gives the client class for which @Builder methods are supplied.
+        @Builder: used on a method of a @Factory class
+            that acts as a builder for an enhanced
+            class.  Builders may also be enhanced. (optional String[]
+            value mapping builder value ids to enhanced class value
+            or delegate ids).
+        @Id: used on a parameter in a builder method to indicate what
+            id in the result the parameter value initializes.
+            (required String value parameter).
+
+      The key point in all of this is how to create instances of classes that
+      use delegation and properties.  Initializing a delegate or initializing
+      a property value takes place when the enhanced class is constructed.
+      We can have generic methods to do this, or explicit constructors.
+      A builder (a factory class, or a limited meta-class) may itself
+      use property and delegation facilities in order to construct its target.
+
+      Interface case:
+      - All we really need in the generated class is a constructor that takes
+        a Map<String,Object> as an argument.
+
+      Abstract class case:
+      - This is more complex.  It would seem to make sense to require that for
+        each constructor in the client class, there is a corresponding constructor
+        in the enhanced class, which takes a Map<String,Object> as an extra argument
+        (probably at the end of the arg list). The implementation just calls
+        super on the correspding parent class constructor, and then uses the
+        Map<String,Object> to initialize the delegates and values.
+
+      So we need a way to indicate that a particular method in a builder class
+      can be used to initialize a particular delegate or property value in
+      the builder's target class.  We can do this by property ID.  For example,
+      the @Builder annotation can have a String[] value, in which each element
+      takes the form
+
+      "(bid)->(ecid)"
+
+      where bid is an id for a value in the builder, and ecid is an id
+      for a value or delegate in the enhanced class.
+
+      Basic dynamic initialization:
+      Object create( Pair<String,Object>... )
+      Object create( Map<String,Object> )
+      Here the map key/first element is either a String (for a Value) or
+      a Class (for a Delegate).
+
+      How does a builder method work?
+      A builder method is any abstract method in a @Builder class that returns
+      the type of the @Builder annotation value.  The interesting problem here
+      is how to pick an appropriate constructor to use.  Basic idea:
+      - all parameters NOT annotated with @Id must match a particular constructor.
+      - all ID parameters are used to create a Map<String,Object> that is
+        passed to the corresponding derived constructor in the enhanced class.
+  </body>
+</html>

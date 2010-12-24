@@ -393,11 +393,7 @@ public final class Algorithms {
                 // Note: the following invoke should never fail
                 try {
                     value = m.invoke(ann);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(Algorithms.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(Algorithms.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InvocationTargetException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(Algorithms.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
