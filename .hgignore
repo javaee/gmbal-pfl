@@ -28,3 +28,4 @@ make/bnd.properties
 \.conflict\~$
 gmbal/**
 libcache/**
+gen/**

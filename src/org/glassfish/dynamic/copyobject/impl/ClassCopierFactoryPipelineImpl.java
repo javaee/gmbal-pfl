@@ -125,16 +125,16 @@ public class ClassCopierFactoryPipelineImpl implements
     } ;
 
     private static final Class<?>[] mapClasses = {
-        ConcurrentHashMap.class,
-        ConcurrentSkipListMap.class,
-        EnumMap.class,
-        HashMap.class,
-        Hashtable.class,
+        // ConcurrentHashMap.class,
+        // ConcurrentSkipListMap.class,
+        // EnumMap.class,
+        // HashMap.class,
+        // Hashtable.class,
         IdentityHashMap.class,
         LinkedHashMap.class,
-        Properties.class,
-        TreeMap.class,
-        WeakHashMap.class
+        // Properties.class,
+        // TreeMap.class,
+        // WeakHashMap.class
     } ;
 
 
