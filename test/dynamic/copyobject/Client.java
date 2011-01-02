@@ -41,7 +41,6 @@
 package dynamic.copyobject  ;
 
 import java.lang.reflect.Proxy;
-import java.lang.reflect.Method;
 
 import java.io.Serializable ;
 import java.math.BigInteger;
@@ -49,11 +48,7 @@ import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-
-import javax.rmi.CORBA.Util;
-import javax.rmi.PortableRemoteObject;
 
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.BAD_PARAM;
@@ -81,7 +76,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Stack;
 import java.util.TimeZone;
 import java.util.TreeMap;
