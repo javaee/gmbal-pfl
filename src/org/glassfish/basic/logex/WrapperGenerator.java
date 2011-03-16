@@ -54,14 +54,14 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
 import org.glassfish.basic.proxy.CompositeInvocationHandler;
 import org.glassfish.basic.proxy.CompositeInvocationHandlerImpl;
 
 /** Given an annotated interface, return a Proxy that implements that interface.
- * Interface must be annotated with @ExceptionWrapper( String idPrefix,
- * String loggerName ).
- * id prefix defaults to empty, loggerName defaults to the package name of the 
- * annotated class.
+ * Interface must be annotated with @ExceptionWrapper( String idPrefix, String loggerName ).
+ * id prefix defaults to empty, loggerName defaults to the package name of the annotated
+ * class.
  *
  * Also, note that this returned wrapper will always implement the MessageInfo
  * interface, which provides a way to capture all of the messages and IDs used
@@ -73,36 +73,34 @@ import org.glassfish.basic.proxy.CompositeInvocationHandlerImpl;
  * This is necessary because the extension mechanism allows the construction
  * of message IDs that cannot be predicted based on the annotations alone.
  *
- * The behavior of the implementation of each method on the interface is 
- * determined in part by its return type as follows:
+ * The behavior of the implementation of each method on the interface is determined
+ * in part by its return type as follows:
  * <ul>
  * <li>void.  Such a method can only log a message.</li>
  * <li>String. Such a method may log a message, and also returns the message.</li>
- * <li>A subclass of Exception.  Such a method may log a message, and also 
- * returns an exception containing the message.
+ * <li>A subclass of Exception.  Such a method may log a message, and also returns
+ * an exception containing the message.
  * </ul>
  *
  * Each method may be annotated as follows:
  *
  * <ul>
- * <li>@Message( String value ).  This defines the message to be placed in a 
- * resource bundle (generated at build time by a separate tool).  The key to
- * the resource bundle is <loggerName>.<methodName>.  The message is prepended
- * with the idPrefix and the id from the @Log annotation (if @Log is present,
- * otherwise nothing is prepended to the message).  If this annotation is not
- * present, a default message is created from the method name and the arguments.
- * <li>@Log( LogLevel level, int id ).  The presence of this annotation 
- * indicates that a log record must be generated, and logger IF the appropriate
- * logger is enabled at the given level (note that LogLevel is an enum used for
- * the annotation, each member of which returns the java.util.logging.Level
- * from a getLevel() method).
+ * <li>@Message( String value ).  This defines the message to be placed in a resource
+ * bundle (generated at build time by a separate tool).  The key to the resource
+ * bundle is <loggerName>.<methodName>.  The message is prepended with the 
+ * idPrefix and the id from the @Log annotation (if @Log is present, otherwise nothing
+ * is prepended to the message).  If this annotation is not present, a default message
+ * is created from the method name and the arguments.
+ * <li>@Log( LogLevel level, int id ).  The presence of this annotation indicates that
+ * a log record must be generated, and logger IF the appropriate logger is enabled at
+ * the given level (note that LogLevel is an enum used for the annotation, each member
+ * of which returns the java.util.logging.Level from a getLevel() method).
  * </ul>
  * 
- * In addition, the @Chain annotation may be used on a method parameter 
- * (whose type must be a subclass of Throwable) of a method that returns an
- * exception to indicate that the parameter should be the cause of the returned
- * exception.  All other method parameters are used as arguments in
- * formatting the message.
+ * In addition, the @Chain annotation may be used on a method parameter (whose type
+ * must be a subclass of Throwable) of a method that returns an exception
+ * to indicate that the parameter should be the cause of the returned exception.
+ * All other method parameters are used as arguments in formatting the message.
  *
  * @author ken
  */
@@ -152,7 +150,6 @@ public class WrapperGenerator {
      * need to override every method.
      */
     public static abstract class ExtensionBase implements Extension {
-
         @Override
         public String getLogId(Method method) {
             return WrapperGenerator.getStandardLogId(method) ;
@@ -167,7 +164,6 @@ public class WrapperGenerator {
         public String getLoggerName(Class<?> cls) {
             return WrapperGenerator.getStandardLoggerName( cls ) ;
         }
-
     }
 
     // Used whenever there is no user-supplied Extension.
@@ -207,6 +203,13 @@ public class WrapperGenerator {
         }
     }
 
+    /** Expose the standard log ID for the method.  This is simply
+     * the annotated value in the @Log annotation: it is not processed in
+     * any way.
+     *
+     * @param method The method for which the ID is requested.
+     * @return The ID (as a string).
+     */
     public static String getStandardLogId( Method method ) {
         Log log = method.getAnnotation( Log.class ) ;
         if (log == null) {
@@ -260,46 +263,7 @@ public class WrapperGenerator {
         return sb.toString() ;
     }
 
-    private static void inferCaller( LogRecord lrec ) {
-	// Private method to infer the caller's class and method names
-
-	// Get the stack trace.
-	StackTraceElement stack[] = (new Throwable()).getStackTrace();
-	StackTraceElement frame = null ;
-	String wcname = "$Proxy" ; // Is this right?  Do we always have Proxy$n here?
-	String baseName = WrapperGenerator.class.getName() ;
-	String nestedName = WrapperGenerator.class.getName() + "$1" ;
-
-	// The top of the stack should always be a method in the wrapper class,
-	// or in this base class.
-	// Search back to the first method not in the wrapper class or this class.
-	int ix = 0;
-	while (ix < stack.length) {
-	    frame = stack[ix];
-	    String cname = frame.getClassName();
-	    if (!cname.contains(wcname) && !cname.equals(baseName)
-                && !cname.equals(nestedName))  {
-		break;
-	    }
-
-	    ix++;
-	}
-
-	// Set the class and method if we are not past the end of the stack
-	// trace
-	if (ix < stack.length) {
-	    lrec.setSourceClassName(frame.getClassName());
-	    lrec.setSourceMethodName(frame.getMethodName());
-	}
-    }
-
-    /** Create the standard exception for this message and method.
-     * 
-     * @param msg The formatted message to appear in the exception.
-     * @param method The method defining this exception.
-     * @return The exception.
-     */
-    public static Throwable makeStandardException( String msg, Method method ) {
+    static Throwable makeStandardException( String msg, Method method ) {
         Throwable result ;
         Class<?> rtype = method.getReturnType() ;
         try {
@@ -325,7 +289,7 @@ public class WrapperGenerator {
 
     }
 
-    public static String getStandardLoggerName( Class<?> cls ) {
+    static String getStandardLoggerName( Class<?> cls ) {
         final ExceptionWrapper ew = cls.getAnnotation( ExceptionWrapper.class ) ;
         String str = ew.loggerName() ;
         if (str.length() == 0) {
@@ -365,12 +329,12 @@ public class WrapperGenerator {
 
     private static ReturnType classifyReturnType( Method method ) {
         Class<?> rtype = method.getReturnType() ;
-        if (Throwable.class.isAssignableFrom(rtype)) {
-            return ReturnType.EXCEPTION ;
+        if (rtype.equals( void.class ) ) {
+            return ReturnType.NULL ;
         } else if (rtype.equals( String.class)) {
             return ReturnType.STRING ;
-        } else if (rtype.equals( void.class ) ) {
-            return ReturnType.NULL ;
+        } else if (Throwable.class.isAssignableFrom(rtype)) {
+            return ReturnType.EXCEPTION ;
         } else {
             throw new RuntimeException( "Method " + method
                 + " has an illegal return type" ) ;
@@ -386,9 +350,11 @@ public class WrapperGenerator {
 
         result.setLoggerName( logger.getName() ) ;
         result.setResourceBundle( logger.getResourceBundle() ) ;
+	/* Note: this is expensive, so generally we don't use it.
         if (level != Level.INFO) {
             inferCaller( result ) ;
         }
+	*/
 
         return result ;
     }
@@ -410,12 +376,13 @@ public class WrapperGenerator {
 
     private final static ShortFormatter formatter = new ShortFormatter() ;
 
-    private static Object handleFullLogging( Log log, Method method, Logger logger,
+    private static Object handleFullLogging( Log log, Method method,
+        ReturnType rtype, Logger logger,
         String idPrefix, Object[] messageParams, Throwable cause,
         Extension extension )  {
 
         final Level level = log.level().getLevel() ;
-        final ReturnType rtype = classifyReturnType( method ) ;
+
         final String msgString = getMessage( method, idPrefix, 
 	    extension.getLogId( method )) ;
         final LogRecord lrec = makeLogRecord( level, msgString,
@@ -473,7 +440,7 @@ public class WrapperGenerator {
      * behavior.
      * @return An instance of the interface.
      */
-    @SuppressWarnings({"unchecked", "unchecked", "unchecked"})
+    @SuppressWarnings({"unchecked", "unchecked"})
     public static <T> T makeWrapper( final Class<T> cls,
         final Extension extension ) {
 
@@ -496,7 +463,7 @@ public class WrapperGenerator {
             // ResourceBundle, in order to generate a properties file which
             // implements the ResourceBundle.
             //
-            // Issue 14269: Do this outside of the construction of the
+            // Issue GLASSFISH-14269: Do this outside of the construction of the
             // InvocationHandler, because Logger.getLogger is an expensive
             // synchronized call.
             Logger lg = null ;
@@ -508,24 +475,34 @@ public class WrapperGenerator {
             final Logger logger = lg ;
 
             InvocationHandler inh = new InvocationHandler() {
-                @Override
                 public Object invoke(Object proxy, Method method, Object[] args)
                     throws Throwable {
 
-                    final Annotation[][] pannos = method.getParameterAnnotations() ;
-                    final int chainIndex = findAnnotatedParameter( pannos,
-                        Chain.class ) ;
-                    Throwable cause = null ;
-                    final Object[] messageParams = getWithSkip( args, chainIndex ) ;
-                    if (chainIndex >= 0) {
-                        cause = (Throwable)args[chainIndex] ;
-                    }
-
-                    final Class<?> rtype = method.getReturnType() ;
+                    final ReturnType rtype = classifyReturnType(method) ;
                     final Log log = method.getAnnotation( Log.class ) ;
 
+                    // Issue GLASSFISH-14852: If there is no message and no logging
+                    // needed, return early and avoid unneeded computation.
+                    if (rtype == ReturnType.NULL) {
+                        if (log == null)  {
+                            return null ;
+                        } else {
+                            final LogLevel level = log.level() ;
+                            if (!logger.isLoggable(level.getLevel())) {
+                                return null ;
+                            }
+                        }
+                    }
+
+                    final Annotation[][] pannos =
+                        method.getParameterAnnotations() ;
+                    final int chainIndex = findAnnotatedParameter( pannos,
+                        Chain.class ) ;
+                    final Object[] messageParams = getWithSkip( args, 
+                         chainIndex ) ;
+
                     if (log == null) {
-                        if (!rtype.equals( String.class ) ) {
+                        if (rtype != ReturnType.STRING) {
                             throw new IllegalArgumentException(
                                 "No @Log annotation present on "
                                 + cls.getName() + "." + method.getName() ) ;
@@ -534,8 +511,13 @@ public class WrapperGenerator {
                         return handleMessageOnly( method, extension, logger,
                             messageParams ) ;
                     } else {
-                        return handleFullLogging( log, method, logger, idPrefix,
-                            messageParams, cause, extension ) ;
+                        Throwable cause = null ;
+                        if (chainIndex >= 0) {
+                            cause = (Throwable)args[chainIndex] ;
+                        }
+
+                        return handleFullLogging( log, method, rtype, logger,
+                            idPrefix, messageParams, cause, extension ) ;
                     }
                 }
             } ;
@@ -557,6 +539,7 @@ public class WrapperGenerator {
                 new CompositeInvocationHandlerImpl() {
                     private static final long serialVersionUID =
                         3086904407674824236L;
+
                     @Override
                     public String toString() {
                         return "ExceptionWrapper[" + cls.getName() + "]" ;
@@ -566,14 +549,15 @@ public class WrapperGenerator {
             cih.addInvocationHandler( cls, inh ) ;
             cih.addInvocationHandler( MessageInfo.class, inhmi) ;
 
-            // Load the Proxy using the same ClassLoader that loaded the interface
+            // Load the Proxy using the same ClassLoader that loaded the
+            // interface
             ClassLoader loader = cls.getClassLoader() ;
             Class<?>[] classes = { cls, MessageInfo.class } ;
             return (T)Proxy.newProxyInstance(loader, classes, cih ) ;
         } catch (Throwable thr) {
             // This method must NEVER throw an exception, because it is usually
-            // called from a static initializer, and uncaught exception in static
-            // initializers are VERY hard to debug.
+            // called from a static initializer, and uncaught exceptions in
+            // static initializers are VERY hard to debug.
             Logger.getLogger( WrapperGenerator.class.getName()).log(Level.SEVERE, 
                 "Error in makeWrapper for " + cls, thr );
 
