@@ -46,6 +46,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -167,13 +169,13 @@ public class WrapperGenerator {
     }
 
     // Used whenever there is no user-supplied Extension.
-    private static final Extension stdExtension = new ExtensionBase() {} ;
+    static final Extension stdExtension = new ExtensionBase() {} ;
 
     private WrapperGenerator() {}
 
     // Find the outer index in pannos for which the element array
     // contains an annotation of type cls.
-    private static int findAnnotatedParameter( Annotation[][] pannos,
+    static int findAnnotatedParameter( Annotation[][] pannos,
         Class<? extends Annotation> cls ) {
         for (int ctr1=0; ctr1<pannos.length; ctr1++ ) {
             final Annotation[] annos = pannos[ctr1] ;
@@ -188,7 +190,7 @@ public class WrapperGenerator {
         return -1 ;
     }
 
-    private static Object[] getWithSkip( Object[] args, int skip ) {
+    static Object[] getWithSkip( Object[] args, int skip ) {
         if (skip >= 0) {
             Object[] result = new Object[args.length-1] ;
             int rindex = 0 ;
@@ -220,13 +222,13 @@ public class WrapperGenerator {
         return String.format( "%05d", log.id() ) ;
     }
 
-    private static Map<String,String> getMessageMap( Class<?> cls,
+    static Map<String,String> getMessageMap( Class<?> cls,
         Extension extension ) {
 
         final Map<String,String> result = new TreeMap<String,String>() ;
         final ExceptionWrapper ew = cls.getAnnotation( ExceptionWrapper.class ) ;
         final String idPrefix = ew.idPrefix() ;
-        for (Method method : cls.getDeclaredMethods()) {
+        for (Method method : cls.getMethods()) {
             final String msgId = extension.getLogId( method ) ;
             final String msg = getMessage( method, idPrefix, msgId ) ;
             result.put( idPrefix + msgId, msg ) ;
@@ -235,7 +237,7 @@ public class WrapperGenerator {
         return result ;
     }
 
-    private static String getMessage( Method method, 
+    static String getMessage( Method method, 
         String idPrefix, String logId ) {
 
         final Message message = method.getAnnotation( Message.class ) ;
@@ -263,12 +265,17 @@ public class WrapperGenerator {
         return sb.toString() ;
     }
 
-    static Throwable makeStandardException( String msg, Method method ) {
+    private static final String cihiName = 
+        CompositeInvocationHandlerImpl.class.getName() ;
+
+    static Throwable makeStandardException( final String msg,
+        final Method method ) {
+
         Throwable result ;
-        Class<?> rtype = method.getReturnType() ;
+        final Class<?> rtype = method.getReturnType() ;
         try {
             @SuppressWarnings("unchecked")
-            Constructor<Throwable> cons =
+            final Constructor<Throwable> cons =
                 (Constructor<Throwable>)rtype.getConstructor(String.class);
             result = cons.newInstance(msg);
         } catch (InstantiationException ex) {
@@ -300,7 +307,7 @@ public class WrapperGenerator {
 
     // Extend: for making system exception based on data 
     // used for minor code and completion status
-    private static String handleMessageOnly( Method method, Extension extension,
+    static String handleMessageOnly( Method method, Extension extension,
         Logger logger, Object[] messageParams ) {
 
         // Just format the message: no exception ID or log level
@@ -325,9 +332,9 @@ public class WrapperGenerator {
         return result ;
     }
 
-    private enum ReturnType { EXCEPTION, STRING, NULL } ;
+    enum ReturnType { EXCEPTION, STRING, NULL } ;
 
-    private static ReturnType classifyReturnType( Method method ) {
+    static ReturnType classifyReturnType( Method method ) {
         Class<?> rtype = method.getReturnType() ;
         if (rtype.equals( void.class ) ) {
             return ReturnType.NULL ;
@@ -341,7 +348,7 @@ public class WrapperGenerator {
         }
     }
 
-    private static LogRecord makeLogRecord( Level level, String key,
+    static LogRecord makeLogRecord( Level level, String key,
         Object[] args, Logger logger ) {
         LogRecord result = new LogRecord( level, key ) ;
         if (args != null && args.length > 0) {
@@ -350,11 +357,6 @@ public class WrapperGenerator {
 
         result.setLoggerName( logger.getName() ) ;
         result.setResourceBundle( logger.getResourceBundle() ) ;
-	/* Note: this is expensive, so generally we don't use it.
-        if (level != Level.INFO) {
-            inferCaller( result ) ;
-        }
-	*/
 
         return result ;
     }
@@ -374,9 +376,9 @@ public class WrapperGenerator {
         }
     }
 
-    private final static ShortFormatter formatter = new ShortFormatter() ;
+    final static ShortFormatter formatter = new ShortFormatter() ;
 
-    private static Object handleFullLogging( Log log, Method method,
+    static Object handleFullLogging( Log log, Method method,
         ReturnType rtype, Logger logger,
         String idPrefix, Object[] messageParams, Throwable cause,
         Extension extension )  {
@@ -392,6 +394,35 @@ public class WrapperGenerator {
         Throwable exc = null ;
         if (rtype == ReturnType.EXCEPTION) {
             exc = extension.makeException( message, method ) ;
+
+            // Massage exception into appropriate form, and get the caller's
+            // class and method.
+            final StackTraceElement[] st = exc.getStackTrace() ;
+            final List<StackTraceElement> filtered =
+                new ArrayList<StackTraceElement>() ;
+
+            boolean skipping = true ;
+            for (StackTraceElement ste : st) {
+                if (skipping) {
+                    if (ste.getClassName().equals( cihiName )
+                        && ste.getMethodName().equals( "invoke" )) {
+                        skipping = false ;
+                    }
+                } else {
+                    filtered.add( ste ) ;
+                }
+            }
+
+            exc.setStackTrace( filtered.toArray(
+                new StackTraceElement[filtered.size()] ) ) ;
+
+            // First stack element we want is the Proxy$n.exceptionMethod
+            // from the exception interface.  Second gives us the
+            // caller class and method name.
+            StackTraceElement caller = filtered.get(1) ;
+            lrec.setSourceClassName( caller.getClassName() );
+            lrec.setSourceMethodName( caller.getMethodName() );
+
 	    if (exc != null) {
 		if (cause != null) {
 		    exc.initCause( cause ) ;

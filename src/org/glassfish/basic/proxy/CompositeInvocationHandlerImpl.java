@@ -45,6 +45,8 @@ import java.util.LinkedHashMap ;
   
 import java.lang.reflect.Method ;
 import java.lang.reflect.InvocationHandler ;
+import org.glassfish.basic.algo.ClassAnalyzer;
+import org.glassfish.basic.func.UnaryPredicateBase;
 
 public class CompositeInvocationHandlerImpl implements 
     CompositeInvocationHandler
@@ -55,10 +57,19 @@ public class CompositeInvocationHandlerImpl implements
     private InvocationHandler defaultHandler = null ;
 
     @Override
-    public void addInvocationHandler( Class<?> interf,
-	InvocationHandler handler ) 
+    public void addInvocationHandler( final Class<?> interf,
+	final InvocationHandler handler )
     {
-	classToInvocationHandler.put( interf, handler ) ;
+        final ClassAnalyzer ca = ClassAnalyzer.getClassAnalyzer( interf ) ;
+        ca.findClasses(
+            new UnaryPredicateBase<Class<?>>("AddClassToMap") {
+                @Override
+                public boolean eval(Class<?> cls) {
+                    classToInvocationHandler.put( cls, handler ) ;
+                    return true ;
+                }
+            }
+        ) ;
     }
 
     @Override
