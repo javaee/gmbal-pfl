@@ -378,23 +378,7 @@ public class WrapperGenerator {
 
     final static ShortFormatter formatter = new ShortFormatter() ;
 
-    static Object handleFullLogging( Log log, Method method,
-        ReturnType rtype, Logger logger,
-        String idPrefix, Object[] messageParams, Throwable cause,
-        Extension extension )  {
-
-        final Level level = log.level().getLevel() ;
-
-        final String msgString = getMessage( method, idPrefix, 
-	    extension.getLogId( method )) ;
-        final LogRecord lrec = makeLogRecord( level, msgString,
-            messageParams, logger ) ;
-        final String message = formatter.format( lrec ) ;
-
-        Throwable exc = null ;
-        if (rtype == ReturnType.EXCEPTION) {
-            exc = extension.makeException( message, method ) ;
-
+    static void trimStackTrace( Throwable exc, LogRecord lrec ) {
             // Massage exception into appropriate form, and get the caller's
             // class and method.
             final StackTraceElement[] st = exc.getStackTrace() ;
@@ -422,8 +406,27 @@ public class WrapperGenerator {
             StackTraceElement caller = filtered.get(1) ;
             lrec.setSourceClassName( caller.getClassName() );
             lrec.setSourceMethodName( caller.getMethodName() );
+    }
+
+    static Object handleFullLogging( Log log, Method method,
+        ReturnType rtype, Logger logger,
+        String idPrefix, Object[] messageParams, Throwable cause,
+        Extension extension )  {
+
+        final Level level = log.level().getLevel() ;
+
+        final String msgString = getMessage( method, idPrefix, 
+	    extension.getLogId( method )) ;
+        final LogRecord lrec = makeLogRecord( level, msgString,
+            messageParams, logger ) ;
+        final String message = formatter.format( lrec ) ;
+
+        Throwable exc = null ;
+        if (rtype == ReturnType.EXCEPTION) {
+            exc = extension.makeException( message, method ) ;
 
 	    if (exc != null) {
+                trimStackTrace( exc, lrec);
 		if (cause != null) {
 		    exc.initCause( cause ) ;
 		}
@@ -432,6 +435,10 @@ public class WrapperGenerator {
 		    lrec.setThrown( exc ) ;
 		}
 	    }
+        } else {
+            // Just do this to correctly set the source class and method name
+            // in the log record.
+            trimStackTrace( new Throwable(), lrec ) ;
         }
 
         if (logger.isLoggable(level)) {

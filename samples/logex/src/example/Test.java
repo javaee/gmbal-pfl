@@ -48,25 +48,29 @@ public class Test {
     private static final TestExceptions tewe = TestExceptionsWithExtension.self ;
 
     private static void msg( String msg ) {
-        System.out.println( msg ) ;
+        System.err.println( msg ) ;
     }
 
     private static void tryExceptions( TestExceptions te ) {
         te.logOnly( "Foo" ) ;
+        msg( "" ) ;
 
         RuntimeException first = null ;
 
         try {
+            msg( "" ) ;
             throw te.anException( 42 ) ;
         } catch (RuntimeException exc) {
             first = exc ;
             msg( "Caught exception: " + exc ) ;
+            msg( "" ) ;
         }
 
         try {
             throw te.logAndChain( first ) ;
         } catch (RuntimeException exc) {
             msg( "Caught second exception: " + exc ) ;
+            msg( "" ) ;
         }
     }
 
