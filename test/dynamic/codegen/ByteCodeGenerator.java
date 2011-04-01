@@ -42,7 +42,7 @@ package dynamic.codegen ;
 
 import java.util.Properties ;
 
-import static org.glassfish.dynamic.codegen.spi.Wrapper.* ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
 
 public class ByteCodeGenerator extends CodeGeneratorBase {
     private Properties options ;

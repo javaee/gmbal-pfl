@@ -41,10 +41,10 @@
 package dynamic.codegen ;
 
 
-import org.glassfish.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
 import junit.framework.TestCase ;
 
-import static org.glassfish.dynamic.codegen.spi.Wrapper.* ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
 
 public class TypeTestSuite extends TestCase {
     private static final boolean DEBUG = false ;

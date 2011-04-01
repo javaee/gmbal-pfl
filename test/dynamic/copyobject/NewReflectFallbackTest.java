@@ -41,8 +41,8 @@
 package dynamic.copyobject  ;
 
 import junit.framework.Test ;
-import org.glassfish.dynamic.copyobject.spi.CopyobjectDefaults;
-import org.glassfish.dynamic.copyobject.spi.ObjectCopierFactory;
+import org.glassfish.pfl.dynamic.copyobject.spi.CopyobjectDefaults;
+import org.glassfish.pfl.dynamic.copyobject.spi.ObjectCopierFactory;
 
 public class NewReflectFallbackTest extends Client
 {

@@ -41,15 +41,15 @@ package dynamic.codegen.test ;
 
 import dynamic.codegen.lib.HelloRemote;
 import dynamic.codegen.lib.Hello;
-import org.glassfish.dynamic.codegen.spi.Expression;
-import org.glassfish.dynamic.codegen.spi.Type;
-import org.glassfish.dynamic.codegen.spi.ClassGenerator;
+import org.glassfish.pfl.dynamic.codegen.spi.Expression;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.codegen.spi.ClassGenerator;
 import dynamic.codegen.ClassGeneratorFactory;
 import java.lang.reflect.Method;
 import java.util.*;
 
 import static java.lang.reflect.Modifier.*;
-import static org.glassfish.dynamic.codegen.spi.Wrapper.*;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.*;
 
 public class EJBRemote_gen 
     implements ClassGeneratorFactory {

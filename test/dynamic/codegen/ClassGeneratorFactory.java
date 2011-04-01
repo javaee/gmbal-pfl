@@ -40,8 +40,8 @@
 
 package dynamic.codegen ;
 
-import org.glassfish.basic.func.NullaryFunction;
-import org.glassfish.dynamic.codegen.spi.ClassGenerator;
+import org.glassfish.pfl.basic.func.NullaryFunction;
+import org.glassfish.pfl.dynamic.codegen.spi.ClassGenerator;
 
 /** Convenience interface that defines a factory for ClassGenerator instances.
  * It puts the class name of the generated class in a single place.

@@ -42,7 +42,7 @@ package dynamic.codegen ;
 
 import java.lang.reflect.Method ;
 
-import static org.glassfish.dynamic.codegen.spi.Wrapper.* ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
 
 public abstract class CodeGeneratorBase implements SimpleCodeGenerator {
     private String className ;

@@ -40,7 +40,7 @@
 
 package dynamic.codegen ;
 
-import org.glassfish.dynamic.codegen.spi.ClassGenerator;
+import org.glassfish.pfl.dynamic.codegen.spi.ClassGenerator;
 import java.lang.reflect.Method ;
 import java.lang.reflect.InvocationTargetException ;
 
@@ -52,7 +52,7 @@ import java.util.HashMap ;
 
 import junit.framework.TestCase ;
 
-import static org.glassfish.dynamic.codegen.spi.Wrapper.* ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
 
 /** Base class used to define code generator test suites.
  * A subclass of this class is created that contains all of the

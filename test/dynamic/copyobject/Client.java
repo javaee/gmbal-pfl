@@ -81,18 +81,18 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-import org.glassfish.basic.contain.Holder;
-import org.glassfish.dynamic.copyobject.spi.ObjectCopierFactory;
-import org.glassfish.dynamic.copyobject.spi.ReflectiveCopyException;
-import org.glassfish.tf.timer.spi.Statistics;
-import org.glassfish.tf.timer.spi.StatsEventHandler;
-import org.glassfish.tf.timer.spi.Timer;
-import org.glassfish.tf.timer.spi.TimerEventController;
-import org.glassfish.tf.timer.spi.TimerFactory;
-import org.glassfish.tf.timer.spi.TimerFactoryBuilder;
-import test.framework.ObjectUtility;
-import test.framework.TestCaseTools;
-import test.framework.TimedTest;
+import org.glassfish.pfl.basic.contain.Holder;
+import org.glassfish.pfl.dynamic.copyobject.spi.ObjectCopierFactory;
+import org.glassfish.pfl.dynamic.copyobject.spi.ReflectiveCopyException;
+import org.glassfish.pfl.tf.timer.spi.Statistics;
+import org.glassfish.pfl.tf.timer.spi.StatsEventHandler;
+import org.glassfish.pfl.tf.timer.spi.Timer;
+import org.glassfish.pfl.tf.timer.spi.TimerEventController;
+import org.glassfish.pfl.tf.timer.spi.TimerFactory;
+import org.glassfish.pfl.tf.timer.spi.TimerFactoryBuilder;
+import org.glassfish.pfl.test.ObjectUtility;
+import org.glassfish.pfl.test.TestCaseTools;
+import org.glassfish.pfl.test.TimedTest;
 
 public abstract class Client extends TestCase
 {

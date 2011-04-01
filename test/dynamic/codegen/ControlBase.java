@@ -43,8 +43,8 @@ package dynamic.codegen ;
 import java.util.List ;
 import java.util.ArrayList ;
 import java.util.Iterator ;
-import org.glassfish.basic.contain.Pair;
-import org.glassfish.basic.func.NullaryFunction;
+import org.glassfish.pfl.basic.contain.Pair;
+import org.glassfish.pfl.basic.func.NullaryFunction;
 
 import sun.corba.Bridge ; // for throwing undeclared checked exceptions 
 

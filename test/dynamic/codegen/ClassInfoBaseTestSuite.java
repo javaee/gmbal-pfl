@@ -40,9 +40,9 @@
 
 package dynamic.codegen ;
 
-import org.glassfish.dynamic.codegen.spi.FieldInfo;
-import org.glassfish.dynamic.codegen.spi.Type;
-import org.glassfish.dynamic.codegen.spi.ClassInfo;
+import org.glassfish.pfl.dynamic.codegen.spi.FieldInfo;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo;
 import java.util.Set ;
 import java.util.HashSet ;
 import java.util.Map ;
@@ -51,7 +51,7 @@ import junit.framework.TestCase ;
 
 import static java.lang.reflect.Modifier.* ;
 
-import static org.glassfish.dynamic.codegen.spi.Wrapper.* ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
 
 public class ClassInfoBaseTestSuite extends TestCase {
     public ClassInfoBaseTestSuite() {

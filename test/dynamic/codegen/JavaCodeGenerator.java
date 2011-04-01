@@ -48,9 +48,9 @@ import java.io.PrintStream ;
 import java.lang.reflect.Method ;
 import java.lang.reflect.Constructor ;
 
-import org.glassfish.dynamic.codegen.impl.CodeGeneratorUtil;
+import org.glassfish.pfl.dynamic.codegen.impl.CodeGeneratorUtil;
 
-import static org.glassfish.dynamic.codegen.spi.Wrapper.* ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
 
 public class JavaCodeGenerator extends CodeGeneratorBase {
     private File directory ;

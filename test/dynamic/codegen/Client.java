@@ -40,21 +40,21 @@
 
 package dynamic.codegen ;
 
-import test.framework.TestCaseTools;
-import org.glassfish.basic.func.NullaryFunction;
-import org.glassfish.basic.contain.Pair;
-import org.glassfish.dynamic.codegen.impl.ASMSetupVisitor;
-import org.glassfish.dynamic.codegen.impl.TreeWalkerContext;
-import org.glassfish.dynamic.codegen.impl.ClassGeneratorImpl;
-import org.glassfish.dynamic.codegen.impl.Identifier;
-import org.glassfish.dynamic.codegen.impl.CurrentClassLoader;
-import org.glassfish.dynamic.codegen.impl.NodeBase;
-import org.glassfish.dynamic.codegen.impl.Node;
-import org.glassfish.dynamic.codegen.impl.Attribute;
-import org.glassfish.dynamic.codegen.spi.GenericClass;
-import org.glassfish.dynamic.codegen.spi.ClassInfo;
-import org.glassfish.dynamic.codegen.spi.Type;
-import org.glassfish.dynamic.copyobject.spi.DefaultCopier;
+import org.glassfish.pfl.test.TestCaseTools;
+import org.glassfish.pfl.basic.func.NullaryFunction;
+import org.glassfish.pfl.basic.contain.Pair;
+import org.glassfish.pfl.dynamic.codegen.impl.ASMSetupVisitor;
+import org.glassfish.pfl.dynamic.codegen.impl.TreeWalkerContext;
+import org.glassfish.pfl.dynamic.codegen.impl.ClassGeneratorImpl;
+import org.glassfish.pfl.dynamic.codegen.impl.Identifier;
+import org.glassfish.pfl.dynamic.codegen.impl.CurrentClassLoader;
+import org.glassfish.pfl.dynamic.codegen.impl.NodeBase;
+import org.glassfish.pfl.dynamic.codegen.impl.Node;
+import org.glassfish.pfl.dynamic.codegen.impl.Attribute;
+import org.glassfish.pfl.dynamic.codegen.spi.GenericClass;
+import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.copyobject.spi.DefaultCopier;
 
 import java.rmi.RemoteException ;
 
@@ -76,7 +76,7 @@ import junit.framework.Test ;
 import junit.framework.TestResult ;
 import junit.framework.TestSuite ;
 
-import static org.glassfish.dynamic.codegen.spi.Wrapper.* ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
 
 import dynamic.codegen.lib.EchoInt ;
 import dynamic.codegen.lib.Constants ;

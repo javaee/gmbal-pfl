@@ -40,13 +40,13 @@
 
 package dynamic.codegen.test ;
 
-import org.glassfish.dynamic.codegen.spi.ClassGenerator;
-import org.glassfish.dynamic.codegen.spi.Type;
-import org.glassfish.dynamic.codegen.spi.Expression;
-import org.glassfish.dynamic.codegen.spi.Signature;
+import org.glassfish.pfl.dynamic.codegen.spi.ClassGenerator;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.codegen.spi.Expression;
+import org.glassfish.pfl.dynamic.codegen.spi.Signature;
 import dynamic.codegen.ClassGeneratorFactory;
 import static java.lang.reflect.Modifier.* ;
-import static org.glassfish.dynamic.codegen.spi.Wrapper.* ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
 
 public class Flow_gen implements ClassGeneratorFactory {
     private static final Signature traceSignature = 
