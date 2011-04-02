@@ -34,7 +34,7 @@
  * holder.
  * 
  */ 
-package org.glassfish.pfl.basic.algo ;
+package org.glassfish.pfl.basic.algorithm ;
 
 import java.util.List ;
 import java.util.Collection ;

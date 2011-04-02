@@ -10,6 +10,8 @@
 <project name="pfl" default="default" basedir=".">
     <description>Builds, tests, and runs the project pfl.</description>
     <import file="nbproject/build-impl.xml"/>
+    <import file="bundles.xml"/> 
+
     <!--
 
     There exist several targets which are by default empty and which can be 
@@ -71,6 +73,7 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <!--
     <target name="jars" depends="basic-jar,basic-tools-jar,tf-jar,
         tf-tools-jar,dynamic-jar,ff-jar"/>
 
@@ -123,4 +126,5 @@
             </fileset>
         </jar>
     </target>
+    -->
 </project>
