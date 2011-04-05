@@ -21,7 +21,7 @@ public class CodegenTestSuite extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("CodegenTestSuite");
-        suite.addTest(Client.suite());
+        suite.addTest(ClientTest.suite());
         return suite;
     }
 

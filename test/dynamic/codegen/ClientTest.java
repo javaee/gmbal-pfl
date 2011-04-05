@@ -108,7 +108,7 @@ import static dynamic.codegen.ControlBase.moa ;
  * <LI>Method overload resolution
  * </UL>
  */
-public class Client extends TestCase {
+public class ClientTest extends TestCase {
     private static final boolean DEBUG = false ;
 
     // Make sure that ControlBase is loaded in the ClassLoader
@@ -117,10 +117,10 @@ public class Client extends TestCase {
     // rather than in the parent to which TestClassLoader delegates.
     private static final Object cb = new ControlBase() ;
 
-    public Client() {
+    public ClientTest() {
     }
 
-    public Client( String name ) {
+    public ClientTest( String name ) {
 	super( name ) ;
     }
 
@@ -1026,7 +1026,7 @@ public class Client extends TestCase {
 
     public static Test suite() 
     {
-	TestSuite main = TestCaseTools.makeTestSuite( Client.class, 
+	TestSuite main = TestCaseTools.makeTestSuite( ClientTest.class,
 	    TestCaseTools.TestSuiteType.SINGLE ) ;
 
 	TestSuite suite = TestCaseTools.makeTestSuite( TypeTestSuite.class ) ;
@@ -1039,7 +1039,7 @@ public class Client extends TestCase {
     }
 
     public static void main( String[] args ) {
-	Client test = new Client() ;
+	ClientTest test = new ClientTest() ;
 	TestResult result = junit.textui.TestRunner.run( 
 	    test.suite() ) ;
 
