@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.glassfish.pfl.basic.algo.ClassAnalyzer;
+import org.glassfish.pfl.basic.algorithm.ClassAnalyzer;
 import org.glassfish.pfl.basic.func.UnaryPredicate;
 
 /** 
