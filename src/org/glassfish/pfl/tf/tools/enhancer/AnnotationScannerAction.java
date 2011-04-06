@@ -50,7 +50,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.glassfish.pfl.tf.timer.impl.TimingInfoProcessor;
+import org.glassfish.pfl.tf.timer.spi.TimingInfoProcessor;
 import org.glassfish.pfl.tf.spi.Util;
 import org.glassfish.pfl.tf.spi.annotation.MethodMonitorGroup;
 import org.objectweb.asm.AnnotationVisitor;

@@ -40,13 +40,12 @@
 
 package org.glassfish.pfl.tf.spi ;
 
-import org.glassfish.pfl.tf.timer.spi.TimingPointType;
 import java.util.List;
 import java.util.Map;
 
-import org.glassfish.gmbal.Description;
 import org.glassfish.pfl.basic.contain.SynchronizedHolder;
 import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
+import org.glassfish.pfl.tf.spi.annotation.Description;
 import org.objectweb.asm.Type;
 
 /**

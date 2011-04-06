@@ -38,17 +38,13 @@
  * holder.
  */
 
-package org.glassfish.pfl.tf.timer.impl ;
+package org.glassfish.pfl.tf.timer.spi ;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.glassfish.pfl.dynamic.codegen.impl.Identifier;
-import org.glassfish.pfl.tf.timer.spi.Controllable;
-import org.glassfish.pfl.tf.timer.spi.TimerFactory;
-import org.glassfish.pfl.tf.timer.spi.TimerFactoryBuilder;
-import org.glassfish.pfl.tf.timer.spi.TimerGroup;
 import org.glassfish.pfl.basic.contain.Pair;
 
 public class TimingInfoProcessor {
@@ -60,13 +56,15 @@ public class TimingInfoProcessor {
 
     private void checkForValidIdentifier( String name ) {
 	if (!Identifier.isValidIdentifier( name )) {
-	    throw new IllegalArgumentException("name " + name + " is not a valid Java identifier");
+	    throw new IllegalArgumentException("name " + name
+                + " is not a valid Java identifier");
 	}
     }
 
     private void checkDone() {
 	if (done) {
-	    throw new IllegalStateException("past getResult: no other methods may be called");
+	    throw new IllegalStateException("past getResult: "
+                + "no other methods may be called");
 	}
     }
 
@@ -75,7 +73,8 @@ public class TimingInfoProcessor {
 	this.pkg = pkg ;
 	checkForValidIdentifier( name ) ;
 	if (!Identifier.isValidFullIdentifier( pkg )) {
-	    throw new IllegalArgumentException(pkg + " is not a valid package name");
+	    throw new IllegalArgumentException(pkg
+                + " is not a valid package name");
 	}
 	this.tf = TimerFactoryBuilder.make( name, name ) ;
 	this.contents = new LinkedHashMap<String,List<String>>() ;

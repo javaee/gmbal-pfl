@@ -42,9 +42,9 @@ package org.glassfish.pfl.tf.tools.enhancer;
 
 import java.util.Set;
 import java.util.Iterator;
-import org.glassfish.pfl.tf.timer.impl.TimingInfoProcessor;
+import org.glassfish.pfl.tf.timer.spi.TimingInfoProcessor;
 import org.glassfish.pfl.tf.timer.spi.TimerFactoryBuilder;
-import org.glassfish.pfl.tf.timer.spi.TimingPointType;
+import org.glassfish.pfl.tf.spi.TimingPointType;
 import org.glassfish.pfl.basic.func.UnaryFunction;
 import org.glassfish.pfl.tf.spi.EnhancedClassData;
 import org.glassfish.pfl.tf.spi.EnhancedClassDataASMImpl;
