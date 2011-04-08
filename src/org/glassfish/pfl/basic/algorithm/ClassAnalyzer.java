@@ -35,7 +35,7 @@
  * 
  */ 
 
-package org.glassfish.pfl.basic.algo ;
+package org.glassfish.pfl.basic.algorithm ;
 
 import java.util.Collections ;
 import java.util.List ;

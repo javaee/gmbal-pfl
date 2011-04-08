@@ -45,7 +45,7 @@ import java.util.LinkedHashMap ;
   
 import java.lang.reflect.Method ;
 import java.lang.reflect.InvocationHandler ;
-import org.glassfish.pfl.basic.algo.ClassAnalyzer;
+import org.glassfish.pfl.basic.algorithm.ClassAnalyzer;
 import org.glassfish.pfl.basic.func.UnaryPredicateBase;
 
 public class CompositeInvocationHandlerImpl implements 
