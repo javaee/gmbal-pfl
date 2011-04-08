@@ -56,8 +56,6 @@ public class MyRemote__Adapter_Simplified_gen implements ClassGeneratorFactory {
     public ClassGenerator evaluate() {
 	_clear() ;
 	_package( "dynamic.codegen.gen" ) ;
-	Type Exception = _import( "java.lang.Exception" ) ;
-	Type Throwable = _import( "java.lang.Throwable" ) ;
 	Type Serializable = _import( "java.io.Serializable" ) ;
 	Type EJBObject = _import( "javax.ejb.EJBObject" ) ;
 	Type EJBException = _import( "javax.ejb.EJBException" ) ;

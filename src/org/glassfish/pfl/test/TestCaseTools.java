@@ -334,7 +334,6 @@ public class TestCaseTools
 	// search for public xxxTestSuite classes and turn these into
 	// test suites using makeTestSuite.
 	Class current = cls ;
-	List names= new ArrayList();
 	while (Test.class.isAssignableFrom(current)) {
 	    Class[] classes = current.getClasses() ;
 	    for (int i= 0; i < classes.length; i++) {

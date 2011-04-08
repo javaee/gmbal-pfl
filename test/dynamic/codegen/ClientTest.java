@@ -270,7 +270,7 @@ public class ClientTest extends TestCase {
 	public void testSimpleNode() {
 	    Node node = new NodeBase( null ) ;
 	    assertEquals( foo.get(node), "" ) ;
-	    assertEquals( bar.get(node), new Integer(1) ) ;
+	    assertEquals( bar.get(node), Integer.valueOf(1) ) ;
 	    assertEquals( baz.get(node), rgbl.evaluate() ) ;
 
 	    foo.set(node, "Raining") ;
@@ -312,17 +312,17 @@ public class ClientTest extends TestCase {
 
 	    // make sure that we get the correct value for bar
 	    assertEquals( foo.get(node2), "Raining" ) ;
-	    assertEquals( bar.get(node2), new Integer(13) ) ;
+	    assertEquals( bar.get(node2), Integer.valueOf(13) ) ;
 	    assertEquals( baz.get(node2), tval ) ;
 	    
 	    // set bar on node1 to a different value
 	    bar.set(node1, 52) ;
-	    assertEquals( bar.get(node2), new Integer(13) ) ;
+	    assertEquals( bar.get(node2), Integer.valueOf(13) ) ;
 	    
 	    // set bar on node2 to a different value
 	    bar.set(node2, 137) ;
-	    assertEquals( bar.get(node2), new Integer(137) ) ;
-	    assertEquals( bar.get(node1), new Integer(52) ) ;
+	    assertEquals( bar.get(node2), Integer.valueOf(137) ) ;
+	    assertEquals( bar.get(node1), Integer.valueOf(52) ) ;
 
 	    // GenerationTestSuiteBase.displayNode( "Delegating node", node2 ) ;
 	}

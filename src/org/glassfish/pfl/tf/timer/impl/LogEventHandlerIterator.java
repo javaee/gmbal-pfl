@@ -59,7 +59,7 @@ public class LogEventHandlerIterator implements Iterator<TimerEvent> {
 	int nextFree ) {
 
 	this.factory = factory ;
-	this.data = data ;
+	this.data = data.clone() ;
 	this.nextFree = nextFree ;
     }
 

@@ -63,7 +63,7 @@ public class ElementParserImpl implements ElementParser {
 
     @Override
     public String[] describe() {
-	return description ;
+	return description.clone() ;
     }
 
     private static class ResultData extends Pair<UnaryFunction<String,Object>,String[]> {
