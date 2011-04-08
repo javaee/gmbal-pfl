@@ -101,8 +101,9 @@ public final class ByteCodeUtility {
         }
 
 	int modifiers = cg.modifiers() ;
-	if (cg.isInterface())
-	    modifiers += ACC_INTERFACE ;
+	if (cg.isInterface()) {
+            modifiers |= ACC_INTERFACE;
+        }
 	String superType = (cg.superType() == null) ? 
 	    ASMUtil.bcName( Type._Object() ) :
 	    ASMUtil.bcName( cg.superType() ) ;

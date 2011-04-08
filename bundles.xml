@@ -26,9 +26,6 @@
         <include name="org.glassfish.pfl.dynamic.codegen.spi"/> 
         <include name="org.glassfish.pfl.dynamic.copyobject.spi"/> 
         <include name="org.glassfish.pfl.dynamic.generator"/> 
-    </patternset>
-
-    <patternset id="dynamic.private">
         <include name="org.glassfish.pfl.dynamic.codegen.impl"/> 
         <include name="org.glassfish.pfl.dynamic.copyobject.impl"/> 
     </patternset>
@@ -53,13 +50,13 @@
 
     <property name="version" value="1.0.0-b001"/>
     <property name="bundle.dir" value="dist/bundles"/>
-    <property name="pfl.jar" value="dist/pfl.jar"/>
+    <property name="bnd.classpath" value="build/classes"/>
 
     <target name="make-bundles" depends="modules.init">
         <make-bundle outfile="pfl-basic.jar"
             outdir="${bundle.dir}"
             version="${version}"
-            classpath="${pfl.jar}">
+            classpath="${bnd.classpath}">
             <directive-list>
                 <directive type="Export-Package" name="basic.export"/>
             </directive-list>
@@ -67,7 +64,7 @@
         <make-bundle outfile="pfl-basic-tools.jar"
             outdir="${bundle.dir}"
             version="${version}"
-            classpath="${pfl.jar}">
+            classpath="${bnd.classpath}">
             <directive-list>
                 <directive type="Export-Package" name="basic-tools.export"/>
             </directive-list>
@@ -75,16 +72,15 @@
         <make-bundle outfile="pfl-dynamic.jar"
             outdir="${bundle.dir}"
             version="${version}"
-            classpath="${pfl.jar}">
+            classpath="${bnd.classpath}">
             <directive-list>
                 <directive type="Export-Package" name="dynamic.export"/>
-                <directive type="Private-Package" name="dynamic.private"/>
             </directive-list>
         </make-bundle>
         <make-bundle outfile="pfl-tf.jar"
             outdir="${bundle.dir}"
             version="${version}"
-            classpath="${pfl.jar}">
+            classpath="${bnd.classpath}">
             <directive-list>
                 <directive type="Export-Package" name="tf.export"/>
                 <directive type="Export-Package" name="tf.private"/>
@@ -93,7 +89,7 @@
         <make-bundle outfile="pfl-tf-tools.jar"
             outdir="${bundle.dir}"
             version="${version}"
-            classpath="${pfl.jar}">
+            classpath="${bnd.classpath}">
             <directive-list>
                 <directive type="Export-Package" name="tf-tools.export"/>
             </directive-list>
@@ -101,7 +97,7 @@
         <make-bundle outfile="pfl-test.jar"
             outdir="${bundle.dir}"
             version="${version}"
-            classpath="${pfl.jar}">
+            classpath="${bnd.classpath}">
             <directive-list>
                 <directive type="Export-Package" name="test.export"/>
             </directive-list>

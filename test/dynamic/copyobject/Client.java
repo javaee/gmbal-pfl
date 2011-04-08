@@ -1095,7 +1095,7 @@ public abstract class Client extends TestCase
         BigInteger bigInt = new BigInteger("-7492932907329832");
         BigDecimal bigDecimal = new BigDecimal(bigInt);
 
-        doImmutableTest(bigInt);
+        doImmutableTest(bigDecimal);
     }
 
     public  void testJavaMathArrayAlias() {
@@ -1438,7 +1438,7 @@ public abstract class Client extends TestCase
 	}
 
 	private boolean checkObject( long epoch, Object obj ) {
-	    if (obj1 instanceof NonFinalComplexClass) {
+	    if (obj instanceof NonFinalComplexClass) {
 		NonFinalComplexClass cc = (NonFinalComplexClass)obj ;
 		return cc.isDirty( epoch ) ;
 	    } else {
@@ -1779,7 +1779,7 @@ public abstract class Client extends TestCase
 	top.disable() ;
 	
 	// Dump out timing results.
-	Map<Timer,Statistics> result = handler.stats() ;	
+	// Map<Timer,Statistics> result = handler.stats() ;
 	// TimerUtils.writeHtmlTable( result, "CDRCopyTree4-3-2-3.html",
 	    // "Timing Data for making " + REP_COUNT
 	    // + " copies of Tree(4, 3, 2, 3) using ORBStream copier" ) ;
@@ -1825,14 +1825,14 @@ public abstract class Client extends TestCase
 
     public  void testLocalInner() {
         HashMap map = new HashMap();
-        map.put("one", new Integer(1));
+        map.put("one", Integer.valueOf(1) );
         Object[] objs = new Object[] { "this", map };
         LocalInner local = new LocalInner(objs);
         doStandardTest(local.iterator);
     }
 
     public  void testAnonymousLocalInner() {
-        Object[] objs = { "test", new Integer(1), new BigInteger("9030923") };
+        Object[] objs = { "test", Integer.valueOf(1), new BigInteger("9030923") };
         AnonymousInner inner = new AnonymousInner(objs);
         doStandardTest(inner.iterator);
     }

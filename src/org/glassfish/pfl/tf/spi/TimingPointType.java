@@ -38,41 +38,14 @@
  * holder.
  */
 
-package dynamic.codegen.test ;
+package org.glassfish.pfl.tf.spi;
 
-import org.glassfish.pfl.dynamic.codegen.spi.Type;
-import org.glassfish.pfl.dynamic.codegen.spi.ClassGenerator;
-import dynamic.codegen.ClassGeneratorFactory;
-import static java.lang.reflect.Modifier.* ;
-import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
-
-public class MyRemote_gen implements ClassGeneratorFactory {
-    @Override
-    public String className() {
-	return "MyRemote" ;
-    }
-
-    @Override
-    public ClassGenerator evaluate() {
-	_clear() ;
-	_package( "dynamic.codegen.gen" ) ;
-	Type EJBObject = _import( "javax.ejb.EJBObject" ) ;
-	Type RemoteException = _import( "java.rmi.RemoteException" ) ;
-	Type AppException = _import( "dynamic.codegen.lib.AppException" ) ;
-
-	_interface( PUBLIC, className(), EJBObject ) ;
-	    _method( PUBLIC|ABSTRACT, _void(), "doSomething", RemoteException) ;
-	    _end() ;
-
-	    _method( PUBLIC|ABSTRACT, _int(), "doSomethingElse", 
-		RemoteException, AppException ) ;
-	    _end() ;
-
-	    _method( PUBLIC|ABSTRACT, _int(), "echo", RemoteException ) ;
-		_arg( _int(), "arg" ) ;
-	    _end() ;
-	_end() ;
-
-	return _classGenerator() ;
-   }
-}
+/** Used to indicate what kind of TimingPoint a InfoMethod represents.
+ * For convience, BOTH is the type of a Monitored Method, since the
+ * enter and exit to the method give the corresponding timer events.
+ */
+public enum TimingPointType { 
+    NONE, 
+    BOTH,
+    ENTER, 
+    EXIT }

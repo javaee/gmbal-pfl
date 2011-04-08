@@ -43,7 +43,6 @@ package org.glassfish.pfl.tf.spi;
 import org.glassfish.pfl.tf.timer.spi.Timer;
 import org.glassfish.pfl.tf.timer.spi.TimerEventController;
 import org.glassfish.pfl.tf.timer.spi.TimerManager;
-import org.glassfish.pfl.tf.timer.spi.TimingPointType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;

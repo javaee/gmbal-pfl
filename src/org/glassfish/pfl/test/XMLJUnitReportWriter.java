@@ -243,7 +243,7 @@ public class XMLJUnitReportWriter implements JUnitReportWriter, XMLConstants {
     }
 
     public void startTest(TestDescription t) {
-        testStarts.put(t, new Long(System.currentTimeMillis()));
+        testStarts.put(t, Long.valueOf(System.currentTimeMillis()));
     }
 
     public void endTest(TestDescription test, long duration ) {

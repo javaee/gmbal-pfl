@@ -40,7 +40,7 @@
 
 package org.glassfish.pfl.tf.spi.annotation;
 
-import org.glassfish.pfl.tf.timer.spi.TimingPointType;
+import org.glassfish.pfl.tf.spi.TimingPointType;
 import java.lang.annotation.Target ;
 import java.lang.annotation.Documented ;
 import java.lang.annotation.ElementType ;

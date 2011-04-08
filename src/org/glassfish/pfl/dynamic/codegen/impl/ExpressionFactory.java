@@ -658,7 +658,8 @@ public final class ExpressionFactory {
 	    public Expression create( ExpressionFactory ef,
 		Expression left, Expression right ) {
 
-		if ((left != Type._boolean()) || (right != Type._boolean()))
+		if (!(left.equals( Type._boolean()))
+                    || !(right.equals( Type._boolean())))
 		    throw new IllegalArgumentException(
 			this.javaRepresentation() + " requires boolean expressions" ) ;
 
@@ -675,7 +676,8 @@ public final class ExpressionFactory {
 	    public Expression create( ExpressionFactory ef,
 		Expression left, Expression right ) {
 
-		if ((left != Type._boolean()) || (right != Type._boolean()))
+		if (!(left.equals( Type._boolean()))
+                    || !(right.equals( Type._boolean())))
 		    throw new IllegalArgumentException(
 			this.javaRepresentation() + " requires boolean expressions" ) ;
 

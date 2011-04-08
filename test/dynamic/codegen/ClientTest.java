@@ -108,7 +108,7 @@ import static dynamic.codegen.ControlBase.moa ;
  * <LI>Method overload resolution
  * </UL>
  */
-public class Client extends TestCase {
+public class ClientTest extends TestCase {
     private static final boolean DEBUG = false ;
 
     // Make sure that ControlBase is loaded in the ClassLoader
@@ -117,10 +117,10 @@ public class Client extends TestCase {
     // rather than in the parent to which TestClassLoader delegates.
     private static final Object cb = new ControlBase() ;
 
-    public Client() {
+    public ClientTest() {
     }
 
-    public Client( String name ) {
+    public ClientTest( String name ) {
 	super( name ) ;
     }
 
@@ -270,7 +270,7 @@ public class Client extends TestCase {
 	public void testSimpleNode() {
 	    Node node = new NodeBase( null ) ;
 	    assertEquals( foo.get(node), "" ) ;
-	    assertEquals( bar.get(node), new Integer(1) ) ;
+	    assertEquals( bar.get(node), Integer.valueOf(1) ) ;
 	    assertEquals( baz.get(node), rgbl.evaluate() ) ;
 
 	    foo.set(node, "Raining") ;
@@ -312,17 +312,17 @@ public class Client extends TestCase {
 
 	    // make sure that we get the correct value for bar
 	    assertEquals( foo.get(node2), "Raining" ) ;
-	    assertEquals( bar.get(node2), new Integer(13) ) ;
+	    assertEquals( bar.get(node2), Integer.valueOf(13) ) ;
 	    assertEquals( baz.get(node2), tval ) ;
 	    
 	    // set bar on node1 to a different value
 	    bar.set(node1, 52) ;
-	    assertEquals( bar.get(node2), new Integer(13) ) ;
+	    assertEquals( bar.get(node2), Integer.valueOf(13) ) ;
 	    
 	    // set bar on node2 to a different value
 	    bar.set(node2, 137) ;
-	    assertEquals( bar.get(node2), new Integer(137) ) ;
-	    assertEquals( bar.get(node1), new Integer(52) ) ;
+	    assertEquals( bar.get(node2), Integer.valueOf(137) ) ;
+	    assertEquals( bar.get(node1), Integer.valueOf(52) ) ;
 
 	    // GenerationTestSuiteBase.displayNode( "Delegating node", node2 ) ;
 	}
@@ -1026,7 +1026,7 @@ public class Client extends TestCase {
 
     public static Test suite() 
     {
-	TestSuite main = TestCaseTools.makeTestSuite( Client.class, 
+	TestSuite main = TestCaseTools.makeTestSuite( ClientTest.class,
 	    TestCaseTools.TestSuiteType.SINGLE ) ;
 
 	TestSuite suite = TestCaseTools.makeTestSuite( TypeTestSuite.class ) ;
@@ -1039,7 +1039,7 @@ public class Client extends TestCase {
     }
 
     public static void main( String[] args ) {
-	Client test = new Client() ;
+	ClientTest test = new ClientTest() ;
 	TestResult result = junit.textui.TestRunner.run( 
 	    test.suite() ) ;
 

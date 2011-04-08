@@ -40,7 +40,6 @@
 
 package org.glassfish.pfl.tf.spi;
 
-import org.glassfish.pfl.tf.timer.spi.TimingPointType;
 import org.glassfish.pfl.tf.spi.annotation.TFEnhanced;
 import java.util.ArrayList;
 import java.util.Collections;
