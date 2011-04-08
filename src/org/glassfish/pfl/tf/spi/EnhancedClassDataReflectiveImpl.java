@@ -51,7 +51,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.objectweb.asm.Type;
+import org.glassfish.pfl.objectweb.asm.Type;
 
 public class EnhancedClassDataReflectiveImpl extends EnhancedClassDataBase {
     private final Class<?> currentClass ;

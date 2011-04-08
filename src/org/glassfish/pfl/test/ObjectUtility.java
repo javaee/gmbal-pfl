@@ -441,21 +441,17 @@ public final class ObjectUtility {
 		    result.append( fld.getName() ) ;
 		    result.append( ":" ) ;
 
-		    try {
-			// Make sure that we can read the field if it is 
-			// not public
-			AccessController.doPrivileged( new PrivilegedAction() {
-			    public Object run() {
-				fld.setAccessible( true ) ;
-				return null ;
-			    } 
-			} ) ;
+                    // Make sure that we can read the field if it is
+                    // not public
+                    AccessController.doPrivileged( new PrivilegedAction() {
+                        public Object run() {
+                            fld.setAccessible( true ) ;
+                            return null ;
+                        }
+                    } ) ;
 
-			java.lang.Object value = fld.get( obj ) ;
-			objectToStringHelper( printed, result, value ) ;
-		    } catch (Exception exc2) {
-			result.append( "???" ) ;
-		    }
+                    java.lang.Object value = fld.get( obj ) ;
+                    objectToStringHelper( printed, result, value ) ;
 
 		    result.endElement() ;
 		}

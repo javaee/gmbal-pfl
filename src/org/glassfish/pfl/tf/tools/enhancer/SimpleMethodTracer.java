@@ -44,11 +44,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.glassfish.pfl.tf.spi.Util;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.glassfish.pfl.objectweb.asm.AnnotationVisitor;
+import org.glassfish.pfl.objectweb.asm.Attribute;
+import org.glassfish.pfl.objectweb.asm.Label;
+import org.glassfish.pfl.objectweb.asm.MethodVisitor;
+import org.glassfish.pfl.objectweb.asm.Opcodes;
 
 /**
  *

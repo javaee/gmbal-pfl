@@ -48,6 +48,18 @@
         <include name="org.glassfish.pfl.test"/> 
     </patternset>
 
+    <patternset id="asm.export">
+	<include name="org.glassfish.pfl.objectweb.asm"/>
+	<!-- <include name="org.glassfish.pfl.objectweb.asm.attrs"/> -->
+	<!-- <include name="org.glassfish.pfl.objectweb.asm.commons"/> -->
+	<!-- <include name="org.glassfish.pfl.objectweb.asm.optimizer"/> -->
+	<!-- <include name="org.glassfish.pfl.objectweb.asm.signature"/> -->
+	<include name="org.glassfish.pfl.objectweb.asm.tree"/>
+	<!-- <include name="org.glassfish.pfl.objectweb.asm.tree.analysis"/> -->
+	<include name="org.glassfish.pfl.objectweb.asm.util"/>
+	<!-- <include name="org.glassfish.pfl.objectweb.asm.xml"/> -->
+    </patternset>
+
     <property name="version" value="1.0.0-b001"/>
     <property name="bundle.dir" value="dist/bundles"/>
     <property name="bnd.classpath" value="build/classes"/>
@@ -102,6 +114,14 @@
                 <directive type="Export-Package" name="test.export"/>
             </directive-list>
         </make-bundle>
+	<make-bundle outfile="pfl-asm.jar"
+            outdir="${bundle.dir}"
+            version="${version}"
+            classpath="${bnd.classpath}">
+            <directive-list>
+		<directive type="Export-Package" name="asm.export"/>
+	    </directive-list>
+	</make-bundle>
     </target>
 
     <target name="-post-jar" depends="make-bundles"/>

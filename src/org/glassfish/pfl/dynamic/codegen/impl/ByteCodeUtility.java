@@ -57,13 +57,13 @@ import org.glassfish.pfl.dynamic.codegen.spi.Variable ;
 import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo ;
 import org.glassfish.pfl.dynamic.codegen.spi.MethodInfo ;
 
-import org.objectweb.asm.MethodVisitor ;
-import org.objectweb.asm.ClassWriter ;
-import org.objectweb.asm.Label ;
-import org.objectweb.asm.util.TraceMethodVisitor ;
+import org.glassfish.pfl.objectweb.asm.MethodVisitor ;
+import org.glassfish.pfl.objectweb.asm.ClassWriter ;
+import org.glassfish.pfl.objectweb.asm.Label ;
+import org.glassfish.pfl.objectweb.asm.util.TraceMethodVisitor ;
 
 import static java.lang.reflect.Modifier.* ;
-import static org.objectweb.asm.Opcodes.* ;
+import static org.glassfish.pfl.objectweb.asm.Opcodes.* ;
 
 /** Class that is responsible for low-level bytecode generation using ASM.
  * It provides methods that directly generate bytecode in a MethodVisitor.
@@ -305,8 +305,8 @@ public final class ByteCodeUtility {
 	} else if (type.equals(Type._Class())) {
 	    // value is a Type, so get a corresponding ASM type.
 	    Type vtype = Type.class.cast( value ) ;
-	    org.objectweb.asm.Type atype = 
-		org.objectweb.asm.Type.getType( vtype.signature() ) ;
+	    org.glassfish.pfl.objectweb.asm.Type atype =
+		org.glassfish.pfl.objectweb.asm.Type.getType( vtype.signature() ) ;
 	    mv.visitLdcInsn( atype ) ;
 	} else if (type.equals( Type._String())) {
 	    mv.visitLdcInsn( value ) ;

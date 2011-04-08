@@ -43,18 +43,18 @@ package org.glassfish.pfl.tf.spi;
 
 import java.io.PrintWriter;
 import org.glassfish.pfl.basic.func.UnaryFunction;
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.util.AbstractVisitor;
-import org.objectweb.asm.util.CheckClassAdapter;
+import org.glassfish.pfl.objectweb.asm.ClassAdapter;
+import org.glassfish.pfl.objectweb.asm.ClassReader;
+import org.glassfish.pfl.objectweb.asm.ClassVisitor;
+import org.glassfish.pfl.objectweb.asm.ClassWriter;
+import org.glassfish.pfl.objectweb.asm.MethodVisitor;
+import org.glassfish.pfl.objectweb.asm.Opcodes;
+import org.glassfish.pfl.objectweb.asm.Type;
+import org.glassfish.pfl.objectweb.asm.tree.LocalVariableNode;
+import org.glassfish.pfl.objectweb.asm.tree.MethodInsnNode;
+import org.glassfish.pfl.objectweb.asm.tree.MethodNode;
+import org.glassfish.pfl.objectweb.asm.util.AbstractVisitor;
+import org.glassfish.pfl.objectweb.asm.util.CheckClassAdapter;
 
 /** Some useful utilities for generating code using ASM.  Nothing in here
  * should be specific to the classfile enhancer for tracing.

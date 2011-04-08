@@ -44,12 +44,12 @@ import org.glassfish.pfl.tf.spi.EnhancedClassData;
 import org.glassfish.pfl.tf.spi.TraceEnhancementException;
 import org.glassfish.pfl.tf.spi.annotation.TFEnhanced;
 import org.glassfish.pfl.tf.spi.annotation.TraceEnhanceLevel;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
+import org.glassfish.pfl.objectweb.asm.AnnotationVisitor;
+import org.glassfish.pfl.objectweb.asm.ClassAdapter;
+import org.glassfish.pfl.objectweb.asm.ClassVisitor;
+import org.glassfish.pfl.objectweb.asm.FieldVisitor;
+import org.glassfish.pfl.objectweb.asm.MethodVisitor;
+import org.glassfish.pfl.objectweb.asm.Type;
 
 /**
  *

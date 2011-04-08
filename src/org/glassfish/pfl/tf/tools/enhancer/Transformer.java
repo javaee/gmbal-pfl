@@ -51,11 +51,11 @@ import org.glassfish.pfl.tf.spi.EnhancedClassDataASMImpl;
 import org.glassfish.pfl.tf.spi.TraceEnhancementException;
 import org.glassfish.pfl.tf.spi.Util;
 
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
+import org.glassfish.pfl.objectweb.asm.ClassAdapter;
+import org.glassfish.pfl.objectweb.asm.ClassReader;
+import org.glassfish.pfl.objectweb.asm.ClassVisitor;
+import org.glassfish.pfl.objectweb.asm.Opcodes;
+import org.glassfish.pfl.objectweb.asm.tree.ClassNode;
 
 /** ClassFile enhancer for the tracing facility.  This modifies the bytecode
  * for an applicable class, then returns the updated bytecode.

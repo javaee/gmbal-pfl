@@ -53,15 +53,15 @@ import java.util.Set;
 import org.glassfish.pfl.tf.timer.spi.TimingInfoProcessor;
 import org.glassfish.pfl.tf.spi.Util;
 import org.glassfish.pfl.tf.spi.annotation.MethodMonitorGroup;
-import org.objectweb.asm.AnnotationVisitor;
+import org.glassfish.pfl.objectweb.asm.AnnotationVisitor;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.EmptyVisitor;
+import org.glassfish.pfl.objectweb.asm.ClassReader;
+import org.glassfish.pfl.objectweb.asm.ClassVisitor;
+import org.glassfish.pfl.objectweb.asm.FieldVisitor;
+import org.glassfish.pfl.objectweb.asm.MethodVisitor;
+import org.glassfish.pfl.objectweb.asm.Opcodes;
+import org.glassfish.pfl.objectweb.asm.Type;
+import org.glassfish.pfl.objectweb.asm.commons.EmptyVisitor;
 
 /** Scan all classes looking for annotations annotated with @MethodMonitorGroup,
  * and saves the internal names of any such annotations.

@@ -46,7 +46,7 @@ import java.util.Map;
 import org.glassfish.pfl.basic.contain.SynchronizedHolder;
 import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
 import org.glassfish.pfl.tf.spi.annotation.Description;
-import org.objectweb.asm.Type;
+import org.glassfish.pfl.objectweb.asm.Type;
 
 /**
  *

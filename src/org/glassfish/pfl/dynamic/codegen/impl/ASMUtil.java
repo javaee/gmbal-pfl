@@ -49,15 +49,15 @@ import java.io.PrintStream ;
 import java.io.FileOutputStream ;
 import java.io.File ;
 
-import org.objectweb.asm.ClassWriter ;
-import org.objectweb.asm.ClassVisitor ;
-import org.objectweb.asm.MethodVisitor ;
-import org.objectweb.asm.ClassAdapter ;
-import org.objectweb.asm.MethodAdapter ;
+import org.glassfish.pfl.objectweb.asm.ClassWriter ;
+import org.glassfish.pfl.objectweb.asm.ClassVisitor ;
+import org.glassfish.pfl.objectweb.asm.MethodVisitor ;
+import org.glassfish.pfl.objectweb.asm.ClassAdapter ;
+import org.glassfish.pfl.objectweb.asm.MethodAdapter ;
 
 // Imports for verify method
-import org.objectweb.asm.ClassReader ;
-import org.objectweb.asm.util.CheckClassAdapter ;
+import org.glassfish.pfl.objectweb.asm.ClassReader ;
+import org.glassfish.pfl.objectweb.asm.util.CheckClassAdapter ;
 // end of verify method imports
 
 import org.glassfish.pfl.dynamic.codegen.spi.ImportList ;

@@ -47,15 +47,15 @@ import org.glassfish.pfl.tf.spi.EnhancedClassData;
 import org.glassfish.pfl.tf.spi.MethodMonitor;
 import org.glassfish.pfl.tf.spi.Util;
 import org.glassfish.pfl.tf.spi.annotation.TraceEnhanceLevel;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.MethodAdapter;
-import org.objectweb.asm.commons.LocalVariablesSorter;
+import org.glassfish.pfl.objectweb.asm.ClassVisitor;
+import org.glassfish.pfl.objectweb.asm.Label;
+import org.glassfish.pfl.objectweb.asm.MethodVisitor;
+import org.glassfish.pfl.objectweb.asm.Opcodes;
+import org.glassfish.pfl.objectweb.asm.Type;
+import org.glassfish.pfl.objectweb.asm.tree.LabelNode;
+import org.glassfish.pfl.objectweb.asm.tree.LocalVariableNode;
+import org.glassfish.pfl.objectweb.asm.MethodAdapter;
+import org.glassfish.pfl.objectweb.asm.commons.LocalVariablesSorter;
 
 public class ClassTracer extends TFEnhanceAdapter {
     // Worst case: call to MethodMonitor.info requires 4 words on the stack.
@@ -112,6 +112,7 @@ public class ClassTracer extends TFEnhanceAdapter {
                         info( util, 4, "Emitting ACONST_NULL,ICONST_0" ) ;
                         mv.visitInsn( Opcodes.ACONST_NULL ) ;
                         mv.visitInsn( Opcodes.ICONST_0 ) ;
+                        return State.NORMAL ;
 
                     case INFO_METHOD_CALL :
                         return State.NORMAL ;

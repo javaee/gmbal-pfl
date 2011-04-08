@@ -51,9 +51,9 @@ import org.glassfish.pfl.dynamic.codegen.spi.Variable ;
 import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo ;
 import org.glassfish.pfl.dynamic.codegen.spi.FieldInfo ;
 
-import org.objectweb.asm.MethodVisitor ;
+import org.glassfish.pfl.objectweb.asm.MethodVisitor ;
 
-import static org.objectweb.asm.Opcodes.* ;
+import static org.glassfish.pfl.objectweb.asm.Opcodes.* ;
 
 /** This class provides methods that allow the construction of an 
  * object that can later be used to emit a bytecode.  This is useful 

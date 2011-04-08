@@ -45,7 +45,7 @@ import java.io.PrintStream ;
 
 import java.util.Map ;
 
-import org.objectweb.asm.ClassWriter ;
+import org.glassfish.pfl.objectweb.asm.ClassWriter ;
 
 import org.glassfish.pfl.dynamic.codegen.spi.Type ;
 import org.glassfish.pfl.dynamic.codegen.spi.Variable ;

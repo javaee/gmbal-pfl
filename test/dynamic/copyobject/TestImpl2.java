@@ -54,7 +54,7 @@ class TestImpl2 implements Serializable {
 
 class NonSerializable2Base {
 
-    private final String msg;
+    protected String msg;
 
     public NonSerializable2Base() {
         msg = "called no-arg cons";
@@ -67,8 +67,6 @@ class NonSerializable2Base {
 }
 
 class NonSerializable2 extends NonSerializable2Base {
-
-    String msg;
 
     public NonSerializable2(boolean bool) {
         msg = "called bool-arg cons";
