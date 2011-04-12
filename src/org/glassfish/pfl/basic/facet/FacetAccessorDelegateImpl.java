@@ -1,7 +1,7 @@
 /* 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2011 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,8 +63,8 @@ abstract class FacetAccessorDelegateImpl implements FacetAccessor {
         facetAccessorDelegate = fa ;
     }
     
-    public <T> T facet(Class<T> cls, boolean debug ) {
-        return facetAccessorDelegate.facet( cls, debug ) ;
+    public <T> T facet(Class<T> cls ) {
+        return facetAccessorDelegate.facet( cls ) ;
     }
 
     public <T> void addFacet(T obj) {
@@ -75,24 +75,24 @@ abstract class FacetAccessorDelegateImpl implements FacetAccessor {
         facetAccessorDelegate.removeFacet( cls ) ;
     }
 
-    public Object invoke(Method method, boolean debug, Object... args) {
-        return facetAccessorDelegate.invoke( method, debug, args ) ;
+    public Object invoke(Method method, Object... args) {
+        return facetAccessorDelegate.invoke( method, args ) ;
     }
 
-    public Object get( Field field, boolean debug ) {
-        return facetAccessorDelegate.get( field, debug ) ;
+    public Object get( Field field ) {
+        return facetAccessorDelegate.get( field ) ;
     }
 
     public Collection<Object> facets() {
         return facetAccessorDelegate.facets() ;
     }
 
-    Object get( Field field, boolean debug ) {
-        return facetAccessorDelegate.get( field, debug ) ;
+    Object get( Field field ) {
+        return facetAccessorDelegate.get( field ) ;
     }
 
-    void set( Field field, Object value, boolean debug ) {
-        facetAccessorDelegate.set( field, value, debug ) ;
+    void set( Field field, Object value ) {
+        facetAccessorDelegate.set( field, value ) ;
     }
 
     */

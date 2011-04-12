@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,18 +40,10 @@
 
 package org.glassfish.pfl.tf.timer.spi ;
 
-import java.util.Set ;
-
-import org.glassfish.gmbal.ManagedObject ;
-import org.glassfish.gmbal.ManagedOperation ;
-import org.glassfish.gmbal.Description ;
-
 /** Creates timer events and sends them to all registered event
  * handlers.  Multiple controllers may be created from the
  * same TimerFactory.
  */
-@ManagedObject
-@Description( "Controls entering and exiting Timers" ) 
 public class TimerEventController extends TimerEventControllerBase {
 
     public TimerEventController( TimerFactory factory, String name ) {
@@ -63,8 +55,6 @@ public class TimerEventController extends TimerEventControllerBase {
      * TimerEventHandlers.  An event is only generated in
      * case timer.isActivated() is true.
      */
-    @ManagedOperation
-    @Description( "Enter a particular Timer" ) 
     public void enter( Timer timer ) {
 	handle( timer, TimerEvent.TimerEventType.ENTER ) ;
     }
@@ -74,8 +64,6 @@ public class TimerEventController extends TimerEventControllerBase {
      * TimerEventHandlers.  An event is only generated in
      * case timer.isActivated() is true.
      */
-    @ManagedOperation
-    @Description( "Exit a particular Timer" ) 
     public void exit( Timer timer ) {
 	handle( timer, TimerEvent.TimerEventType.EXIT ) ;
     }

@@ -38,18 +38,31 @@
  * holder.
  */
 
-package org.glassfish.pfl.tf.timer.spi ;
+package org.glassfish.pfl.tf.timer.spi;
 
-/** A simple interface used to provide access to the name and the
- * factory that created this instance.  All types that are
- * created by the TimerFactory implement this interface.
+
+/**  Interface used to provide the capability to manage timer service objects.
+ *
+ * @author ken_admin
  */
-public interface Named {
-    /** Return the TimerFactory that created this Named.
+public interface ObjectRegistrationManager {
+    /** Register obj at the root of the management tree.
+     *
+     * @param obj Object to register
      */
-    TimerFactory factory() ;
+    void manage( Named obj ) ;
 
-    /** A short name for this Controllable.
+    /** Register obj as an immediate child of parent in the management tree.
+     *
+     * @param parent Parent object (already registered)
+     * @param obj Object to register
      */
-    String name() ;
+    void manage( Named parent, Named obj ) ;
+
+    /** Remove obj from the management tree.
+     *
+     * @param obj Object to be removed from the management tree.
+     */
+    void unmanage( Named obj ) ;
+
 }

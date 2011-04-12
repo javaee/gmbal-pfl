@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,10 +46,6 @@ import java.util.HashSet ;
 
 import org.glassfish.pfl.tf.timer.impl.TimerFactoryImpl ;
 
-import org.glassfish.gmbal.ManagedAttribute ;
-import org.glassfish.gmbal.ManagedOperation ;
-import org.glassfish.gmbal.Description ;
-
 /** Supports registration of TimerEventHandlers.  A subclass of this class
  * must also provide some mechanism to create and propagate TimerEvents,
  * which may be subclasses of TimerEvent if needed.  A subclass typically
@@ -75,8 +71,6 @@ public abstract class TimerEventControllerBase extends NamedBase {
     /** Register the handler to start receiving events from this
      * controller.
      */
-    @ManagedOperation
-    @Description( "Register a TimerEventHandler with this TimerEventController" ) 
     public void register( TimerEventHandler handler ) {
 	handlers.add( handler ) ;
     }	
@@ -84,16 +78,12 @@ public abstract class TimerEventControllerBase extends NamedBase {
     /** Deregister the handler to stop receiving events from this
      * controller.
      */
-    @ManagedOperation
-    @Description( "Deregister a TimerEventHandler from this TimerEventController" ) 
     public void deregister( TimerEventHandler handler ) {
 	handlers.remove( handler ) ;
     }
 
     /** Read-only image of the set of Handlers.
      */
-    @ManagedAttribute
-    @Description( "TimerEventHandlers registered with this TimerEventController" ) 
     public Set<TimerEventHandler> handlers() {
 	return roHandlers ;
     }

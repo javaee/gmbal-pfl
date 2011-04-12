@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -107,6 +107,10 @@ import org.glassfish.pfl.basic.proxy.CompositeInvocationHandlerImpl;
  * @author ken
  */
 public class WrapperGenerator {
+    // XXX add support for resource bundles from the gmbal version of
+    // logex.
+    // XXX check the CORBA version of logex to see if optimizations are in the
+    // pfl version.
     /** Hidden interface implemented by the result of the makeWrapper call.
      * This is needed in the resource file generation tool.
      */

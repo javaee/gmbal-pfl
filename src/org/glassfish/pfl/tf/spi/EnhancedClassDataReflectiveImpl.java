@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,6 +63,7 @@ public class EnhancedClassDataReflectiveImpl extends EnhancedClassDataBase {
 
     // Get Set<String> for MM annotations present on class
     private void processClassAnnotations() {
+        // XXX Need to consider inherited annotations as well.
         final Annotation[] classAnnotations =
             currentClass.getAnnotations() ;
         if (classAnnotations != null) {

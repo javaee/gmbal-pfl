@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,17 +40,11 @@
 
 package org.glassfish.pfl.tf.timer.spi ;
 
-import org.glassfish.pfl.tf.timer.impl.TimerFactoryImpl ;
-
-import org.glassfish.gmbal.IncludeSubclass ;
-
 /** Handles timer events, represented by timer instances.
  * An enter event means that a measurement has begun for an event,
  * and an exit event signals the end of the last measurement that
  * was started.
  */
-@IncludeSubclass( { StatsEventHandler.class, LogEventHandler.class,
-    TimerFactoryImpl.TracingEventHandler.class } )
 public interface TimerEventHandler extends Named {
     void notify( TimerEvent event ) ;
 }

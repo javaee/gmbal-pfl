@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,13 +47,10 @@ import java.util.Set ;
 import java.util.HashSet ;
 import java.util.Collections ;
 
-import org.glassfish.gmbal.ManagedObjectManager ;
-import org.glassfish.gmbal.ManagedObject ;
-import org.glassfish.gmbal.Description ;
 import org.glassfish.pfl.tf.timer.spi.Controllable;
 import org.glassfish.pfl.tf.timer.spi.LogEventHandler;
-import org.glassfish.pfl.tf.timer.spi.Named;
 import org.glassfish.pfl.tf.timer.spi.NamedBase;
+import org.glassfish.pfl.tf.timer.spi.ObjectRegistrationManager;
 import org.glassfish.pfl.tf.timer.spi.StatsEventHandler;
 import org.glassfish.pfl.tf.timer.spi.Timer;
 import org.glassfish.pfl.tf.timer.spi.TimerEvent;
@@ -77,7 +74,7 @@ import org.glassfish.pfl.tf.timer.spi.TimerGroup;
 // A lock will also be used in Timer to control access to the
 // activation state of a Timer.
 public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
-    private ManagedObjectManager mom ;
+    private ObjectRegistrationManager orm ;
 
     // The string<->int dictionary for timer names
     private Map<Controllable,Integer> conToInt ;
@@ -93,36 +90,10 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
     private Map<String,TimerEventHandler> timerEventHandlers ;
     private Map<String,TimerEventControllerBase> timerEventControllers ;
 
-    private boolean doGmbalRegistration ;
-
-    private void manage( Named obj ) {
-        // Note that no extra parameters are needed here, because Named.getName
-        // is an ObjectNameKey.
-        if ((mom != null) && doGmbalRegistration) {
-            // System.out.println( "Registering " + obj ) ;
-            mom.registerAtRoot( obj ) ;
-        }
-    }
-
-    private void manage( Named parent, Named obj ) {
-        // Note that no extra parameters are needed here, because Named.getName
-        // is an ObjectNameKey.
-        if ((mom != null) && doGmbalRegistration){
-            // System.out.println( "Registering " + obj ) ;
-            mom.register( parent, obj ) ;
-        }
-    }
-
-    private void unmanage( Named obj ) {
-        if ((mom != null) && doGmbalRegistration) {
-            mom.unregister( obj ) ;
-        }
-    }
-
-    public TimerFactoryImpl( ManagedObjectManager mom, String name, String description,
-        boolean doGmbalRegistration ) {
+    public TimerFactoryImpl( ObjectRegistrationManager orm, String name,
+        String description ) {
 	super( 0, null, name, description ) ;
-        this.mom = mom ;
+        this.orm = orm ;
 	setFactory( this ) ;
 	add( this ) ; // The TimerFactory is a group containing all 
 		      // Timers and TimerGroups it creates, so it
@@ -141,8 +112,7 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
 
 	timerEventHandlers = new HashMap<String,TimerEventHandler>() ;
 	timerEventControllers = new HashMap<String,TimerEventControllerBase>() ;
-        this.doGmbalRegistration = doGmbalRegistration ;
-        manage( this ) ;
+        orm.manage( this ) ;
     }
 
     // con must be a Controllable with an id already set (which is
@@ -160,29 +130,32 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
     private void checkArgs( Set<String> inUse, String name, 
 	String description ) {
 
-	if (name == null)
-	    throw new IllegalArgumentException( "name must not be null" ) ;
-	if (description == null)
-	    throw new IllegalArgumentException( 
-		"description must not be null" ) ;
-	if (inUse.contains(name)) 
-	    throw new IllegalArgumentException( name + " is already used." ) ;
+	if (name == null) {
+            throw new IllegalArgumentException("name must not be null");
+        }
+	if (description == null) {
+            throw new IllegalArgumentException("description must not be null");
+        }
+	if (inUse.contains(name)) {
+            throw new IllegalArgumentException(name + " is already used.");
+        }
     }
 
+    @Override
     public synchronized int numberOfIds() {
 	return nextIndex ;
     }
 
+    @Override
     public synchronized Controllable getControllable( int id ) {
-	if ((id >= 0) && (id < nextIndex))
-	    return intToCon.get( id ) ;
+	if ((id >= 0) && (id < nextIndex)) {
+            return intToCon.get(id);
+        }
+
 	throw new IllegalArgumentException( "Argument " + id 
 	    + " must be between 0 and " + (nextIndex - 1)) ;
     }
 
-    @ManagedObject
-    @Description( "A simple TimerEventHandler that just displays TimerEvents "
-        + "as they occur" )
     public static class TracingEventHandler 
 	extends NamedBase 
 	implements TimerEventHandler {
@@ -191,70 +164,85 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
 	    super( factory, name ) ;
 	}
 
+        @Override
 	public void notify( TimerEvent event ) {
 	    System.out.println( Thread.currentThread().getName() 
 		+ " TRACE " + event ) ;
 	}
     }
 
+    @Override
     public synchronized TimerEventHandler makeTracingEventHandler( 
 	String name ) {
 
-	if (timerEventHandlers.keySet().contains( name ))
-	    throw new IllegalArgumentException( "Name " + name 
-		+ " is already in use." ) ;
+	if (timerEventHandlers.keySet().contains( name )) {
+            throw new IllegalArgumentException("Name " + name +
+                " is already in use.");
+        }
+
 	TimerEventHandler result = new TracingEventHandler( factory(), name ) ;
-        manage( this, result ) ;
+        orm.manage( this, result ) ;
 	timerEventHandlers.put( name, result ) ;
 	return result ;
     }
 
+    @Override
     public synchronized LogEventHandler makeLogEventHandler( String name ) {
-	if (timerEventHandlers.keySet().contains( name ))
-	    throw new IllegalArgumentException( "Name " + name 
-		+ " is already in use." ) ;
+	if (timerEventHandlers.keySet().contains( name )) {
+            throw new IllegalArgumentException("Name " + name +
+                " is already in use.");
+        }
+
 	LogEventHandler result = new LogEventHandlerImpl( factory(), name ) ;
-        manage( this, result ) ;
+        orm.manage( this, result ) ;
 	timerEventHandlers.put( name, result ) ;
 	return result ;
     }
 
+    @Override
     public synchronized StatsEventHandler makeStatsEventHandler( String name ) {
-	if (timerEventHandlers.keySet().contains( name ))
-	    throw new IllegalArgumentException( "Name " + name 
-		+ " is already in use." ) ;
+	if (timerEventHandlers.keySet().contains( name )) {
+            throw new IllegalArgumentException("Name " + name +
+                " is already in use.");
+        }
+
 	StatsEventHandler result = new StatsEventHandlerImpl( factory(), 
 	    name ) ;
-        manage( this, result ) ;
+        orm.manage( this, result ) ;
 	timerEventHandlers.put( name, result ) ;
 	return result ;
     }
 
+    @Override
     public synchronized StatsEventHandler makeMultiThreadedStatsEventHandler( 
 	String name ) {
 
-	if (timerEventHandlers.keySet().contains( name ))
-	    throw new IllegalArgumentException( "Name " + name 
-		+ " is already in use." ) ;
+	if (timerEventHandlers.keySet().contains( name )) {
+            throw new IllegalArgumentException("Name " + name +
+                " is already in use.");
+        }
+
 	StatsEventHandler result = new MultiThreadedStatsEventHandlerImpl( 
 	    factory(), name ) ;
-        manage( this, result ) ;
+        orm.manage( this, result ) ;
 	timerEventHandlers.put( name, result ) ;
 	return result ;
     }
 
+    @Override
     public synchronized void removeTimerEventHandler( 
 	TimerEventHandler handler ) {
 
 	timerEventHandlers.remove( handler.name() ) ;
-        unmanage( handler ) ;
+        orm.unmanage( handler ) ;
     }
 
+    @Override
     public synchronized Timer makeTimer( String name, String description ) {
 	checkArgs( timers.keySet(), name, description ) ;
 
 	TimerImpl result = new TimerImpl( nextIndex, this, name, description ) ;
-        manage( this, result ) ;
+        orm.manage( this, result ) ;
 	mapId( result ) ;
 	timers.put( name, result ) ;
 	add( result ) ;  // Remember, a TimerFactory is a TimerGroup 
@@ -263,10 +251,12 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
 	return result ;
     }
 
+    @Override
     public synchronized Map<String,TimerImpl> timers() {
 	return roTimers ;
     }
 
+    @Override
     public synchronized TimerGroup makeTimerGroup( String name, 
 	String description ) {
 
@@ -274,7 +264,7 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
 
 	TimerGroupImpl result = new TimerGroupImpl( nextIndex, this, name, 
 	    description ) ;
-        manage( this, result ) ;
+        orm.manage( this, result ) ;
 
 	mapId( result ) ;
 	timerGroups.put( result.name(), result ) ;
@@ -285,51 +275,63 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
 	return result ;
     }
 
+    @Override
     public synchronized Map<String,TimerGroupImpl> timerGroups() {
 	return roTimerGroups ;
     }
 
     public void saveTimerEventController( TimerEventControllerBase tec ) {
-	if (timerEventControllers.keySet().contains( tec.name() ))
-	    throw new IllegalArgumentException( "Name " + tec.name() 
-		+ " is already in use." ) ;
+	if (timerEventControllers.keySet().contains( tec.name() )) {
+            throw new IllegalArgumentException("Name " + tec.name() +
+                " is already in use.");
+        }
 
 	timerEventControllers.put( tec.name(), tec ) ;
     }
 
+    @Override
     public synchronized TimerEventController makeController( String name ) {
 	TimerEventController result = new TimerEventController( this, name ) ;
-        manage( this, result ) ;
+        orm.manage( this, result ) ;
 	return result ;
     }
 
+    @Override
     public synchronized void removeController( 
 	TimerEventControllerBase controller ) {
 
 	timerEventControllers.remove( controller.name() ) ;
-        unmanage( controller ) ;
+        orm.unmanage( controller ) ;
     }
 
+    @Override
     public synchronized Set<? extends Controllable> enabledSet() {
 	Set<Controllable> result = new HashSet<Controllable>() ;
 
-	for (Timer t : timers.values()) 
-	    if (t.isEnabled()) 
-		result.add( t ) ;
+	for (Timer t : timers.values()) {
+            if (t.isEnabled()) {
+                result.add(t);
+            }
+        }
 
-	for (TimerGroup tg : timerGroups.values()) 
-	    if (tg.isEnabled())
-		result.add( tg ) ;
+	for (TimerGroup tg : timerGroups.values()) {
+            if (tg.isEnabled()) {
+                result.add(tg);
+            }
+        }
 
 	return result ;    
     }
 
+    @Override
     public synchronized Set<Timer> activeSet() {
 	Set<Timer> result = new HashSet<Timer>() ;
 
-	for (Timer t : timers.values()) 
-	    if (t.isActivated()) 
-		result.add( t ) ;
+	for (Timer t : timers.values()) {
+            if (t.isActivated()) {
+                result.add(t);
+            }
+        }
 
 	return result ;    
     }
@@ -359,6 +361,7 @@ public class TimerFactoryImpl extends TimerGroupImpl implements TimerFactory {
 	}
     }
 
+    @Override
     public synchronized boolean timerAlreadyExists( String name ) {
         return timers.keySet().contains( name ) ;
     }

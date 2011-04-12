@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,8 +48,6 @@ import java.util.ArrayList ;
 
 import org.glassfish.pfl.tf.timer.impl.TimerFactoryImpl ;
 
-import org.glassfish.gmbal.ManagedObjectManager ;
-
 /** TimerFactoryBuilder creates independent
  * instances of the TimerFactory interface.
  * Guarantees that all TimerFactory instances have unique names.
@@ -72,21 +70,20 @@ public class TimerFactoryBuilder {
     public synchronized static TimerFactory make( 
         String name, String description ) {
 
-        return make( null, name, description, false ) ;
+        return make( null, name, description ) ;
     }
 
     /** Create a new TimerFactory.  No two TimerFactory instances
      * can have the same name.
      */
-    public synchronized static TimerFactory make( ManagedObjectManager mom, 
-        String name, String description, boolean doGmbalRegistration ) {
+    public synchronized static TimerFactory make( ObjectRegistrationManager orm,
+        String name, String description ) {
 
 	if (fmap.get( name ) != null)
 	    throw new IllegalArgumentException(
 		"There is currently a TimerFactory named " + name ) ;
 
-	TimerFactory result = new TimerFactoryImpl( mom, name, description,
-            doGmbalRegistration ) ;
+	TimerFactory result = new TimerFactoryImpl( orm, name, description ) ;
 	fmap.put( name, result ) ;
 	return result ;
     }

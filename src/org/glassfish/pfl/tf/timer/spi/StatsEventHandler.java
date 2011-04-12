@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,11 +42,6 @@ package org.glassfish.pfl.tf.timer.spi ;
 
 import java.util.Map ;
 
-import org.glassfish.gmbal.ManagedObject ;
-import org.glassfish.gmbal.ManagedAttribute ;
-import org.glassfish.gmbal.ManagedOperation ;
-import org.glassfish.gmbal.Description ;
-
 /** Gather statistics on the times reported to this TimerEventHandler.  It will keep 
  * events from different thread separated in order to get good results, but the
  * result of the stats call merges all of the results together.
@@ -55,22 +50,16 @@ import org.glassfish.gmbal.Description ;
  * the same thread.  Recursive calls are matched, and the results accumulated
  * as in any other case.
  */
-@ManagedObject
-@Description( "TimerEventHandler that accumulates statistics on events" ) 
 public interface StatsEventHandler extends TimerEventHandler {
     /** Return map that gives the accumulated statistics for each
      * TimerEvent that has been observed by this event handler since
      * the last call to clear (or since the creation of this handler,
      * if clear has not been called).
      */
-    @ManagedAttribute
-    @Description( "A table giving statistics for each activated Timer that had at least one TimerEvent" )
     Map<Timer,Statistics> stats() ;
 
     /** Discard all accumulated statistics.
      */
-    @ManagedOperation
-    @Description( "Discard all statistics on all Timers" ) 
     void clear() ;
 }
 

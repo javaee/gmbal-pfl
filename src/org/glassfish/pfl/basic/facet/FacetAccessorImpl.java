@@ -1,7 +1,7 @@
 /* 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2011 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,7 +61,7 @@ public class FacetAccessorImpl implements FacetAccessor {
     }
     
     @Override
-    public <T> T facet(Class<T> cls, boolean debug ) {
+    public <T> T facet(Class<T> cls ) {
         Object result = null ;
         
         if (cls.isInstance(delegate)) {
@@ -103,10 +103,10 @@ public class FacetAccessorImpl implements FacetAccessor {
     }
 
     @Override
-    public Object invoke(Method method, boolean debug, Object... args) {
+    public Object invoke(Method method, Object... args) {
         Object result = null ;
 
-        Object target = facet( method.getDeclaringClass(), debug ) ;
+        Object target = facet( method.getDeclaringClass() ) ;
         if (target == null) {
             throw new IllegalArgumentException(
                 "No facet available for method " + method ) ;
@@ -129,10 +129,10 @@ public class FacetAccessorImpl implements FacetAccessor {
     }
 
     @Override
-    public Object get(Field field, boolean debug) {
+    public Object get(Field field ) {
         Object result = null ;
 
-        Object target = facet( field.getDeclaringClass(), debug ) ;
+        Object target = facet( field.getDeclaringClass() ) ;
 
         try {
             result = field.get(target);
@@ -148,8 +148,8 @@ public class FacetAccessorImpl implements FacetAccessor {
     }
 
     @Override
-    public void set(Field field, Object value, boolean debug) {
-        Object target = facet( field.getDeclaringClass(), debug ) ;
+    public void set(Field field, Object value ) {
+        Object target = facet( field.getDeclaringClass() ) ;
 
         try {
             field.set(target, value);

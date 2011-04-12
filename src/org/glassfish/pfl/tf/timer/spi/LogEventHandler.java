@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,23 +42,12 @@ package org.glassfish.pfl.tf.timer.spi ;
 
 import java.io.PrintStream ;
 
-import org.glassfish.gmbal.ManagedObject ;
-import org.glassfish.gmbal.ManagedOperation ;
-import org.glassfish.gmbal.InheritedAttribute ;
-import org.glassfish.gmbal.Description ;
-
 /** A TimerEventHandler that stores all events that is receives.  It can
  * be used in the JDK 5 for loop.
  */
-@ManagedObject
-@Description( "TimerEventHandler that records all TimerEvents in a log" ) 
-@InheritedAttribute( methodName="iterator", 
-    description="TimerEvents contained in this log in order of occurrence" )
 public interface LogEventHandler extends TimerEventHandler, Iterable<TimerEvent> {
     /** Discard the contents of the log.
      */
-    @ManagedOperation
-    @Description( "Discard all recorded timer events" )
     void clear() ;
 
     /** Display the contents of this log in formatted form to the PrintStream.

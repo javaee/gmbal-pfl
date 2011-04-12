@@ -1,7 +1,7 @@
 /* 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2011 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,7 +55,7 @@ public interface FacetAccessor {
      * @return Instance of cls for this facet.  Null if no such
      * facet is available.
      */
-    <T> T facet( Class<T> cls, boolean debug ) ;
+    <T> T facet( Class<T> cls ) ;
     
     /** Add a facet to the object.  The type T must not already
      * be available as a facet.
@@ -83,7 +83,7 @@ public interface FacetAccessor {
      * @param args Arguments to the method.
      * @return restult of the invoke call.
      */
-    Object invoke( Method method, boolean debug, Object... args ) ;
+    Object invoke( Method method, Object... args ) ;
 
     /** Fetch the value of the field from whichever facet contains the field.
      * Read-only because that's all that the intended application needs.
@@ -92,7 +92,7 @@ public interface FacetAccessor {
      * @param debug True if debugging trace output is desired
      * @return The value of the field
      */
-    Object get( Field field, boolean debug ) ;
+    Object get( Field field ) ;
 
-    void set( Field field, Object value, boolean debug ) ;
+    void set( Field field, Object value ) ;
 }

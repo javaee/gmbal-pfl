@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,23 +40,15 @@
 
 package org.glassfish.pfl.tf.timer.spi ;
 
-import org.glassfish.gmbal.ManagedAttribute ;
-import org.glassfish.gmbal.ManagedObject ;
-import org.glassfish.gmbal.Description ;
-
 /** Used to create specific TimerEvent instances through a TimerEventController.
  * The contents() method in a Timer returns an unmodifiable empty set.
  *
  * @author  Ken Cavanaugh
  */
-@ManagedObject
-@Description( "A timer represents a particular action that has a duration from ENTER to EXIT" )
 public interface Timer extends Controllable {
     /** Return true if this Timer is ready to create TimerEvents.
      * This is the case either if this Timer is enabled, or is reachable
      * through contents() from an enabled TimerGroup.
      */
-    @ManagedAttribute
-    @Description( "True if this Timer is enabled, and can generate TimerEvents" ) 
     boolean isActivated() ;
 }

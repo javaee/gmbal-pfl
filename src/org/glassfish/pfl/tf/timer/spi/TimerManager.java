@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.glassfish.gmbal.ManagedObjectManager ;
 import org.glassfish.pfl.tf.spi.MethodMonitorRegistry;
 
 /** Provides access to timer facilities.
@@ -69,13 +68,13 @@ public class TimerManager<T> {
     /** Create a new TimerManager, with a TimerFactory registered under the given name
      * in the TimerFactoryBuilder, and a TimerEventController with the same name.
      */
-    public TimerManager( ManagedObjectManager mom, String name, boolean doGmbalRegistration ) {
-	tf = TimerFactoryBuilder.make( mom, name, name, doGmbalRegistration ) ;
+    public TimerManager( ObjectRegistrationManager orm, String name ) {
+	tf = TimerFactoryBuilder.make( orm, name, name ) ;
 	controller = tf.makeController( name ) ;
     }
 
     public TimerManager( String name ) {
-        this( null, name, false ) ;
+        this( null, name ) ;
     }
 
     /** Destroy this TimerManager by removing its TimerFactory from the
