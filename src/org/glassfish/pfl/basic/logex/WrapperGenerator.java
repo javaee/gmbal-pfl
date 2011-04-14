@@ -78,10 +78,13 @@ import org.glassfish.pfl.basic.proxy.CompositeInvocationHandlerImpl;
  * The behavior of the implementation of each method on the interface is determined
  * in part by its return type as follows:
  * <ul>
- * <li>void.  Such a method can only log a message.</li>
- * <li>String. Such a method may log a message, and also returns the message.</li>
+ * <li>void.  Such a method can only log a message. Must have @Log, @Message is
+ * optional.</li>
+ * <li>String. Such a method may log a message, and also returns the message.
+ * Both @Log and @Message are optional.</li>
  * <li>A subclass of Exception.  Such a method may log a message, and also returns
  * an exception containing the message.
+ * Both @Log and @Message are optional.
  * </ul>
  *
  * Each method may be annotated as follows:
@@ -107,10 +110,14 @@ import org.glassfish.pfl.basic.proxy.CompositeInvocationHandlerImpl;
  * @author ken
  */
 public class WrapperGenerator {
-    // XXX add support for resource bundles from the gmbal version of
-    // logex.
+    // XXX Must support @Message without @Log, which in turn means that
+    // the resource bundle key must be loggername.methodname, not the logger ID
+    // as it presently is in this version.
     // XXX check the CORBA version of logex to see if optimizations are in the
     // pfl version.
+    // XXX All annotations must be capable of being inherited.  Check the 
+    // annotation semantics for this, and adjust code as needed.
+
     /** Hidden interface implemented by the result of the makeWrapper call.
      * This is needed in the resource file generation tool.
      */
@@ -209,6 +216,11 @@ public class WrapperGenerator {
         }
     }
 
+    // Return the key used in the resource bundle.
+    private String getMsgKey( Logger logger, Method method ) {
+	return logger.getName() + "." + method.getName() ;
+    }
+
     /** Expose the standard log ID for the method.  This is simply
      * the annotated value in the @Log annotation: it is not processed in
      * any way.
@@ -232,7 +244,11 @@ public class WrapperGenerator {
         final Map<String,String> result = new TreeMap<String,String>() ;
         final ExceptionWrapper ew = cls.getAnnotation( ExceptionWrapper.class ) ;
         final String idPrefix = ew.idPrefix() ;
+
+	// A message is defined for every method, even if no annotations are
+	// present!
         for (Method method : cls.getMethods()) {
+	    // FIXME: need id to be loggername.methodname, not ID (which is not always present)
             final String msgId = extension.getLogId( method ) ;
             final String msg = getMessage( method, idPrefix, msgId ) ;
             result.put( idPrefix + msgId, msg ) ;
@@ -241,9 +257,12 @@ public class WrapperGenerator {
         return result ;
     }
 
+    // This should ONLY be used for constructing the message map.
     static String getMessage( Method method, 
         String idPrefix, String logId ) {
 
+	// XXX FIXME: this annotation could be inherited from an overridden method
+	// in a super(class|interface).
         final Message message = method.getAnnotation( Message.class ) ;
         final StringBuilder sb = new StringBuilder() ;
         sb.append( idPrefix ) ;
@@ -309,8 +328,6 @@ public class WrapperGenerator {
         return str ;
     }
 
-    // Extend: for making system exception based on data 
-    // used for minor code and completion status
     static String handleMessageOnly( Method method, Extension extension,
         Logger logger, Object[] messageParams ) {
 
@@ -323,6 +340,7 @@ public class WrapperGenerator {
             transMsg = msg ;
         } else {
             final String logId = extension.getLogId( method ) ;
+	    // FIXME: can't use log id here
             transMsg = catalog.getString( logId ) ;
         }
 
@@ -419,6 +437,7 @@ public class WrapperGenerator {
 
         final Level level = log.level().getLevel() ;
 
+	// FIXME: key is loggername.methodname
         final String msgString = getMessage( method, idPrefix, 
 	    extension.getLogId( method )) ;
         final LogRecord lrec = makeLogRecord( level, msgString,

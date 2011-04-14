@@ -188,7 +188,7 @@ public class ClassAnalyzer {
                 } else {
                     sb.append( " " ) ;
                 }
-                sb.append( cls.getName() ) ;
+                sb.append( cls.getSimpleName() ) ;
             }
             sb.append( "]" ) ;
             contents = sb.toString() ;
