@@ -763,6 +763,19 @@ is divided into following sections:
             -->
     <target depends="init" if="have.tests" name="-pre-test-run">
         <mkdir dir="${build.test.results.dir}"/>
+	<java classname="org.glassfish.pfl.tf.tools.enhancer.EnhanceTool" classpath="build/classes"
+	      fork="true" dir="build/test/classes">
+	    <arg value="-dir"/>
+	    <arg value="tf"/>
+	    <arg value="-debug"/>
+	    <arg value="false"/>
+	    <arg value="-verbose"/>
+	    <arg value="1"/>
+	    <arg value="-rf"/>
+	    <arg value="tf/tfannotations.properties"/>
+	    <arg value="-mode"/>
+	    <arg value="TraceEnhance"/>
+        </java>
     </target>
     <target depends="init,compile-test,-pre-test-run" if="have.tests" name="-do-test-run">
         <j2seproject3:junit testincludes="**/*Test.java"/>

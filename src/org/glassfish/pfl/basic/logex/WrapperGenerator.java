@@ -56,6 +56,7 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import org.glassfish.pfl.basic.algorithm.AnnotationAnalyzer;
 
 import org.glassfish.pfl.basic.proxy.CompositeInvocationHandler;
 import org.glassfish.pfl.basic.proxy.CompositeInvocationHandlerImpl;
@@ -115,8 +116,6 @@ public class WrapperGenerator {
     // as it presently is in this version.
     // XXX check the CORBA version of logex to see if optimizations are in the
     // pfl version.
-    // XXX All annotations must be capable of being inherited.  Check the 
-    // annotation semantics for this, and adjust code as needed.
 
     /** Hidden interface implemented by the result of the makeWrapper call.
      * This is needed in the resource file generation tool.
@@ -180,7 +179,9 @@ public class WrapperGenerator {
     }
 
     // Used whenever there is no user-supplied Extension.
-    static final Extension stdExtension = new ExtensionBase() {} ;
+    private static final Extension stdExtension = new ExtensionBase() {} ;
+
+    private static final AnnotationAnalyzer aa = new AnnotationAnalyzer() ;
 
     private WrapperGenerator() {}
 
@@ -229,7 +230,7 @@ public class WrapperGenerator {
      * @return The ID (as a string).
      */
     public static String getStandardLogId( Method method ) {
-        Log log = method.getAnnotation( Log.class ) ;
+	Log log = aa.getAnnotation( method, Log.class ) ;
         if (log == null) {
             throw new RuntimeException(
                 "No Log annotation present for " + method ) ;
@@ -242,7 +243,7 @@ public class WrapperGenerator {
         Extension extension ) {
 
         final Map<String,String> result = new TreeMap<String,String>() ;
-        final ExceptionWrapper ew = cls.getAnnotation( ExceptionWrapper.class ) ;
+        final ExceptionWrapper ew = aa.getAnnotation( cls, ExceptionWrapper.class ) ;
         final String idPrefix = ew.idPrefix() ;
 
 	// A message is defined for every method, even if no annotations are
@@ -261,9 +262,7 @@ public class WrapperGenerator {
     static String getMessage( Method method, 
         String idPrefix, String logId ) {
 
-	// XXX FIXME: this annotation could be inherited from an overridden method
-	// in a super(class|interface).
-        final Message message = method.getAnnotation( Message.class ) ;
+        final Message message = aa.getAnnotation( method, Message.class ) ;
         final StringBuilder sb = new StringBuilder() ;
         sb.append( idPrefix ) ;
         sb.append( logId ) ;
@@ -320,7 +319,7 @@ public class WrapperGenerator {
     }
 
     static String getStandardLoggerName( Class<?> cls ) {
-        final ExceptionWrapper ew = cls.getAnnotation( ExceptionWrapper.class ) ;
+        final ExceptionWrapper ew = aa.getAnnotation( cls, ExceptionWrapper.class ) ;
         String str = ew.loggerName() ;
         if (str.length() == 0) {
             str = cls.getPackage().getName() ;
@@ -333,7 +332,7 @@ public class WrapperGenerator {
 
         // Just format the message: no exception ID or log level
         // This code is adapted from java.util.logging.Formatter.formatMessage
-        final String msg = method.getAnnotation(Message.class).value() ;
+        final String msg = aa.getAnnotation( method, Message.class).value() ;
         String transMsg ;
         final ResourceBundle catalog = logger.getResourceBundle() ;
         if (catalog == null) {
@@ -512,7 +511,7 @@ public class WrapperGenerator {
                     "is not an interface" ) ;
             }
 
-            final ExceptionWrapper ew = cls.getAnnotation( ExceptionWrapper.class ) ;
+            final ExceptionWrapper ew = aa.getAnnotation( cls, ExceptionWrapper.class ) ;
             final String idPrefix = ew.idPrefix() ;
             final String name = extension.getLoggerName( cls );
 
@@ -540,7 +539,7 @@ public class WrapperGenerator {
                     throws Throwable {
 
                     final ReturnType rtype = classifyReturnType(method) ;
-                    final Log log = method.getAnnotation( Log.class ) ;
+                    final Log log = aa.getAnnotation( method, Log.class ) ;
 
                     // Issue GLASSFISH-14852: If there is no message and no logging
                     // needed, return early and avoid unneeded computation.

@@ -413,4 +413,11 @@ public class AnnotationAnalyzer {
             return null ;
         }
     }
+
+    public <A extends Annotation> A getAnnotation( AnnotatedElement elem,
+	Class<A> cls ) {
+
+	Annotation anno = getAnnotations( elem ).get( cls ) ;
+	return cls.cast( anno ) ;
+    }
 }
