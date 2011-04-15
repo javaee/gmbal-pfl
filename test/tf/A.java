@@ -38,34 +38,18 @@
  * holder.
  */
 
-package org.glassfish.pfl.tf.timer.spi;
+package tf;
 
+import java.lang.annotation.Target ;
+import java.lang.annotation.Documented ;
+import java.lang.annotation.ElementType ;
+import java.lang.annotation.Retention ;
+import java.lang.annotation.RetentionPolicy ;
+import org.glassfish.pfl.tf.spi.annotation.MethodMonitorGroup;
 
-/**  Interface used to provide the capability to manage timer service objects.
- *
- * @author ken_admin
- */
-public interface ObjectRegistrationManager {
-    ObjectRegistrationManager nullImpl
-        = new ObjectRegistrationManagerNOPImpl() ;
-
-    /** Register obj at the root of the management tree.
-     *
-     * @param obj Object to register
-     */
-    void manage( Named obj ) ;
-
-    /** Register obj as an immediate child of parent in the management tree.
-     *
-     * @param parent Parent object (already registered)
-     * @param obj Object to register
-     */
-    void manage( Named parent, Named obj ) ;
-
-    /** Remove obj from the management tree.
-     *
-     * @param obj Object to be removed from the management tree.
-     */
-    void unmanage( Named obj ) ;
-
+@MethodMonitorGroup
+@Documented
+@Target({ElementType.TYPE,ElementType.METHOD,ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface A {
 }

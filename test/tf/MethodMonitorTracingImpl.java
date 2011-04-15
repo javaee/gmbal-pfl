@@ -38,34 +38,65 @@
  * holder.
  */
 
-package org.glassfish.pfl.tf.timer.spi;
+package tf;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import org.glassfish.pfl.tf.spi.MethodMonitorBase;
 
-/**  Interface used to provide the capability to manage timer service objects.
+/**
  *
- * @author ken_admin
+ * @author ken
  */
-public interface ObjectRegistrationManager {
-    ObjectRegistrationManager nullImpl
-        = new ObjectRegistrationManagerNOPImpl() ;
+public class MethodMonitorTracingImpl extends MethodMonitorBase
+    implements Iterable<TraceNode>  {
 
-    /** Register obj at the root of the management tree.
-     *
-     * @param obj Object to register
-     */
-    void manage( Named obj ) ;
+    private static final String myName = "Tracing" ;
 
-    /** Register obj as an immediate child of parent in the management tree.
-     *
-     * @param parent Parent object (already registered)
-     * @param obj Object to register
-     */
-    void manage( Named parent, Named obj ) ;
+    @Override
+    public Iterator<TraceNode> iterator() {
+        return state.iterator() ;
+    }
 
-    /** Remove obj from the management tree.
-     *
-     * @param obj Object to be removed from the management tree.
-     */
-    void unmanage( Named obj ) ;
+    public enum EntryType { ENTER, INFO, EXIT, EXIT_RESULT, EXCEPTION }
 
+    private final List<TraceNode> state = new ArrayList<TraceNode>() ;
+
+    public MethodMonitorTracingImpl( Class<?> cls ) {
+        super( myName, cls,
+            new MethodMonitorBase.MethodMonitorFactorySelfImpl(myName)) ;
+        ((MethodMonitorBase.MethodMonitorFactorySelfImpl)factory()).init(
+            this ) ;
+    }
+
+    @Override
+    public void enter(int ident, Object... args) {
+        state.add( new TraceNode( ident, args ) ) ;
+    }
+
+    @Override
+    public void info(Object[] args, int callerIdent, int selfIdent) {
+        state.add( new TraceNode( selfIdent, callerIdent, args ) ) ;
+    }
+
+    @Override
+    public void exit(int ident) {
+        state.add( new TraceNode( ident ) ) ;
+    }
+
+    @Override
+    public void exit(int ident, Object result) {
+        state.add( new TraceNode( ident, result ) ) ;
+    }
+
+    @Override
+    public void exception(int ident, Throwable thr) {
+        state.add( new TraceNode( ident, thr ) ) ;
+    }
+
+    @Override
+    public void clear() {
+        state.clear() ;
+    }
 }

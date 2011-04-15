@@ -37,35 +37,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-package org.glassfish.pfl.tf.timer.spi;
+package tf;
 
-
-/**  Interface used to provide the capability to manage timer service objects.
+/**
  *
  * @author ken_admin
  */
-public interface ObjectRegistrationManager {
-    ObjectRegistrationManager nullImpl
-        = new ObjectRegistrationManagerNOPImpl() ;
+public interface TestClass {
+    long add( long a, long b ) ;
 
-    /** Register obj at the root of the management tree.
-     *
-     * @param obj Object to register
-     */
-    void manage( Named obj ) ;
-
-    /** Register obj as an immediate child of parent in the management tree.
-     *
-     * @param parent Parent object (already registered)
-     * @param obj Object to register
-     */
-    void manage( Named parent, Named obj ) ;
-
-    /** Remove obj from the management tree.
-     *
-     * @param obj Object to be removed from the management tree.
-     */
-    void unmanage( Named obj ) ;
-
+    long mult( long a, long b ) ;
 }

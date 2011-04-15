@@ -70,7 +70,7 @@ public class TimerFactoryBuilder {
     public synchronized static TimerFactory make( 
         String name, String description ) {
 
-        return make( null, name, description ) ;
+        return make( ObjectRegistrationManager.nullImpl, name, description ) ;
     }
 
     /** Create a new TimerFactory.  No two TimerFactory instances

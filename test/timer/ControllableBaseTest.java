@@ -38,34 +38,61 @@
  * holder.
  */
 
-package org.glassfish.pfl.tf.timer.spi;
+package timer ;
 
+// Test NamedBase
 
-/**  Interface used to provide the capability to manage timer service objects.
- *
- * @author ken_admin
- */
-public interface ObjectRegistrationManager {
-    ObjectRegistrationManager nullImpl
-        = new ObjectRegistrationManagerNOPImpl() ;
+import org.glassfish.pfl.tf.timer.impl.ControllableBase;
+import org.glassfish.pfl.tf.timer.impl.TimerFactoryImpl;
+import org.glassfish.pfl.tf.timer.spi.TimerFactory;
+import org.glassfish.pfl.tf.timer.spi.TimerFactoryBuilder;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-    /** Register obj at the root of the management tree.
-     *
-     * @param obj Object to register
-     */
-    void manage( Named obj ) ;
+public class ControllableBaseTest {
+    private String name = "MyName" ;
+    private int id = 26 ;
+    private String description = "Another simple test" ;
+    private TimerFactory factory ;
+    private ControllableTest ct ;
 
-    /** Register obj as an immediate child of parent in the management tree.
-     *
-     * @param parent Parent object (already registered)
-     * @param obj Object to register
-     */
-    void manage( Named parent, Named obj ) ;
+    private static class ControllableTest extends ControllableBase {
+	public ControllableTest( int id, String name, String description,
+	    TimerFactory factory ) {
 
-    /** Remove obj from the management tree.
-     *
-     * @param obj Object to be removed from the management tree.
-     */
-    void unmanage( Named obj ) ;
+	    super( id, name, description, TimerFactoryImpl.class.cast( factory ) ) ;
+	}
+    }
 
+    @Before
+    public void setUp() {
+	factory = TimerFactoryBuilder.make( "CTF", "No description" ) ;
+	ct = new ControllableTest( id, name, description, factory ) ;
+    }
+
+    @After
+    public void tearDown() {
+	TimerFactoryBuilder.destroy( factory ) ;
+    }
+
+    @Test()
+    public void testId() {
+	Assert.assertEquals( id, ct.id() ) ;
+    }
+
+    @Test() 
+    public void testDescription() {
+	Assert.assertEquals( description, ct.description() ) ;
+    }
+
+    @Test()
+    public void testEnable() {
+	Assert.assertFalse( ct.isEnabled() ) ;
+	ct.enable() ;
+	Assert.assertTrue( ct.isEnabled() ) ;
+	ct.disable() ;
+	Assert.assertFalse( ct.isEnabled() ) ;
+    }
 }

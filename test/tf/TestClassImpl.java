@@ -37,35 +37,81 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package tf;
 
-package org.glassfish.pfl.tf.timer.spi;
+import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
 
-
-/**  Interface used to provide the capability to manage timer service objects.
+/**
  *
- * @author ken_admin
+ * @author ken
  */
-public interface ObjectRegistrationManager {
-    ObjectRegistrationManager nullImpl
-        = new ObjectRegistrationManagerNOPImpl() ;
+@A @B @C
+public class TestClassImpl implements TestClass {
+    static {
+        System.out.println( "Start of <clinit>" ) ;
+    }
 
-    /** Register obj at the root of the management tree.
-     *
-     * @param obj Object to register
-     */
-    void manage( Named obj ) ;
+    @A
+    private long increment( long x ) {
+        return x + 1 ;
+    }
 
-    /** Register obj as an immediate child of parent in the management tree.
-     *
-     * @param parent Parent object (already registered)
-     * @param obj Object to register
-     */
-    void manage( Named parent, Named obj ) ;
+    @A
+    private long decrement( long x ) {
+        return x - 1 ;
+    }
 
-    /** Remove obj from the management tree.
-     *
-     * @param obj Object to be removed from the management tree.
-     */
-    void unmanage( Named obj ) ;
+    @A
+    private boolean is0( long x ) {
+        return x==0 ;
+    }
 
+    @A
+    private boolean is1( long x ) {
+        return x==1 ;
+    }
+
+    @InfoMethod
+    private void bigAddValue( String msg, long value ) { }
+
+    @InfoMethod
+    private void bigMultValue( String msg, long value ) { }
+
+    @B
+    public long add( long a, long b ) {
+        if ((a<0) || (b<0)) {
+            throw new RuntimeException( "Negative not supported" ) ;
+        }
+
+        if (is0(b)) {
+            return a ;
+        } else {
+            if (b > 100) {
+                bigAddValue( "Large argument for add", b ) ;
+            }
+
+            return add( increment(a), decrement(b) ) ;
+        }
+    }
+
+    @C
+    public long mult( long a, long b ) {
+        if ((a<0) || (b<0)) {
+            throw new RuntimeException( "Negative not supported" ) ;
+        }
+
+        if (is0(b)) {
+            return 0 ;
+        } else if (is1(b)) {
+            return a ;
+        } else {
+            if (b > 10) {
+                bigMultValue( "Large argument for mult", b ) ;
+            }
+
+            long decRes = decrement(b) ;
+            long multRes = mult( a, decRes ) ;
+            return add( a, multRes ) ;
+        }
+    }
 }
