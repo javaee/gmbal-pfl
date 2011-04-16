@@ -193,9 +193,6 @@ public class TraceNode {
         } else if (data instanceof Throwable) {
             return data.getClass().equals( other.data.getClass() ) ;
         } else {
-            if (data == null) {
-                return other.data == null;
-            }
             return data.equals(other.data);
         }
     }

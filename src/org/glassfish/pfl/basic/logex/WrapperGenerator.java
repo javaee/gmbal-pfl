@@ -65,17 +65,17 @@ import org.glassfish.pfl.basic.proxy.CompositeInvocationHandlerImpl;
  * Interface must be annotated with @ExceptionWrapper( String idPrefix, String loggerName ).
  * id prefix defaults to empty, loggerName defaults to the package name of the annotated
  * class.
- *
+ * <p>
  * Also, note that this returned wrapper will always implement the MessageInfo
  * interface, which provides a way to capture all of the messages and IDs used
  * in the interface.  This is used to generate resource bundles. In order for
  * this to work, it is required that the interface declare a field
- *
- * public static final [class name] self = makeWrapper( ... ) ;
- *
+ * <p>
+ * public static final [class name] self = ExceptionWrapper.makeWrapper( ... ) ;
+ * <p>
  * This is necessary because the extension mechanism allows the construction
  * of message IDs that cannot be predicted based on the annotations alone.
- *
+ * <p>
  * The behavior of the implementation of each method on the interface is determined
  * in part by its return type as follows:
  * <ul>
@@ -111,9 +111,6 @@ import org.glassfish.pfl.basic.proxy.CompositeInvocationHandlerImpl;
  * @author ken
  */
 public class WrapperGenerator {
-    // XXX Must support @Message without @Log, which in turn means that
-    // the resource bundle key must be loggername.methodname, not the logger ID
-    // as it presently is in this version.
     // XXX check the CORBA version of logex to see if optimizations are in the
     // pfl version.
 
@@ -178,10 +175,64 @@ public class WrapperGenerator {
         }
     }
 
-    // Used whenever there is no user-supplied Extension.
-    private static final Extension stdExtension = new ExtensionBase() {} ;
+    /** Expose the standard log ID for the method.  This is simply
+     * the annotated value in the @Log annotation: it is not processed in
+     * any way.
+     *
+     * @param method The method for which the ID is requested.
+     * @return The ID (as a string), or null if no @Log annotation is present.
+     */
+    public static String getStandardLogId( Method method ) {
+	Log log = aa.getAnnotation( method, Log.class ) ;
+        if (log == null) {
+            return null ;
+        }
 
-    private static final AnnotationAnalyzer aa = new AnnotationAnalyzer() ;
+        return String.format( "%05d", log.id() ) ;
+    }
+
+    static Throwable makeStandardException( final String msg,
+        final Method method ) {
+
+        Throwable result ;
+        final Class<?> rtype = method.getReturnType() ;
+        try {
+            @SuppressWarnings("unchecked")
+            final Constructor<Throwable> cons =
+                (Constructor<Throwable>)rtype.getConstructor(String.class);
+            result = cons.newInstance(msg);
+        } catch (InstantiationException ex) {
+            throw new RuntimeException( ex ) ;
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException( ex ) ;
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException( ex ) ;
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException( ex ) ;
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException( ex ) ;
+        } catch (SecurityException ex) {
+            throw new RuntimeException( ex ) ;
+        }
+
+        return result ;
+    }
+
+    static String getStandardLoggerName( Class<?> cls ) {
+        final ExceptionWrapper ew = aa.getAnnotation( cls, ExceptionWrapper.class ) ;
+        String str = ew.loggerName() ;
+        if (str.length() == 0) {
+            str = cls.getPackage().getName() ;
+        }
+        return str ;
+    }
+
+
+    // Used whenever there is no user-supplied Extension.
+    static final Extension stdExtension = new ExtensionBase() {} ;
+
+    // Used to handle inheritance of annotations for methods.
+    static final AnnotationAnalyzer aa = new AnnotationAnalyzer() ;
 
     private WrapperGenerator() {}
 
@@ -218,25 +269,8 @@ public class WrapperGenerator {
     }
 
     // Return the key used in the resource bundle.
-    private String getMsgKey( Logger logger, Method method ) {
-	return logger.getName() + "." + method.getName() ;
-    }
-
-    /** Expose the standard log ID for the method.  This is simply
-     * the annotated value in the @Log annotation: it is not processed in
-     * any way.
-     *
-     * @param method The method for which the ID is requested.
-     * @return The ID (as a string).
-     */
-    public static String getStandardLogId( Method method ) {
-	Log log = aa.getAnnotation( method, Log.class ) ;
-        if (log == null) {
-            throw new RuntimeException(
-                "No Log annotation present for " + method ) ;
-        }
-
-        return String.format( "%05d", log.id() ) ;
+    static String getMsgKey( String logger, Method method ) {
+	return logger + "." + method.getName() ;
     }
 
     static Map<String,String> getMessageMap( Class<?> cls,
@@ -244,29 +278,33 @@ public class WrapperGenerator {
 
         final Map<String,String> result = new TreeMap<String,String>() ;
         final ExceptionWrapper ew = aa.getAnnotation( cls, ExceptionWrapper.class ) ;
+        final String loggerName = ew.loggerName() ;
         final String idPrefix = ew.idPrefix() ;
 
 	// A message is defined for every method, even if no annotations are
 	// present!
         for (Method method : cls.getMethods()) {
-	    // FIXME: need id to be loggername.methodname, not ID (which is not always present)
-            final String msgId = extension.getLogId( method ) ;
-            final String msg = getMessage( method, idPrefix, msgId ) ;
-            result.put( idPrefix + msgId, msg ) ;
+            final String key = getMsgKey( loggerName, method ) ;
+            final String msg = getMessage( method, idPrefix, extension ) ;
+            result.put( key, msg ) ;
         }
 
         return result ;
     }
 
-    // This should ONLY be used for constructing the message map.
-    static String getMessage( Method method, 
-        String idPrefix, String logId ) {
+    // Used to construct the message map, and in case no ResourceBundle is
+    // available.
+    static String getMessage( Method method,
+        String idPrefix, Extension extension ) {
 
         final Message message = aa.getAnnotation( method, Message.class ) ;
         final StringBuilder sb = new StringBuilder() ;
-        sb.append( idPrefix ) ;
-        sb.append( logId ) ;
-        sb.append( ": " ) ;
+        String logId = extension.getLogId(method);
+        if (logId != null) {
+            sb.append( idPrefix ) ;
+            sb.append( logId ) ;
+            sb.append( ": " ) ;
+        }
                     
         if (message == null) {
             sb.append( method.getName() ) ;
@@ -287,68 +325,46 @@ public class WrapperGenerator {
         return sb.toString() ;
     }
 
-    private static final String cihiName = 
+    static final String cihiName = 
         CompositeInvocationHandlerImpl.class.getName() ;
 
-    static Throwable makeStandardException( final String msg,
-        final Method method ) {
+    static String getMessageOrKey( Logger logger, Method method,
+        Extension extension ) {
+        final String prefix = extension.getLogId(method) ;
+        final ResourceBundle catalog = logger.getResourceBundle() ;
 
-        Throwable result ;
-        final Class<?> rtype = method.getReturnType() ;
-        try {
-            @SuppressWarnings("unchecked")
-            final Constructor<Throwable> cons =
-                (Constructor<Throwable>)rtype.getConstructor(String.class);
-            result = cons.newInstance(msg);
-        } catch (InstantiationException ex) {
-            throw new RuntimeException( ex ) ;
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException( ex ) ;
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException( ex ) ;
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException( ex ) ;
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException( ex ) ;
-        } catch (SecurityException ex) {
-            throw new RuntimeException( ex ) ;
+        String transMsg = null ;
+        if (catalog != null) {
+            final String msgKey = getMsgKey( logger.getName(), method ) ;
+            transMsg = catalog.getString( msgKey ) ;
+            if (transMsg != null || transMsg.equals( msgKey )) {
+                transMsg = null ;
+            }
         }
 
-        return result ;
-
-    }
-
-    static String getStandardLoggerName( Class<?> cls ) {
-        final ExceptionWrapper ew = aa.getAnnotation( cls, ExceptionWrapper.class ) ;
-        String str = ew.loggerName() ;
-        if (str.length() == 0) {
-            str = cls.getPackage().getName() ;
+        if (transMsg == null) {
+            // if there is no ResourceBundle, we use the message
+            // from the method.
+            transMsg = getMessage( method, prefix, extension ) ;
         }
-        return str ;
+
+        return transMsg  ;
     }
 
     static String handleMessageOnly( Method method, Extension extension,
         Logger logger, Object[] messageParams ) {
 
-        // Just format the message: no exception ID or log level
-        // This code is adapted from java.util.logging.Formatter.formatMessage
-        final String msg = aa.getAnnotation( method, Message.class).value() ;
-        String transMsg ;
+        final String prefix = extension.getLogId(method) ;
         final ResourceBundle catalog = logger.getResourceBundle() ;
-        if (catalog == null) {
-            transMsg = msg ;
-        } else {
-            final String logId = extension.getLogId( method ) ;
-	    // FIXME: can't use log id here
-            transMsg = catalog.getString( logId ) ;
-        }
-
-        final String result ;
+        final String transMsg = getMessageOrKey( logger, method, extension ) ;
+        String result ;
         if (transMsg.indexOf( "{0" ) >= 0 ) {
             result = java.text.MessageFormat.format( transMsg, messageParams ) ;
         } else {
             result = transMsg ;
         }
+
+        // XXX OperationContext?
 
         return result ;
     }
@@ -429,17 +445,63 @@ public class WrapperGenerator {
             lrec.setSourceMethodName( caller.getMethodName() );
     }
 
+    static boolean isMajorLevel( Level level ) {
+        return level.intValue() > Level.INFO.intValue() ;
+    }
+
+    static boolean needStackTrace( Level level, Method method ) {
+        // Determine whether or not we need to add a stack trace to
+        // the log record.
+
+        final Class<?> mcls = method.getDeclaringClass() ;
+        final boolean hasClassST = aa.getAnnotation(mcls,
+            StackTrace.class )  != null ;
+        final boolean hasClassNST = aa.getAnnotation(mcls,
+            NoStackTrace.class )  != null ;
+        final boolean hasMethodST = aa.getAnnotation(method,
+            StackTrace.class )  != null ;
+        final boolean hasMethodNST = aa.getAnnotation(method,
+            NoStackTrace.class )  != null ;
+        final boolean highLevel = isMajorLevel( level ) ;
+
+        // How to interpret flags:
+        // xST and xNST (for x=class or method) should not both be true at
+        // the same time (but if they are, assume xST)
+        // hasClassST   hasClassNST     hasMethodST     hasMethodNST    level above info        result
+        // F            F               F               F               F                       F
+        // F            F               F               F               T                       T
+        // F            F               F               T               -                       F
+        // F            F               T               -               -                       T
+        // F            T               F               -               -                       F
+        // F            T               T               -               -                       T
+        // T            -               -               F               -                       T
+        // T            -               -               T               -                       F
+
+        boolean useST = false ;
+        if (hasClassST) {
+            useST = !hasMethodNST ;
+        } else if (hasClassNST) {
+            useST = hasMethodST ;
+        } else if (hasMethodST) {
+            useST = true ;
+        } else if (hasMethodNST) {
+            useST = false ;
+        } else {
+            useST = highLevel ;
+        }
+
+        return useST ;
+    }
+
     static Object handleFullLogging( Log log, Method method,
         ReturnType rtype, Logger logger,
         String idPrefix, Object[] messageParams, Throwable cause,
         Extension extension )  {
 
         final Level level = log.level().getLevel() ;
-
-	// FIXME: key is loggername.methodname
-        final String msgString = getMessage( method, idPrefix, 
-	    extension.getLogId( method )) ;
-        final LogRecord lrec = makeLogRecord( level, msgString,
+        final boolean useST = needStackTrace( level, method ) ;
+        final String msgKey = getMessageOrKey( logger, method, extension ) ;
+        final LogRecord lrec = makeLogRecord( level, msgKey,
             messageParams, logger ) ;
         final String message = formatter.format( lrec ) ;
 
@@ -452,10 +514,6 @@ public class WrapperGenerator {
 		if (cause != null) {
 		    exc.initCause( cause ) ;
 		}
-
-		if (level != Level.INFO) {
-		    lrec.setThrown( exc ) ;
-		}
 	    }
         } else {
             // Just do this to correctly set the source class and method name
@@ -463,15 +521,30 @@ public class WrapperGenerator {
             trimStackTrace( new Throwable(), lrec ) ;
         }
 
-        if (logger.isLoggable(level)) {
+        if (exc != null) {
+            if (useST) {
+                lrec.setThrown( exc ) ;
+            }
+        }
+
+        /* XXX This is a problem, because we don't control the message string.
+         * We need to do something like add another {n} argument to the end
+         * of the message string that goes into the ResourceBundle.
+         * Do we need yet another annotation (@OperationContext) to control
+         * this?
+         *
+        // XXX need to centralize isLoggable checks.
+        if (logger.isLoggable(level) && isMajorLevel(level)) {
             final String context = OperationTracer.getAsString() ;
-            String newMsg = msgString ;
+            String newMsg = msgKey ;
+            // FIXME: doesn't work with resource bundle.
             if (context.length() > 0) {
                 newMsg += "\nCONTEXT:" + context ;
                 lrec.setMessage( newMsg ) ;
             }
             logger.log( lrec ) ;
         }
+        */
 
         switch (rtype) {
             case EXCEPTION : return exc ;
@@ -522,10 +595,10 @@ public class WrapperGenerator {
             // initializer must initialize a log wrapper WITHOUT a
             // ResourceBundle, in order to generate a properties file which
             // implements the ResourceBundle.
-            //
-            // Issue GLASSFISH-14269: Do this outside of the construction of the
-            // InvocationHandler, because Logger.getLogger is an expensive
-            // synchronized call.
+            
+            // Issue GLASSFISH-14269: Get the logger outside of the
+            // construction of the InvocationHandler, because Logger.getLogger
+            // is an expensive synchronized call.
             Logger lg = null ;
             try {
                 lg = Logger.getLogger( name, name ) ;
@@ -535,6 +608,7 @@ public class WrapperGenerator {
             final Logger logger = lg ;
 
             InvocationHandler inh = new InvocationHandler() {
+                @Override
                 public Object invoke(Object proxy, Method method, Object[] args)
                     throws Throwable {
 
@@ -548,6 +622,8 @@ public class WrapperGenerator {
                             return null ;
                         } else {
                             final LogLevel level = log.level() ;
+                            // XXX need to centralize isLoggable checks.
+                            // This may be a new extension point.
                             if (!logger.isLoggable(level.getLevel())) {
                                 return null ;
                             }

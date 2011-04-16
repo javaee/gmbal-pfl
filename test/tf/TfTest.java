@@ -62,6 +62,8 @@ import org.junit.Test;
  */
 public class TfTest
 {
+    private static final boolean DEBUG = false ;
+
     private PrintStream out ;
     private PrintStream err ;
 
@@ -89,12 +91,13 @@ public class TfTest
         doSimpleTest( false ) ;
     }
 
-    @Test
+    // @Test: don't need this, since we aren't using TestClassImpl_tf
     public void testSimpleTraced() {
         doSimpleTest( true ) ;
     }
 
-    @Test
+    // @Test: don't need this, as it just dumps hundreds of lines of output
+    // without any assertions.
     public void testWithTracing() {
         MethodMonitorRegistry.register(A.class, 
             MethodMonitorFactoryDefaults.dprint() );
@@ -104,7 +107,9 @@ public class TfTest
             MethodMonitorFactoryDefaults.dprint() );
 
         TestClass tc = getTestClass( true ) ;
-        System.out.println( "result = " + tc.mult( 10, 10 ) ) ;
+        if (DEBUG) {
+            System.out.println( "result = " + tc.mult( 10, 10 ) ) ;
+        }
     }
 
     private MethodMonitorFactory tracingMonitorFactory =
