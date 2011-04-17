@@ -106,7 +106,15 @@
     <property name="bundle.dir" value="dist/bundles"/>
     <property name="bnd.classpath" value="build/classes"/>
 
-    <target name="make-bundles" depends="modules.init">
+    <target name="make-src-bundle" depends="modules.init">
+	<mkdir dir="${bundle.dir}"/>
+	<jar jarfile="${bundle.dir}/pfl-source.jar" duplicate="fail">
+	    <fileset dir="src">
+	    </fileset>
+	</jar>
+    </target>
+
+    <target name="make-bundles" depends="modules.init, make-src-bundle">
         <make-bundle outfile="pfl-basic.jar"
             outdir="${bundle.dir}"
             version="${version}"
@@ -168,7 +176,7 @@
 
     <target name="-post-jar" depends="make-bundles"/>
 
-    <property name="pfl.version" value="1.0.0-b01"/>
+    <property name="pfl.version" value="1.0.0-b001"/>
 
     <macrodef name="make-pfl-pom">
 	<attribute name="artifactId"/>
@@ -298,7 +306,7 @@
 	<attribute name="module"/>
 	<attribute name="destination"/>
 	<sequential>
-	    <push-to-local-maven outdir="dest/bundles"
+	    <push-to-maven outdir="dest/bundles"
 		module="@{module}" destination="@{destination}"/>
 	</sequential>
     </macrodef>
@@ -320,11 +328,11 @@
 
     <macrodef name="release-to-local-maven">
         <sequential>
-            <echo message="Releasing modules with version ${pfl.version} to @{destination}"/>
+            <echo message="Releasing modules with version ${pfl.version} to local repository"/>
             <pfl-push-to-local-maven module="pfl-asm"/>
             <pfl-push-to-local-maven module="pfl-basic"/>
             <pfl-push-to-local-maven module="pfl-basic-tools"/>
-            <pfl-push-to-local-maven module="pfl-dynami"/>
+            <pfl-push-to-local-maven module="pfl-dynamic"/>
             <pfl-push-to-local-maven module="pfl-test"/>
             <pfl-push-to-local-maven module="pfl-tf"/>
             <pfl-push-to-local-maven module="pfl-tf-tools"/>
@@ -332,12 +340,12 @@
         </sequential>
     </macrodef>
 
-    <target name="release" depends="modules.init">
+    <target name="release" depends="modules.init, make-bundles, make-poms">
         <echo message="releasing to ${repo.url}"/>
         <release-to-maven destination="${repo.url}"/>
     </target>
 
-    <target name="release-local" depends="modules.init">
+    <target name="release-local" depends="modules.init, make-bundles, make-poms">
         <echo message="releasing to local repository"/>
         <release-to-local-maven/>
     </target>
