@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.pfl.basic.algorithm.ClassAnalyzer;
 import org.glassfish.pfl.basic.func.UnaryPredicate;
 
@@ -113,7 +115,16 @@ public class FacetAccessorImpl implements FacetAccessor {
         }
 
         try {
-            result = method.invoke(target, args);
+            Method m = target.getClass().getDeclaredMethod(method.getName(),
+                method.getParameterTypes() ) ;
+
+            result = m.invoke(target, args);
+        } catch (NoSuchMethodException ex) {
+            throw new IllegalArgumentException(
+                "Exception on invocation", ex ) ;
+        } catch (SecurityException ex) {
+            throw new IllegalArgumentException(
+                "Exception on invocation", ex ) ;
         } catch (IllegalAccessException ex) {
             throw new IllegalArgumentException(
                 "Exception on invocation", ex ) ;

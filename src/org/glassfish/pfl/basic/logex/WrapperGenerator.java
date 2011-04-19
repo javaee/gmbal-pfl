@@ -183,12 +183,16 @@ public class WrapperGenerator {
      * @return The ID (as a string), or null if no @Log annotation is present.
      */
     public static String getStandardLogId( Method method ) {
-	Log log = aa.getAnnotation( method, Log.class ) ;
+        final Class<?> cls = method.getDeclaringClass() ;
+        final ExceptionWrapper ew = cls.getAnnotation( ExceptionWrapper.class ) ;
+        final String idPrefix = ew.idPrefix() ;
+	final Log log = aa.getAnnotation( method, Log.class ) ;
         if (log == null) {
             return null ;
         }
 
-        return String.format( "%05d", log.id() ) ;
+        final String result = String.format( "%s%05d", idPrefix, log.id() ) ;
+        return result ;
     }
 
     static Throwable makeStandardException( final String msg,
@@ -295,14 +299,12 @@ public class WrapperGenerator {
     // Used to construct the message map, and in case no ResourceBundle is
     // available.
     static String getMessage( Method method,
-        String idPrefix, Extension extension ) {
+        String prefix, Extension extension ) {
 
         final Message message = aa.getAnnotation( method, Message.class ) ;
         final StringBuilder sb = new StringBuilder() ;
-        String logId = extension.getLogId(method);
-        if (logId != null) {
-            sb.append( idPrefix ) ;
-            sb.append( logId ) ;
+        if (prefix != null) {
+            sb.append( prefix ) ;
             sb.append( ": " ) ;
         }
                     
@@ -324,9 +326,6 @@ public class WrapperGenerator {
 
         return sb.toString() ;
     }
-
-    static final String cihiName = 
-        CompositeInvocationHandlerImpl.class.getName() ;
 
     static String getMessageOrKey( Logger logger, Method method,
         Extension extension ) {
@@ -414,6 +413,9 @@ public class WrapperGenerator {
     }
 
     final static ShortFormatter formatter = new ShortFormatter() ;
+
+    static final String cihiName =
+        CompositeInvocationHandlerImpl.class.getName() ;
 
     static void trimStackTrace( Throwable exc, LogRecord lrec ) {
             // Massage exception into appropriate form, and get the caller's
