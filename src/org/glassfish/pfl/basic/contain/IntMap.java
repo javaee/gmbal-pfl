@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,69 +38,18 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
+package org.glassfish.pfl.basic.contain ;
 
-import java.io.PrintStream ;
-import org.glassfish.pfl.basic.algorithm.Printer;
+public interface IntMap<E> 
+{
+    /** If key >= 0, return the value bound to key, or null if none.
+     * Throws IllegalArgumentException if key <0.
+     */
+    E get( int key ) ;
 
-/** Extends the file utility Printer with line numbers that are
- * also optionally stored as Attributes in Nodes for annotating the AST.
- */
-public class CodegenPrinter extends Printer {
-    static Attribute<Integer> lineNumberAttribute = new Attribute<Integer>( 
-	Integer.class, "lineNumber", -1 ) ;
-
-    private int lineNumber ;
-
-    public CodegenPrinter( PrintStream ps ) {
-	this( ps, DEFAULT_INCREMENT, ' ' ) ;
-    }
-
-    public CodegenPrinter( PrintStream ps, int increment, char padChar ) {
-	super( ps, increment, padChar ) ;
-	this.lineNumber = 1 ;
-    }
-
-    public int lineNumber() {
-	return lineNumber ;
-    }
-
-    @Override
-    public CodegenPrinter p( String str ) {
-	super.p( str ) ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter p( Object obj ) {
-	super.p( obj ) ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter in() {
-	super.in() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter out() {
-	super.out() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter nl() {
-	super.nl() ;
-	return this ;
-    }
-
-    public CodegenPrinter nl( Node node ) {
-	lineNumber++ ;
-	if (node != null)
-	    lineNumberAttribute.set( node, lineNumber ) ;
-	super.nl() ;
-	return this ;
-    }
+    /** If key >= 0, bind value to the key.
+     * Throws IllegalArgumentException if key <0.
+     */
+    public void set( int key, E value ) ;
 }
 

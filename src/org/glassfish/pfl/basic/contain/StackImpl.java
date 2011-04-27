@@ -38,69 +38,60 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
+package org.glassfish.pfl.basic.contain ;
 
-import java.io.PrintStream ;
-import org.glassfish.pfl.basic.algorithm.Printer;
+import java.util.EmptyStackException ;
 
-/** Extends the file utility Printer with line numbers that are
- * also optionally stored as Attributes in Nodes for annotating the AST.
- */
-public class CodegenPrinter extends Printer {
-    static Attribute<Integer> lineNumberAttribute = new Attribute<Integer>( 
-	Integer.class, "lineNumber", -1 ) ;
+// We implement a Stack here instead of using java.util.Stack because
+// java.util.Stack is thread-safe, negatively impacting performance.
+// We use an ArrayList instead since it is not thread-safe.  
+// RequestInfoStack is used quite frequently.
+public class StackImpl<E> {
+    // The stack for RequestInfo objects.  
+    private Object[] data = new Object[3] ;
+    private int top = -1 ;
 
-    private int lineNumber ;
-
-    public CodegenPrinter( PrintStream ps ) {
-	this( ps, DEFAULT_INCREMENT, ' ' ) ;
+    // Tests if this stack is empty.
+    public final boolean empty() {
+	return top == -1;
     }
 
-    public CodegenPrinter( PrintStream ps, int increment, char padChar ) {
-	super( ps, increment, padChar ) ;
-	this.lineNumber = 1 ;
+    // Looks at the object at the top of this stack without removing it
+    // from the stack.
+    @SuppressWarnings("unchecked")
+    public final E peek() {
+	if (empty()) {
+            throw new EmptyStackException();
+        }
+
+	return (E)data[ top ];
     }
 
-    public int lineNumber() {
-	return lineNumber ;
+    // Removes the object at the top of this stack and returns that 
+    // object as the value of this function.
+    @SuppressWarnings("unchecked")
+    public final E pop() {
+	Object obj = peek() ;
+	data[top] = null ;
+	top-- ;
+	return (E)obj;
     }
 
-    @Override
-    public CodegenPrinter p( String str ) {
-	super.p( str ) ;
-	return this ;
+    private void ensure() 
+    {
+	if (top == (data.length-1)) {
+	    int newSize = 2*data.length ;
+	    Object[] newData = new Object[ newSize ] ;
+	    System.arraycopy( data, 0, newData, 0, data.length ) ;
+	    data = newData ;
+	}
     }
 
-    @Override
-    public CodegenPrinter p( Object obj ) {
-	super.p( obj ) ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter in() {
-	super.in() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter out() {
-	super.out() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter nl() {
-	super.nl() ;
-	return this ;
-    }
-
-    public CodegenPrinter nl( Node node ) {
-	lineNumber++ ;
-	if (node != null)
-	    lineNumberAttribute.set( node, lineNumber ) ;
-	super.nl() ;
-	return this ;
+    // Pushes an item onto the top of the stack
+    public final Object push( E item ) {
+	ensure() ;
+	top++ ;
+	data[top] = item;
+	return item;
     }
 }
-

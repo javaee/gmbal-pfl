@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,69 +38,56 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
+package org.glassfish.pfl.basic.contain ;
 
-import java.io.PrintStream ;
-import org.glassfish.pfl.basic.algorithm.Printer;
+import java.util.ArrayList ;
 
-/** Extends the file utility Printer with line numbers that are
- * also optionally stored as Attributes in Nodes for annotating the AST.
+/** Utility for managing mappings from densely allocated integer
+ * keys to arbitrary objects.  This should only be used for
+ * keys in the range 0..max such that "most" of the key space is actually
+ * used.
  */
-public class CodegenPrinter extends Printer {
-    static Attribute<Integer> lineNumberAttribute = new Attribute<Integer>( 
-	Integer.class, "lineNumber", -1 ) ;
+public class DenseIntMapImpl<E> implements IntMap<E>
+{
+    private ArrayList<E> list = new ArrayList<E>() ;
 
-    private int lineNumber ;
-
-    public CodegenPrinter( PrintStream ps ) {
-	this( ps, DEFAULT_INCREMENT, ' ' ) ;
+    private void checkKey( int key ) 
+    {
+	if (key < 0)
+	    throw new IllegalArgumentException( "Key must be >= 0." ) ;
     }
 
-    public CodegenPrinter( PrintStream ps, int increment, char padChar ) {
-	super( ps, increment, padChar ) ;
-	this.lineNumber = 1 ;
+    /** If key >= 0, return the value bound to key, or null if none.
+     * Throws IllegalArgumentException if key <0.
+     */
+    public E get( int key ) 
+    {
+	checkKey( key ) ;
+
+	E result = null ;
+	if (key < list.size())
+	    result = list.get( key ) ;
+
+	return result ;
     }
 
-    public int lineNumber() {
-	return lineNumber ;
+    /** If key >= 0, bind value to the key.
+     * Throws IllegalArgumentException if key <0.
+     */
+    public void set( int key, E value ) 
+    {
+	checkKey( key ) ;
+	extend( key ) ;
+	list.set( key, value ) ;
     }
 
-    @Override
-    public CodegenPrinter p( String str ) {
-	super.p( str ) ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter p( Object obj ) {
-	super.p( obj ) ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter in() {
-	super.in() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter out() {
-	super.out() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter nl() {
-	super.nl() ;
-	return this ;
-    }
-
-    public CodegenPrinter nl( Node node ) {
-	lineNumber++ ;
-	if (node != null)
-	    lineNumberAttribute.set( node, lineNumber ) ;
-	super.nl() ;
-	return this ;
+    private void extend( int index )
+    {
+	if (index >= list.size()) {
+	    list.ensureCapacity( index + 1 ) ;
+	    int max = list.size() ;
+	    while (max++ <= index)
+		list.add( null ) ;
+	}
     }
 }
-

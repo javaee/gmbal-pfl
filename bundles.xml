@@ -53,6 +53,7 @@
         <include name="org.glassfish.pfl.basic.facet"/> 
         <include name="org.glassfish.pfl.basic.fsm"/> 
         <include name="org.glassfish.pfl.basic.func"/> 
+        <include name="org.glassfish.pfl.basic.graph"/> 
         <include name="org.glassfish.pfl.basic.logex"/> 
         <include name="org.glassfish.pfl.basic.proxy"/> 
     </patternset>

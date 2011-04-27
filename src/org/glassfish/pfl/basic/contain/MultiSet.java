@@ -38,69 +38,82 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
+package org.glassfish.pfl.basic.contain ;
 
-import java.io.PrintStream ;
-import org.glassfish.pfl.basic.algorithm.Printer;
+import java.util.Map ;
+import java.util.HashMap ;
 
-/** Extends the file utility Printer with line numbers that are
- * also optionally stored as Attributes in Nodes for annotating the AST.
+/** A simple abstraction of a MultiSet, that is, a "set" that can contain
+ * more than one copy of the same element.  I am implementing only the
+ * bare minimum that is required for now.
  */
-public class CodegenPrinter extends Printer {
-    static Attribute<Integer> lineNumberAttribute = new Attribute<Integer>( 
-	Integer.class, "lineNumber", -1 ) ;
+public class MultiSet<E> {
+     private Map<E,Integer> contents = new HashMap<E,Integer>() ;
 
-    private int lineNumber ;
+     public void add( E element ) {
+	 Integer value = contents.get( element ) ;
+	 if (value == null) {
+	    value = 0 ;
+	 }
 
-    public CodegenPrinter( PrintStream ps ) {
-	this( ps, DEFAULT_INCREMENT, ' ' ) ;
-    }
+	 value += 1 ;
+	 contents.put( element, value ) ;
+     }
 
-    public CodegenPrinter( PrintStream ps, int increment, char padChar ) {
-	super( ps, increment, padChar ) ;
-	this.lineNumber = 1 ;
-    }
+     public void remove( E element ) {
+	 Integer value = contents.get( element ) ;
+	 if (value == null) {
+	     return ;
+	 }
 
-    public int lineNumber() {
-	return lineNumber ;
-    }
+	 value -= 1 ;
 
-    @Override
-    public CodegenPrinter p( String str ) {
-	super.p( str ) ;
-	return this ;
-    }
+	 if (value == 0) {
+	     contents.remove( element ) ;
+	 } else {
+	     contents.put( element, value ) ;
+	 }
+     }
 
-    @Override
-    public CodegenPrinter p( Object obj ) {
-	super.p( obj ) ;
-	return this ;
-    }
+     public boolean contains( E element ) {
+	 Integer value = contents.get( element ) ;
+	 if (value == null) {
+	    value = 0 ;
+	 }
 
-    @Override
-    public CodegenPrinter in() {
-	super.in() ;
-	return this ;
-    }
+	return value > 0 ;
+     }
 
-    @Override
-    public CodegenPrinter out() {
-	super.out() ;
-	return this ;
-    }
+     /** Return the number of unique elements in this MultiSet.
+      */
+     public int size() {
+	 return contents.keySet().size() ;
+     }
+     
+     private static void shouldBeTrue( boolean val, String msg ) {
+	 if (!val) 
+	     System.out.println( msg ) ;
+     }
 
-    @Override
-    public CodegenPrinter nl() {
-	super.nl() ;
-	return this ;
-    }
+     private static void shouldBeFalse( boolean val, String msg ) {
+	 if (val) 
+	     System.out.println( msg ) ;
+     }
 
-    public CodegenPrinter nl( Node node ) {
-	lineNumber++ ;
-	if (node != null)
-	    lineNumberAttribute.set( node, lineNumber ) ;
-	super.nl() ;
-	return this ;
-    }
+     public static void main( String[] args ) {
+	MultiSet<String> mset = new MultiSet<String>() ;
+	String s1 = "first" ;
+	String s2 = "second" ;
+	
+	mset.add( s1 ) ;
+	shouldBeTrue( mset.contains( s1 ), "mset does not contain s1 (1)" ) ;
+
+	mset.add( s2 ) ;
+	mset.add( s1 ) ;
+	mset.remove( s1 ) ;
+	shouldBeTrue( mset.contains( s1 ), "mset does not contain s1 (2)" ) ;
+	mset.remove( s1 ) ;
+	shouldBeFalse( mset.contains( s1 ), "mset still contains s1 (3)" ) ;
+	shouldBeTrue( mset.contains( s2 ), "mset does not contain s2 (4)" ) ;
+     }
 }
-

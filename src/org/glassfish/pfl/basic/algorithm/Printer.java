@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
+package org.glassfish.pfl.basic.algorithm ;
 
 import java.io.PrintStream ;
 
@@ -107,9 +107,8 @@ public class Printer{
     }
 
     public Printer p( Object... args ) {
-        for (Object obj : args) {
-            p(obj);
-        }
+        for (Object obj : args)
+            p( obj ) ;
 
         return this ;
     }
@@ -128,10 +127,9 @@ public class Printer{
     }
 
     public Printer out() {
-	if (indent < increment) {
-            throw new IllegalStateException(
-                "Cannot undent past start of line");
-        }
+	if (indent < increment)
+	    throw new IllegalStateException(
+		"Cannot undent past start of line" ) ;
 
 	indent -= increment ;
 	fill() ;
@@ -144,9 +142,8 @@ public class Printer{
 
     private void fill() {
 	pad = new char[indent] ;
-	for (int ctr = 0; ctr<pad.length; ctr++) {
-            pad[ctr] = padChar;
-        }
+	for (int ctr = 0; ctr<pad.length; ctr++)
+	    pad[ctr] = padChar ;
     }
 
     public Printer nl() {
@@ -187,14 +184,12 @@ public class Printer{
             // by a space.
             while (j < 16 && (i + j) < length) {
                 int k = buffer[i + j];
-                if (k < 0) {
+                if (k < 0)
                     k = 256 + k;
-                }
                 String hex = Integer.toHexString(k);
-                if (hex.length() == 1) {
+                if (hex.length() == 1)
                     hex = "0" + hex;
-                }
-                sbuf.append(hex).append(" ");
+                sbuf.append(hex + " ");
                 j++;
             }
             
@@ -211,11 +206,10 @@ public class Printer{
             int x = 0;
             while (x < 16 && x + i < length) {
                 char ch = (char)buffer[i + x] ;
-                if (isPrintable( ch )) {
-                    sbuf.append(ch);
-                } else {
-                    sbuf.append('.');
-                }
+                if (isPrintable( ch ))
+                    sbuf.append( ch ) ;
+                else
+                    sbuf.append( '.' ) ;
                 x++;
             }
 

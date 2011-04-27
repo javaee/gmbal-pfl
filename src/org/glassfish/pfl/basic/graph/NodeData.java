@@ -38,69 +38,48 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
+package org.glassfish.pfl.basic.graph ;
 
-import java.io.PrintStream ;
-import org.glassfish.pfl.basic.algorithm.Printer;
-
-/** Extends the file utility Printer with line numbers that are
- * also optionally stored as Attributes in Nodes for annotating the AST.
+/** Data about a node in a graph. 
  */
-public class CodegenPrinter extends Printer {
-    static Attribute<Integer> lineNumberAttribute = new Attribute<Integer>( 
-	Integer.class, "lineNumber", -1 ) ;
+public class NodeData 
+{
+    private boolean visited ;
+    private boolean root ;
 
-    private int lineNumber ;
-
-    public CodegenPrinter( PrintStream ps ) {
-	this( ps, DEFAULT_INCREMENT, ' ' ) ;
+    public NodeData()
+    {
+	clear() ;
     }
 
-    public CodegenPrinter( PrintStream ps, int increment, char padChar ) {
-	super( ps, increment, padChar ) ;
-	this.lineNumber = 1 ;
+    public final void clear()
+    {
+	this.visited = false ;
+	this.root = true ;
     }
 
-    public int lineNumber() {
-	return lineNumber ;
+    /** Return whether this node has been visited in a traversal.
+     * Note that we only support a single traversal at a time.
+     */
+    boolean isVisited() 
+    {
+	return visited ;
     }
 
-    @Override
-    public CodegenPrinter p( String str ) {
-	super.p( str ) ;
-	return this ;
+    void visited()
+    {
+	visited = true ;
     }
 
-    @Override
-    public CodegenPrinter p( Object obj ) {
-	super.p( obj ) ;
-	return this ;
+    /** Return whether this node is a root.
+     */
+    boolean isRoot() 
+    {
+	return root ;
     }
 
-    @Override
-    public CodegenPrinter in() {
-	super.in() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter out() {
-	super.out() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter nl() {
-	super.nl() ;
-	return this ;
-    }
-
-    public CodegenPrinter nl( Node node ) {
-	lineNumber++ ;
-	if (node != null)
-	    lineNumberAttribute.set( node, lineNumber ) ;
-	super.nl() ;
-	return this ;
+    void notRoot()
+    {
+	root = false ;
     }
 }
-

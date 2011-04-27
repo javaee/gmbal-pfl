@@ -38,69 +38,13 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
+package org.glassfish.pfl.basic.graph ;
 
-import java.io.PrintStream ;
-import org.glassfish.pfl.basic.algorithm.Printer;
+import java.util.Set ;
 
-/** Extends the file utility Printer with line numbers that are
- * also optionally stored as Attributes in Nodes for annotating the AST.
- */
-public class CodegenPrinter extends Printer {
-    static Attribute<Integer> lineNumberAttribute = new Attribute<Integer>( 
-	Integer.class, "lineNumber", -1 ) ;
+public interface Graph<T extends Node> extends Set<T> // Set<Node>
+{
+    NodeData getNodeData( T node ) ;
 
-    private int lineNumber ;
-
-    public CodegenPrinter( PrintStream ps ) {
-	this( ps, DEFAULT_INCREMENT, ' ' ) ;
-    }
-
-    public CodegenPrinter( PrintStream ps, int increment, char padChar ) {
-	super( ps, increment, padChar ) ;
-	this.lineNumber = 1 ;
-    }
-
-    public int lineNumber() {
-	return lineNumber ;
-    }
-
-    @Override
-    public CodegenPrinter p( String str ) {
-	super.p( str ) ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter p( Object obj ) {
-	super.p( obj ) ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter in() {
-	super.in() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter out() {
-	super.out() ;
-	return this ;
-    }
-
-    @Override
-    public CodegenPrinter nl() {
-	super.nl() ;
-	return this ;
-    }
-
-    public CodegenPrinter nl( Node node ) {
-	lineNumber++ ;
-	if (node != null)
-	    lineNumberAttribute.set( node, lineNumber ) ;
-	super.nl() ;
-	return this ;
-    }
+    Set<T> getRoots() ;
 }
-

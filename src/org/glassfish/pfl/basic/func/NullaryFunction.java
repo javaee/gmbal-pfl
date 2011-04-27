@@ -38,4 +38,36 @@ package org.glassfish.pfl.basic.func ;
 
 public interface NullaryFunction<T> {
     public T evaluate() ;
+
+    public class Factory {
+	private Factory() {}
+
+	public static <T> NullaryFunction<T> makeConstant( final T value ) {
+	    return new NullaryFunction() {
+                @Override
+		public T evaluate() {
+		    return value ;
+		}
+	    } ;
+	}
+
+	public static <T> NullaryFunction<T> makeFuture(
+	    final NullaryFunction<T> closure ) {
+	    return new NullaryFunction() {
+		private boolean evaluated = false ;
+		private T value ;
+
+                @Override
+		public synchronized T evaluate()
+		{
+		    if (!evaluated) {
+			evaluated = true ;
+			value = closure.evaluate() ;
+		    }
+
+		    return value ;
+		}
+	    } ;
+	}
+    }
 }
