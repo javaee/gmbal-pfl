@@ -45,7 +45,8 @@ import java.util.ArrayList ;
 import java.util.Arrays ;
 
 public class OperationTracer {
-    private static boolean enabled = false ;
+    private static boolean enabled = true ;
+    private static boolean frozen = false ;
 
     public static String convertToString( Object arg ) {
         if (arg == null) {
@@ -214,11 +215,17 @@ public class OperationTracer {
         return sb.toString() ;
     }
 
+    public static void enter( final String name, final Object... args ) {
+        if (enabled && !frozen) {
+            state.get().add( new GenericElement( name, args ) ) ;
+        }
+    }
+    
     /** Initialize operation tracing on the caller's thread.
      * The OperationTracer is initially empty.
      */
     public static void begin( final String label ) {
-        if (enabled) {
+        if (enabled && !frozen) {
             final List<Element> elements = state.get() ;
             elements.clear() ;
             elements.add( 
@@ -236,7 +243,7 @@ public class OperationTracer {
      * After this call, toString will return the empty string.
      */
     public static void finish() {
-        if (enabled) {
+        if (enabled && !frozen) {
             state.get().clear() ;
         }
     }
@@ -245,7 +252,7 @@ public class OperationTracer {
      * given type name.
      */
     public static void startReadValue( final String name ) {
-        if (enabled) {
+        if (enabled && !frozen) {
             state.get().add( new ValueElement( name ) ) ;
         }
     }
@@ -254,7 +261,7 @@ public class OperationTracer {
      * read.
      */
     public static void readingField( final String fieldName ) {
-        if (enabled) {
+        if (enabled && !frozen) {
             final List<Element> elements = state.get() ;
             final int lastIndex = elements.size() - 1 ;
 
@@ -271,19 +278,19 @@ public class OperationTracer {
     /** Pop the record of the current value that was just read.
      */
     public static void endReadValue() {
-        if (enabled) {
+        if (enabled && !frozen) {
             end() ;
         }
     }
 
     public static void startReadArray( final String name, final int size ) {
-        if (enabled) {
+        if (enabled && !frozen) {
             state.get().add( new ArrayElement( name, size ) ) ;
         }
     }
 
     public static void readingIndex( final int index ) {
-        if (enabled) {
+        if (enabled && !frozen) {
             final List<Element> elements = state.get() ;
             final int lastIndex = elements.size() - 1 ;
 
@@ -299,7 +306,7 @@ public class OperationTracer {
     }
 
     public static void endReadArray() {
-        if (enabled) {
+        if (enabled && !frozen) {
             end() ;
         }
     }
@@ -315,17 +322,12 @@ public class OperationTracer {
     public static void clear() {
         if (enabled) {
             state.get().clear() ;
-        }
-    }
-
-    public static void enter( final String name, final Object... args ) {
-        if (enabled) {
-            state.get().add( new GenericElement( name, args ) ) ;    
+            frozen = false ;
         }
     }
 
     public static void exit() {
-        if (enabled) {
+        if (enabled && !frozen) {
             end() ;
         }
     }

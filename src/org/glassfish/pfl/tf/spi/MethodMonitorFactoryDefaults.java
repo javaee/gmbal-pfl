@@ -55,6 +55,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.pfl.basic.algorithm.Algorithms;
 import org.glassfish.pfl.basic.contain.Pair;
+import org.glassfish.pfl.basic.logex.OperationTracer ;
 
 /**
  *
@@ -128,91 +129,6 @@ public class MethodMonitorFactoryDefaults {
                 } ;
             }
         };
-
-    public static class OperationTracer {
-        private static boolean enabled = true ;
-
-        public static void enable() {
-            enabled = true ;
-        }
-
-        public static void disable() {
-            enabled = false ;
-        }
-
-        private OperationTracer() {}
-
-        private static ThreadLocal<List<Pair<String,Object[]>>> state =
-            new ThreadLocal<List<Pair<String,Object[]>>>() {
-            @Override
-            public List<Pair<String,Object[]>> initialValue() {
-                return new ArrayList<Pair<String,Object[]>>() ;
-            }
-        } ;
-
-        private static String format( final Pair<String,Object[]> arg ) {
-            String name = arg.first() ;
-            Object[] args = arg.second() ;
-            StringBuilder sb = new StringBuilder() ;
-            if (name == null) {
-                sb.append( "!NULL_NAME!" ) ;
-            } else {
-                sb.append( name ) ;
-            }
-
-            sb.append( '(' ) ;
-            boolean first = true ;
-            for (Object obj : args ) {
-                if (first) {
-                    first = false ;
-                } else {
-                    sb.append( ',' ) ;
-                }
-
-                sb.append( Algorithms.convertToString(obj)) ;
-            }
-            sb.append( ')' ) ;
-            return sb.toString() ;
-        }
-
-        /** Return the current contents of the OperationTracer state
-         * for the current thread.
-         * @return State of the OperationTracer.
-         */
-        public static String getAsString() {
-            final StringBuilder sb = new StringBuilder() ;
-            final Formatter fmt = new Formatter( sb ) ;
-            final List<Pair<String,Object[]>> elements = state.get() ;
-            int ctr = 0 ;
-            for (Pair<String,Object[]> elem : elements) {
-                fmt.format( "\n\t(%3d): %s", ctr++, format( elem ) ) ;
-            }
-
-            return sb.toString() ;
-        }
-
-        public static void clear() {
-            if (enabled) {
-                state.get().clear() ;
-            }
-        }
-
-        public static void enter( final String name, final Object... args ) {
-            if (enabled) {
-                state.get().add( new Pair<String,Object[]>( name, args ) ) ;
-            }
-        }
-
-        public static void exit() {
-            if (enabled) {
-                final List<Pair<String,Object[]>> elements = state.get() ;
-                int size = elements.size() ;
-                if (size > 0) {
-                    elements.remove( size - 1 ) ;
-                }
-            }
-        }
-    }
 
     private static MethodMonitorFactory dprintImpl = 
         new MethodMonitorFactoryBase( "DprintImpl" ) {
