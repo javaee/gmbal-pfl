@@ -267,7 +267,9 @@
             <echo message="Releasing module @{module} to local repository"/>
 
 	    <artifact:pom id="@{module}.pom" file="@{outdir}/@{module}.pom.xml"/>
+            <property environment="env"/>
             <artifact:install file="@{outdir}/@{module}.jar">
+                <localRepository path="${env.HOME}/.m2/repository"/>
                 <pom refid="@{module}.pom"/>
             </artifact:install>
         </sequential>

@@ -261,7 +261,7 @@ public class Block {
 	return new Block( result ) ;
     }
 
-    public Block substitute( List<Pair<String,String>> substitutions ) {
+    public Block substitute( List<? extends Pair<String,String>> substitutions ) {
 	List<String> result = new ArrayList<String>() ;
 	for (String line : data) {
 	    String newLine = line ;

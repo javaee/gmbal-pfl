@@ -45,7 +45,6 @@ import java.util.ArrayList ;
 
 import java.io.File ;
 import java.io.IOException ;
-import org.glassfish.pfl.basic.contain.Pair;
 import org.glassfish.pfl.basic.tools.argparser.ArgParser;
 import org.glassfish.pfl.basic.tools.argparser.DefaultValue;
 import org.glassfish.pfl.basic.tools.argparser.Help;
@@ -53,7 +52,7 @@ import org.glassfish.pfl.basic.tools.argparser.Help;
 public class WorkspaceRename {
     private static final String[] SUBSTITUTE_SUFFIXES = {
 	"c", "h", "java", "sjava", "idl", "htm", "html", "xml", "dtd",
-	"tdesc", "policy", "secure", "vthought",
+	"tdesc", "policy", "secure", "vthought", "jmk",
 	"ksh", "sh", "classlist", "config", "properties", "prp", 
 	"set", "settings", "data", "txt", "text", "javaref", "idlref" } ;
 
@@ -76,18 +75,14 @@ public class WorkspaceRename {
     } ;
 
     private static final String[] IGNORE_NAMES = {
-	"NORENAME", "errorfile", "sed_pattern_file.version", "package-list"
+	"NORENAME", "errorfile", "sed_pattern_file.version", "package-list",
+        ".hgtags"
     } ;
 
     private static final String[] IGNORE_DIRS = {
 	".hg", ".snprj", ".cvs", "SCCS", "obj", "obj_g", "Codemgr_wsdata", 
 	"deleted_files", "build", "rename", "freezepoint", "test-output",
 	"webrev", "javadoc", "felix-cache", "vpproject"
-    } ;
-
-    private static final String[][] patterns = {
-	{ "org.objectweb.asm", "org.glassfish.pfl.org.objectweb.asm" },
-	{ "org/objectweb/asm", "org/glassfish/pfl/org/objectweb/asm" }
     } ;
 
     public static void main(String[] strs) {
@@ -124,6 +119,13 @@ public class WorkspaceRename {
 	    + " (all text file)" )
         @DefaultValue ( "true" ) 
         boolean expandtabs() ;
+
+        @Help( "List of patterns given as <source java package name>:<renamed java package name>."
+            + " Also handes the /-separated version of the pattern.  If the string VERSION occurs" 
+            + " in the renamed java package name, it will be replaced with the value of the"
+            + " version() argument." ) 
+        @DefaultValue( "" )
+        List<ArgParser.StringPair> patterns() ;
     }
 
     // Extract these from args so that the methods in Arguments are not
@@ -135,7 +137,7 @@ public class WorkspaceRename {
     private final String version ;
     private final boolean copyonly ;
     private final boolean expandtabs ;
-
+    private final List<ArgParser.StringPair> patterns ;
     private final List<String> noActionFileNames = new ArrayList<String>() ;
 
     private void trace( String msg ) {
@@ -156,13 +158,12 @@ public class WorkspaceRename {
             String targetName = sourceName.substring( 
                 rootName.length() ) ;
 
-            for (String[] astr : patterns) {
-                final String key = astr[0] ;
-                final String replacement = astr[1] ;
+            for (ArgParser.StringPair astr : patterns) {
+                final String key = astr.first() ;
+                final String replacement = astr.second() ;
 
                 if (sourceName.indexOf( key ) >= 0) {
-                    targetName = targetName.replace( key, replacement )
-                        .replace( "VERSION", version ) ;
+                    targetName = targetName.replace( key, replacement ) ;
                 }
             }
 
@@ -191,10 +192,27 @@ public class WorkspaceRename {
 	verbose = args.verbose() ;
 	dryrun = args.dryrun() ;
 	copyonly = args.copyonly() ;
+
+        patterns = new ArrayList<ArgParser.StringPair>() ;
+        for (ArgParser.StringPair sp : args.patterns()) {
+            final String key = sp.first() ;
+            final String value = sp.second().replace( "VERSION", version ) ;
+            final ArgParser.StringPair newSp =
+                new ArgParser.StringPair( key, value ) ;
+            patterns.add( newSp ) ;
+
+            final String slashKey = key.replace( ".", "/" ) ;
+            final String slashValue = value.replace( ".", "/" ) ;
+            final ArgParser.StringPair slashSp =
+                new ArgParser.StringPair( slashKey, slashValue ) ;
+            patterns.add( slashSp ) ;
+        }
+
         expandtabs = args.expandtabs() ;
 
 	if (verbose > 1) {
 	    trace( "Main: args:\n" + args ) ;
+            trace( "Main: patterns: " + patterns ) ;
 	}
     }
 
@@ -234,17 +252,6 @@ public class WorkspaceRename {
 		}
 	    } ;
 
-	    final List<Pair<String,String>> substitutions = 
-		new ArrayList<Pair<String,String>>() ;
-
-	    for (String[] pstrs : patterns) {
-		String pattern = pstrs[0] ;
-		String replacement = pstrs[1].replace( "VERSION", version ) ;
-		Pair<String,String> pair = new Pair<String,String>( pattern, 
-                    replacement ) ;
-		substitutions.add( pair ) ;
-	    }
-
 	    final Scanner.Action renameAction = new Scanner.Action() {
 		@Override
 		public String toString() {
@@ -264,7 +271,7 @@ public class WorkspaceRename {
 
 			    Block sourceBlock = BlockParser.getBlock( fw ) ;
 			    Block targetBlock = sourceBlock.substitute( 
-                                substitutions ) ;
+                                patterns ) ;
 
                             if (expandtabs) {
                                 targetBlock = targetBlock.expandTabs() ;

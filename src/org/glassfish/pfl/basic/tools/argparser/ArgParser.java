@@ -176,6 +176,27 @@ public class ArgParser {
     private final Map<String,ElementParser> parserData =
         new HashMap<String, ElementParser>();
 
+    /** Useful utility class for parsing pairs of strings.
+     */
+    public static class StringPair extends Pair<String,String> {
+        public StringPair( String first, String second ) {
+            super( first, second ) ;
+        }
+
+        /** Construct a StringPair from data of the first first:second.
+         * @param data The string to parse into a StringPair.
+         */
+	public StringPair( String data ) {
+	    super( null, null ) ;
+	    int index = data.indexOf( ':' ) ;
+	    if (index < 0) {
+                throw new IllegalArgumentException(data + " does not contain a :");
+            }
+	    _first = data.substring( 0, index ) ;
+	    _second = data.substring( index + 1 ) ;
+	}
+    }
+
     /** Construct an ArgParser that parses an argument string into an instance of the 
      * Class argument.
      * cls must be an interface.  Each method in this interface must take no arguments. 
@@ -458,18 +479,6 @@ public class ArgParser {
 ////////////////////////////////////////////////////////////////////////////////////
 
     private enum PrimaryColor { RED, GREEN, BLUE } ;
-
-    public static class StringPair extends Pair<String,String> {
-	public StringPair( String data ) {
-	    super( null, null ) ;
-	    int index = data.indexOf( ':' ) ;
-	    if (index < 0) {
-                throw new IllegalArgumentException(data + " does not contain a :");
-            }
-	    _first = data.substring( 0, index ) ;
-	    _second = data.substring( index + 1 ) ;
-	}
-    }
 
     private interface TestInterface1{
 	@DefaultValue( "27" ) 

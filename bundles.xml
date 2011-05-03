@@ -94,7 +94,7 @@
     <patternset id="asm.export">
 	<include name="org.glassfish.pfl.objectweb.asm"/>
 	<!-- <include name="org.glassfish.pfl.objectweb.asm.attrs"/> -->
-	<!-- <include name="org.glassfish.pfl.objectweb.asm.commons"/> -->
+	<include name="org.glassfish.pfl.objectweb.asm.commons"/> 
 	<!-- <include name="org.glassfish.pfl.objectweb.asm.optimizer"/> -->
 	<include name="org.glassfish.pfl.objectweb.asm.signature"/> 
 	<include name="org.glassfish.pfl.objectweb.asm.tree"/>

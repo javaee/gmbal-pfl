@@ -86,6 +86,10 @@ public class OperationTracer {
         }
     }
 
+    public static void freeze() {
+        frozen = true ;
+    }
+
     public static void enable() {
         enabled = true ;
     }
