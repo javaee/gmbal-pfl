@@ -39,13 +39,17 @@ package org.glassfish.pfl.basic.facet;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.pfl.basic.algorithm.ClassAnalyzer;
+import org.glassfish.pfl.basic.contain.Holder;
 import org.glassfish.pfl.basic.func.UnaryPredicate;
 
 /** 
@@ -105,23 +109,53 @@ public class FacetAccessorImpl implements FacetAccessor {
     }
 
     @Override
-    public Object invoke(Method method, Object... args) {
-        Object result = null ;
-
-        Object target = facet( method.getDeclaringClass() ) ;
+    public Object invoke(final Method method, final Object... args) {
+        final Object target = facet( method.getDeclaringClass() ) ;
         if (target == null) {
             throw new IllegalArgumentException(
                 "No facet available for method " + method ) ;
         }
 
         try {
-            Method m = target.getClass().getDeclaredMethod(method.getName(),
-                method.getParameterTypes() ) ;
+            final ClassAnalyzer ca =
+                ClassAnalyzer.getClassAnalyzer( target.getClass() ) ;
+            final String mname = method.getName() ;
+            final Class<?>[] mparams = method.getParameterTypes() ;
+            final Holder<Method> mholder = new Holder<Method>() ;
 
-            result = m.invoke(target, args);
-        } catch (NoSuchMethodException ex) {
-            throw new IllegalArgumentException(
-                "Exception on invocation", ex ) ;
+            ca.findClasses( 
+                new UnaryPredicate<Class<?>>() {
+                    @Override
+                    public boolean evaluate(Class<?> arg) {
+                        try {
+                            if (mholder.content() == null) {
+                                Method m = arg.getDeclaredMethod(mname, mparams);
+                                mholder.content(m);
+                                return true;
+                            }
+                        } catch (Exception ex) {
+                            // ignore
+                        }
+
+                        return false ;
+                    }
+                } 
+            ) ;
+
+            if (System.getSecurityManager() == null) {
+                mholder.content().setAccessible(true);
+            } else {
+                AccessController.doPrivileged( new PrivilegedAction<Object>() {
+                    @Override
+                    public Object run() {
+                        mholder.content().setAccessible(true);
+                        return null ;
+                    }
+                }) ;
+            }
+
+            final Object result = mholder.content().invoke(target, args);
+            return result ;
         } catch (SecurityException ex) {
             throw new IllegalArgumentException(
                 "Exception on invocation", ex ) ;
@@ -135,8 +169,6 @@ public class FacetAccessorImpl implements FacetAccessor {
             throw new IllegalArgumentException(
                 "Exception on invocation", ex ) ;
         }
-        
-        return result ;
     }
 
     @Override

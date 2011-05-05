@@ -52,34 +52,54 @@ import org.glassfish.pfl.basic.facet.FacetAccessorImpl;
  * @author ken
  */
 public class FacetAccessorTest extends TestCase {
-    private interface A {
+    public interface A {
         int operation( int arg ) ;
         
         int add( int arg1, int arg2 ) ;
     }
     
-    private interface B {
+    public interface B {
         int operation( int arg ) ;
         
         int sub( int arg1, int arg2 ) ;
     }
-    
-    private static Method a_operation ;
-    private static Method add ;
-    private static Method b_operation ;
-    private static Method sub ;
-    
-    static {
-        try {
-            a_operation = A.class.getDeclaredMethod( "operation", int.class ) ;
-            b_operation = B.class.getDeclaredMethod( "operation", int.class ) ;
-            add = A.class.getDeclaredMethod( "add", int.class, int.class ) ;
-            sub = B.class.getDeclaredMethod( "sub", int.class, int.class ) ;
-        } catch (Exception exc) {
-            throw new RuntimeException( exc ) ;
+
+    public static class BImpl implements B {
+        public int factor ;
+
+        public BImpl( int factor ) {
+            this.factor = factor ;
+        }
+
+        @Override
+        public int operation( int arg ) {
+            return factor*arg ;
+        }
+
+        @Override
+        public int sub( int arg1, int arg2 ) {
+            return arg1-arg2 ;
+
         }
     }
-    
+
+    public static class CImpl extends BImpl {
+        public CImpl( int factor ) {
+            super( factor ) ;
+        }
+
+        @Override
+        public int sub( int arg1, int arg2 ) {
+            return 2*super.sub( arg1, arg2 ) ;
+        }
+    }
+
+    private Method a_operation ;
+    private Method add ;
+    private Method b_operation ;
+    private Method sub ;
+    private Method c_sub ;
+
     public static class TestClass implements A, FacetAccessor {
         private FacetAccessor delegate ;
         
@@ -134,24 +154,6 @@ public class FacetAccessorTest extends TestCase {
         }
     }
     
-    public static class BImpl implements B {
-        public int factor ;
-        
-        public BImpl( int factor ) {
-            this.factor = factor ;
-        }
-        
-        @Override
-        public int operation( int arg ) {
-            return factor*arg ;
-        }
-        
-        @Override
-        public int sub( int arg1, int arg2 ) {
-            return arg1-arg2 ;
-
-        }
-    }
         
     public FacetAccessorTest(String testName) {
         super(testName);
@@ -167,11 +169,27 @@ public class FacetAccessorTest extends TestCase {
         }
 
         super.setUp();
+
+        try {
+            a_operation = A.class.getDeclaredMethod( "operation", int.class ) ;
+            b_operation = B.class.getDeclaredMethod( "operation", int.class ) ;
+            add = A.class.getDeclaredMethod( "add", int.class, int.class ) ;
+            sub = B.class.getDeclaredMethod( "sub", int.class, int.class ) ;
+            c_sub = CImpl.class.getDeclaredMethod( "sub", int.class, int.class ) ;
+        } catch (Exception exc) {
+            throw new RuntimeException( exc ) ;
+        }
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+
+        a_operation = null ;
+        b_operation = null ;
+        add = null ;
+        sub = null ;
+        c_sub = null ;
     }
 
     /**
@@ -184,7 +202,7 @@ public class FacetAccessorTest extends TestCase {
         assertEquals( fa, fa.facet( TestClass.class ) ) ;
         assertEquals( fa, fa.facet( A.class ) ) ;
         assertNull( fa.facet( B.class ) ) ;
-        B b = new BImpl( 10 ) ;
+        B b = new CImpl( 10 ) ;
         fa.addFacet( b ) ;
         assertEquals( b, fa.facet( B.class ) ) ;
         fa.removeFacet( B.class ) ;
@@ -197,13 +215,14 @@ public class FacetAccessorTest extends TestCase {
     public void testInvoke() {
         System.out.println("invoke");
         FacetAccessor fa = new TestClass() ;
-        B b = new BImpl( 10 ) ;
+        B b = new CImpl( 10 ) ;
         fa.addFacet( b ) ;
         
         assertEquals( fa.invoke( a_operation, 2  ), 4 ) ;
         assertEquals( fa.invoke( add, 21, 17 ), 38 ) ;
         assertEquals( fa.invoke( b_operation, 2 ), 20 ) ;
-        assertEquals( fa.invoke( sub, 21, 17 ), 4 ) ;
+        assertEquals( fa.invoke( sub, 21, 17 ), 8 ) ;
+        assertEquals( fa.invoke( c_sub, 21, 17 ), 8 ) ;
         
         b = new BImpl( 100 ) ;
         fa.addFacet( b ) ;
