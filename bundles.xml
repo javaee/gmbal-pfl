@@ -307,7 +307,7 @@
 	<attribute name="module"/>
 	<attribute name="destination"/>
 	<sequential>
-	    <push-to-maven outdir="dest/bundles"
+	    <push-to-maven outdir="dist/bundles"
 		module="@{module}" destination="@{destination}"/>
 	</sequential>
     </macrodef>

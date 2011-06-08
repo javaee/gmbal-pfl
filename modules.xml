@@ -283,7 +283,7 @@
             <echo message="Releasing module @{module} to @{destination}"/>
 
 	    <artifact:pom id="@{module}.pom" file="@{outdir}/@{module}.pom.xml"/>
-            <artifact:deploy file="${releaselib.dir}/bundles/@{module}.jar">
+            <artifact:deploy file="@{outdir}/@{module}.jar">
                 <remoteRepository url="@{destination}">
                     <authentication id="java.net.maven2.repository"/> <!-- this is java.net specific -->
                 </remoteRepository>
