@@ -106,6 +106,7 @@
     <property name="version" value="1.0.0-b001"/>
     <property name="bundle.dir" value="dist/bundles"/>
     <property name="bnd.classpath" value="build/classes"/>
+    <property name="repo.url" value="http://download.java.net/maven/2"/>
 
     <target name="make-src-bundle" depends="modules.init">
 	<mkdir dir="${bundle.dir}"/>
@@ -177,8 +178,6 @@
 
     <target name="-post-jar" depends="make-bundles"/>
 
-    <property name="pfl.version" value="1.0.0-b001"/>
-
     <macrodef name="make-pfl-pom">
 	<attribute name="artifactId"/>
 	<attribute name="description"/>
@@ -188,7 +187,7 @@
 		outdir="dist/bundles"
 		groupId="org.glassfish.pfl" 
 		artifactId="@{artifactId}" 
-		version="${pfl.version}"
+		version="${version}"
 		description="@{description}"
 		url="http://kenai.com/hg/gmbal~pfl">
 		<element-list>
@@ -224,7 +223,7 @@
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-basic"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 	    </dep-list>
 	</make-pfl-pom>
 	<make-pfl-pom artifactid="pfl-dynamic" 
@@ -233,11 +232,11 @@
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-asm"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-basic"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 	    </dep-list>
 	</make-pfl-pom>
 	<make-pfl-pom artifactid="pfl-test" 
@@ -246,11 +245,11 @@
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-basic"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-basic-tools"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 	    </dep-list>
 	</make-pfl-pom>
 	<make-pfl-pom artifactid="pfl-tf" 
@@ -259,11 +258,11 @@
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-asm"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-basic"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 	    </dep-list>
 	</make-pfl-pom>
 	<make-pfl-pom artifactid="pfl-tf-tools" 
@@ -272,19 +271,19 @@
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-asm"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-basic"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-basic-tools"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 		<dependency
 		    groupId="org.glassfish.pfl"
 		    artifactId="pfl-tf"
-		    version="${pfl.version}"/>
+		    version="${version}"/>
 	    </dep-list>
 	</make-pfl-pom>
 	<make-pfl-pom artifactid="pfl-asm" 
@@ -315,7 +314,7 @@
     <macrodef name="release-to-maven">
         <attribute name="destination"/>
         <sequential>
-            <echo message="Releasing modules with version ${pfl.version} to @{destination}"/>
+            <echo message="Releasing modules with version ${version} to @{destination}"/>
             <pfl-push-to-maven destination="@{destination}" module="pfl-asm"/>
             <pfl-push-to-maven destination="@{destination}" module="pfl-basic" />
             <pfl-push-to-maven destination="@{destination}" module="pfl-basic-tools"/>
@@ -329,7 +328,7 @@
 
     <macrodef name="release-to-local-maven">
         <sequential>
-            <echo message="Releasing modules with version ${pfl.version} to local repository"/>
+            <echo message="Releasing modules with version ${version} to local repository"/>
             <pfl-push-to-local-maven module="pfl-asm"/>
             <pfl-push-to-local-maven module="pfl-basic"/>
             <pfl-push-to-local-maven module="pfl-basic-tools"/>
