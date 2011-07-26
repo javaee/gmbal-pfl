@@ -76,9 +76,6 @@
         <include name="org.glassfish.pfl.tf.spi"/> 
         <include name="org.glassfish.pfl.tf.spi.annotation"/> 
         <include name="org.glassfish.pfl.tf.timer.spi"/> 
-    </patternset>
-
-    <patternset id="tf.private">
         <include name="org.glassfish.pfl.tf.timer.impl"/> 
     </patternset>
 
@@ -103,10 +100,10 @@
 	<!-- <include name="org.glassfish.pfl.objectweb.asm.xml"/> -->
     </patternset>
 
-    <property name="version" value="1.0.0-b001"/>
+    <property name="version" value="3.2.0-b001"/>
     <property name="bundle.dir" value="dist/bundles"/>
     <property name="bnd.classpath" value="build/classes"/>
-    <property name="repo.url" value="http://download.java.net/maven/2"/>
+    <property name="repo.url" value="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository"/>
 
     <target name="make-src-bundle" depends="modules.init">
 	<mkdir dir="${bundle.dir}"/>
@@ -117,7 +114,9 @@
     </target>
 
     <target name="make-bundles" depends="modules.init, make-src-bundle">
-        <make-bundle outfile="pfl-basic.jar"
+        <make-bundle 
+            bundlename="pfl-basic"
+            outfile="pfl-basic.jar"
             outdir="${bundle.dir}"
             version="${version}"
             classpath="${bnd.classpath}">
@@ -125,7 +124,9 @@
                 <directive type="Export-Package" name="basic.export"/>
             </directive-list>
         </make-bundle>
-        <make-bundle outfile="pfl-basic-tools.jar"
+        <make-bundle 
+            bundlename="pfl-basic-tools"
+            outfile="pfl-basic-tools.jar"
             outdir="${bundle.dir}"
             version="${version}"
             classpath="${bnd.classpath}">
@@ -133,7 +134,9 @@
                 <directive type="Export-Package" name="basic-tools.export"/>
             </directive-list>
         </make-bundle>
-        <make-bundle outfile="pfl-dynamic.jar"
+        <make-bundle 
+            bundlename="pfl-dynamic"
+            outfile="pfl-dynamic.jar"
             outdir="${bundle.dir}"
             version="${version}"
             classpath="${bnd.classpath}">
@@ -141,16 +144,19 @@
                 <directive type="Export-Package" name="dynamic.export"/>
             </directive-list>
         </make-bundle>
-        <make-bundle outfile="pfl-tf.jar"
+        <make-bundle 
+            bundlename="pfl-tf"
+            outfile="pfl-tf.jar"
             outdir="${bundle.dir}"
             version="${version}"
             classpath="${bnd.classpath}">
             <directive-list>
                 <directive type="Export-Package" name="tf.export"/>
-                <directive type="Private-Package" name="tf.private"/>
             </directive-list>
         </make-bundle>
-        <make-bundle outfile="pfl-tf-tools.jar"
+        <make-bundle 
+            bundlename="pfl-tf-tools"
+            outfile="pfl-tf-tools.jar"
             outdir="${bundle.dir}"
             version="${version}"
             classpath="${bnd.classpath}">
@@ -158,7 +164,9 @@
                 <directive type="Export-Package" name="tf-tools.export"/>
             </directive-list>
         </make-bundle>
-        <make-bundle outfile="pfl-test.jar"
+        <make-bundle 
+            bundlename="pfl-test"
+            outfile="pfl-test.jar"
             outdir="${bundle.dir}"
             version="${version}"
             classpath="${bnd.classpath}">
@@ -166,7 +174,9 @@
                 <directive type="Export-Package" name="test.export"/>
             </directive-list>
         </make-bundle>
-	<make-bundle outfile="pfl-asm.jar"
+	<make-bundle 
+            bundlename="pfl-asm"
+            outfile="pfl-asm.jar"
             outdir="${bundle.dir}"
             version="${version}"
             classpath="${bnd.classpath}">
