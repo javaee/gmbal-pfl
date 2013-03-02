@@ -412,8 +412,6 @@ public class WrapperGenerator {
         }
     }
 
-    final static ShortFormatter formatter = new ShortFormatter() ;
-
     static final String cihiName =
         CompositeInvocationHandlerImpl.class.getName() ;
 
@@ -505,6 +503,7 @@ public class WrapperGenerator {
         final String msgKey = getMessageOrKey( logger, method, extension ) ;
         final LogRecord lrec = makeLogRecord( level, msgKey,
             messageParams, logger ) ;
+        final ShortFormatter formatter = new ShortFormatter() ; // fix GLASSFISH-18351
         final String message = formatter.format( lrec ) ;
 
         Throwable exc = null ;
