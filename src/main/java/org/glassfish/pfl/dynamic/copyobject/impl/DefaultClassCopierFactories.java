@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,10 @@ import java.lang.reflect.Method ;
 import java.lang.reflect.Modifier ;
 
 import java.util.Map ;
+
+import java.security.PrivilegedAction;
+import java.security.AccessController;
+
 import org.glassfish.pfl.basic.concurrent.WeakHashMapSafeReadLock;
 
 import org.glassfish.pfl.dynamic.copyobject.spi.ReflectiveCopyException ;
@@ -114,17 +118,28 @@ public abstract class DefaultClassCopierFactories
 	    // occur).
 	    private boolean notCopyable( Class<?> cls ) {
 		Class<?> current = cls ;
+                Method[] methods ;
 		while (current != Object.class) {
 		    if (safe(current)) {
                         return false;
                     }
-
-		    for (Method m : current.getDeclaredMethods() ) {
-			if ((m.getName().equals( "finalize" )) ||
-			    Modifier.isNative(m.getModifiers()) ) {
-			    return true ;
-			}
-		    }
+                    // Fix GLASSFISH-18310
+                    if (System.getSecurityManager() == null) {
+                        methods = current.getDeclaredMethods();
+                    } else {
+                        final Class<?> _current = current;
+                        methods = (Method[]) AccessController.doPrivileged(new PrivilegedAction() {
+                            public Object run() {
+                                return _current.getDeclaredMethods();
+                            }
+                        });
+                    }
+                    for (Method m : methods) {
+                        if ((m.getName().equals("finalize"))
+                                || Modifier.isNative(m.getModifiers())) {
+                            return true;
+                        }
+                    }                  
 
 		    current = current.getSuperclass() ;
 		}
