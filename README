@@ -4,7 +4,7 @@ mvn clean install
 To test:
 mvn test
 
-TODO: Fix following tests. They are known failures.
+TODO: TfTest us failing, and is excluded in pom file. Fix it and add it back. 
 
 Tests in error: 
   twoAnnotations(tf.TfTest)
