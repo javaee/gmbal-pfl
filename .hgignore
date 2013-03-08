@@ -29,3 +29,6 @@ make/bnd.properties
 gmbal/**
 libcache/**
 gen/**
+**/target/**
+target/**
+

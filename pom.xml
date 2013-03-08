@@ -51,10 +51,10 @@
         <url>http://java.net/projects/gmbal/sources/pfl/show</url>
     </scm>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish</groupId>
+    <groupId>org.glassfish.pfl</groupId>
     <artifactId>pfl</artifactId>
-    <packaging>jar</packaging>
-    <version>4.0.0-b001</version>
+    <version>4.0.0-b002-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>pfl</name>
     <description>Primitive Function Library</description>
     <url>http://java.net/projects/gmbal</url>
@@ -74,19 +74,16 @@
     </issueManagement>
     <mailingLists>
     </mailingLists>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.ejb</groupId>
-            <artifactId>ejb-container</artifactId>
-            <version>3.1.2.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>pfl-basic</module>
+        <module>pfl-basic-tools</module>
+        <module>pfl-tf</module>
+        <module>pfl-tf-tools</module>
+        <module>pfl-asm</module>
+        <module>pfl-dynamic</module>
+        <module>pfl-test</module>
+    </modules>
+
     <build>
         <plugins>
             <plugin>
@@ -98,51 +95,7 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.13</version>
-                <configuration>
-                     <excludes>
-                         <exclude>**/TfTest*.java</exclude>
-                     </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${project.name}</Bundle-Name>
-                        <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>
-                            org.glassfish.pfl.*                   
-                        </Export-Package>             
-                    </instructions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>    
-                            <goal>manifest</goal>
-                        </goals>   
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archive>  
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive> 
-                </configuration>
-            </plugin>  
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>  
