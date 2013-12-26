@@ -11,6 +11,9 @@ public class ClassCopierTest {
     private PipelineClassCopierFactory factory = new ClassCopierFactoryPipelineImpl();
     private HashMap<Object, Object> map = new HashMap<Object, Object>();
 
+    /**
+     * Verify fix for https://java.net/jira/browse/GLASSFISH-20814
+     */
     @Test
     public void afterCopyingHashMap_mayAddEntries() {
         HashMap<Object, Object> original = new HashMap<Object, Object>();
