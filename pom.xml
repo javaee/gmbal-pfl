@@ -53,7 +53,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.pfl</groupId>
     <artifactId>pfl</artifactId>
-    <version>4.0.0-b004-SNAPSHOT</version>
+    <version>4.0.0-b004</version>
     <packaging>pom</packaging>
     <name>pfl</name>
     <description>Primitive Function Library</description>
