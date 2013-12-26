@@ -40,9 +40,10 @@
 
 package org.glassfish.pfl.dynamic.copyobject.impl ;
 
-import java.util.Map ;
+import org.glassfish.pfl.dynamic.copyobject.spi.ReflectiveCopyException;
 
-import org.glassfish.pfl.dynamic.copyobject.spi.ReflectiveCopyException ;
+import java.util.HashMap;
+import java.util.Map;
 
 /** A convenient base class for making ClassCopier types.
  * This takes care of checking oldToNew and updating oldToNew
@@ -118,21 +119,58 @@ public abstract class ClassCopierBase implements ClassCopier {
      * infinite recursion.
      */
     @Override
-    public final Object copy( Map<Object,Object> oldToNew,
-	Object source ) throws ReflectiveCopyException
-    {
-	Object result = oldToNew.get( source ) ;
-	if (result == null) {
-            try {
-                result = createCopy( source ) ;
-                oldToNew.put( source, result ) ;
-                result = doCopy( oldToNew, source, result ) ;
-            } catch (StackOverflowError ex) {
-                throw Exceptions.self.stackOverflow( source, ex ) ;
-            }
-	}
+    public final Object copy(Map<Object, Object> oldToNew, Object source) throws ReflectiveCopyException {
+        Object result = oldToNew.get(source);
+        if (result == null) {
+            result = doSpecialCaseCopy(oldToNew, source);
+        }
+        if (result == null) {
+            result = doByFieldCopy(oldToNew, source);
+        }
 
-	return result ;
+        return result;
+    }
+
+    /**
+     * Sometimes the internal representation of an object will be violated by our field-by-field copy. This method
+     * handles those special cases. It suggests that there may be a basic problem with our code logic.
+     * @param oldToNew a map of already copied objects and their corresponding copies.
+     * @param source the object to copy.
+     */
+    private Object doSpecialCaseCopy(Map<Object, Object> oldToNew, Object source) {
+        Object result = null;
+
+        if (isEmptyHashMap(source))
+            result = cloneEmptyHashMap();
+
+        if (result != null)
+            oldToNew.put(source, result);
+        return result;
+    }
+
+    /**
+     * As of JDK 1.7-40, the JDK relies on the HashMap#table field being identical to a constant. That will not be
+     * true if we invoke #doByFieldCopy to copy it, so we need special processing.
+     * @param source the object to copy.
+     */
+    private boolean isEmptyHashMap(Object source) {
+        return source instanceof HashMap && ((HashMap) source).isEmpty();
+    }
+
+    private HashMap cloneEmptyHashMap() {
+        return new HashMap();
+    }
+
+    private Object doByFieldCopy(Map<Object, Object> oldToNew, Object source) {
+        Object result;
+        try {
+            result = createCopy(source);
+            oldToNew.put(source, result);
+            result = doCopy(oldToNew, source, result);
+        } catch (StackOverflowError ex) {
+            throw Exceptions.self.stackOverflow(source, ex);
+        }
+        return result;
     }
 
     @Override

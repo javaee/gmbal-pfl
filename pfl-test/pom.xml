@@ -49,6 +49,15 @@
     <artifactId>pfl-test</artifactId>
     <packaging>bundle</packaging>
     <name>PFL Test</name>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>javax.persistence</artifactId>
+                <version>2.0.5</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
