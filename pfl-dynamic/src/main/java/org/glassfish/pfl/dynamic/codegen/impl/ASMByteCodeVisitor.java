@@ -1,7 +1,9 @@
+package org.glassfish.pfl.dynamic.codegen.impl;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010,2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,18 +40,14 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
 
-
-import java.io.PrintStream ;
-
-import java.util.Map ;
-
-import org.glassfish.pfl.objectweb.asm.ClassWriter ;
-
-import org.glassfish.pfl.dynamic.codegen.spi.Type ;
-import org.glassfish.pfl.dynamic.codegen.spi.Variable ;
 import org.glassfish.pfl.basic.contain.Pair;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.codegen.spi.Variable;
+import org.objectweb.asm.ClassWriter;
+
+import java.io.PrintStream;
+import java.util.Map;
 
 
 /** Visitor that is used to generate byte code for a class.

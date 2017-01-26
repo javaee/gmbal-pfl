@@ -1,7 +1,9 @@
+package org.glassfish.pfl.dynamic.codegen.impl;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010,2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,35 +40,31 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
-
-import java.util.Properties ;
-import java.util.HashSet ;
-import java.util.HashMap ;
-
-import java.io.IOException ;
-import java.io.PrintStream ;
-import java.io.FileOutputStream ;
-import java.io.File ;
-
-import org.glassfish.pfl.objectweb.asm.ClassWriter ;
-import org.glassfish.pfl.objectweb.asm.ClassVisitor ;
-import org.glassfish.pfl.objectweb.asm.MethodVisitor ;
-import org.glassfish.pfl.objectweb.asm.ClassAdapter ;
-import org.glassfish.pfl.objectweb.asm.MethodAdapter ;
-
-// Imports for verify method
-import org.glassfish.pfl.objectweb.asm.ClassReader ;
-import org.glassfish.pfl.objectweb.asm.util.CheckClassAdapter ;
-// end of verify method imports
-
-import org.glassfish.pfl.dynamic.codegen.spi.ImportList ;
-import org.glassfish.pfl.dynamic.codegen.spi.Type ;
-import org.glassfish.pfl.dynamic.codegen.spi.Variable ;
-import org.glassfish.pfl.dynamic.codegen.spi.Wrapper ;
-import java.io.PrintWriter;
 import org.glassfish.pfl.basic.contain.Pair;
 import org.glassfish.pfl.basic.func.NullaryFunction;
+import org.glassfish.pfl.dynamic.codegen.spi.ImportList;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.codegen.spi.Variable;
+import org.glassfish.pfl.dynamic.codegen.spi.Wrapper;
+import org.objectweb.asm.ClassAdapter;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodAdapter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.util.CheckClassAdapter;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Properties;
+
+// Imports for verify method
+// end of verify method imports
 
 /** Simple class containing a few ASM-related utilities 
  * and dynamic attributes needs for the byte code generator.
@@ -249,8 +247,7 @@ public class ASMUtil {
 
 	// generate byte code
 	twc = new TreeWalkerContext() ;
-	Visitor v2 = new ASMByteCodeVisitor( twc, cw, traceByteCodeGeneration, 
-	    debugOutput ) ;
+	Visitor v2 = new ASMByteCodeVisitor( twc, cw, traceByteCodeGeneration, debugOutput ) ;
 	cg.accept( v2 ) ;
 
 	byte[] result = fixStackSize( cw.toByteArray() ) ;

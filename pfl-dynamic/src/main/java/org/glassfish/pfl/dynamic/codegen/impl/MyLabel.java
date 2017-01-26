@@ -1,7 +1,9 @@
+package org.glassfish.pfl.dynamic.codegen.impl;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010,2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,9 +40,7 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl;
-
-import org.glassfish.pfl.objectweb.asm.Label ;
+import org.objectweb.asm.Label ;
 
 /** This trivial class exists only to give a slightly
  *  more readable toString method for ASM labels.

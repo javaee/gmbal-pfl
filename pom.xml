@@ -79,7 +79,6 @@
         <module>pfl-basic-tools</module>
         <module>pfl-tf</module>
         <module>pfl-tf-tools</module>
-        <module>pfl-asm</module>
         <module>pfl-dynamic</module>
         <module>pfl-test</module>
     </modules>
@@ -99,6 +98,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>3.3.1</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

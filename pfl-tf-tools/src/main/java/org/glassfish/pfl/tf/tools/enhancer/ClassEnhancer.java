@@ -1,7 +1,9 @@
+package org.glassfish.pfl.tf.tools.enhancer;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010,2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,15 +40,13 @@
  * holder.
  */
 
-package org.glassfish.pfl.tf.tools.enhancer;
-
-import org.glassfish.pfl.objectweb.asm.ClassVisitor;
-import org.glassfish.pfl.objectweb.asm.Label;
-import org.glassfish.pfl.objectweb.asm.MethodAdapter;
-import org.glassfish.pfl.objectweb.asm.MethodVisitor;
-import org.glassfish.pfl.objectweb.asm.Opcodes;
-import org.glassfish.pfl.objectweb.asm.Type;
-import org.glassfish.pfl.objectweb.asm.commons.GeneratorAdapter;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodAdapter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.GeneratorAdapter;
 
 import org.glassfish.pfl.basic.contain.SynchronizedHolder ;
 import org.glassfish.pfl.tf.spi.EnhancedClassData;
@@ -58,8 +58,7 @@ public class ClassEnhancer extends TFEnhanceAdapter {
     private final EnhancedClassData ecd ;
     private boolean hasStaticInitializer = false ;
 
-    public ClassEnhancer( Util util, EnhancedClassData ecd,
-        ClassVisitor cv ) {
+    public ClassEnhancer( Util util, EnhancedClassData ecd, ClassVisitor cv ) {
 
         super( cv, TraceEnhanceLevel.NONE, TraceEnhanceLevel.PHASE1, ecd ) ;
         this.util = util ;
@@ -97,8 +96,7 @@ public class ClassEnhancer extends TFEnhanceAdapter {
             if (util.getDebug()) {
                 mv = new SimpleMethodTracer(mv, util) ;
             }
-            MethodAdapter ma = new StaticInitVisitor( siacc, "()V", mv,
-                util, ecd ) ;
+            MethodAdapter ma = new StaticInitVisitor( siacc, "()V", mv, util, ecd ) ;
 
             ma.visitCode() ;
             ma.visitInsn( Opcodes.RETURN ) ; // Only if creating a <clinit>!

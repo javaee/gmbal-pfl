@@ -1,7 +1,9 @@
+package org.glassfish.pfl.tf.tools.enhancer;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010,2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,24 +40,22 @@
  * holder.
  */
 
-package org.glassfish.pfl.tf.tools.enhancer;
-
-import java.util.Set;
-import java.util.Iterator;
-import org.glassfish.pfl.tf.timer.spi.TimingInfoProcessor;
-import org.glassfish.pfl.tf.timer.spi.TimerFactoryBuilder;
-import org.glassfish.pfl.tf.spi.TimingPointType;
 import org.glassfish.pfl.basic.func.UnaryFunction;
 import org.glassfish.pfl.tf.spi.EnhancedClassData;
 import org.glassfish.pfl.tf.spi.EnhancedClassDataASMImpl;
+import org.glassfish.pfl.tf.spi.TimingPointType;
 import org.glassfish.pfl.tf.spi.TraceEnhancementException;
 import org.glassfish.pfl.tf.spi.Util;
+import org.glassfish.pfl.tf.timer.spi.TimerFactoryBuilder;
+import org.glassfish.pfl.tf.timer.spi.TimingInfoProcessor;
+import org.objectweb.asm.ClassAdapter;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
 
-import org.glassfish.pfl.objectweb.asm.ClassAdapter;
-import org.glassfish.pfl.objectweb.asm.ClassReader;
-import org.glassfish.pfl.objectweb.asm.ClassVisitor;
-import org.glassfish.pfl.objectweb.asm.Opcodes;
-import org.glassfish.pfl.objectweb.asm.tree.ClassNode;
+import java.util.Iterator;
+import java.util.Set;
 
 /** ClassFile enhancer for the tracing facility.  This modifies the bytecode
  * for an applicable class, then returns the updated bytecode.
@@ -112,10 +112,6 @@ public class Transformer implements UnaryFunction<byte[],byte[]> {
         this.mode = mode ;
         this.tip = tip ;
         this.annotationNames = anames ;
-    }
-
-    private boolean hasAccess( int access, int flag ) {
-        return (access & flag) == flag ;
     }
 
     private String getSuffix( String str ) {

@@ -1,7 +1,9 @@
+package org.glassfish.pfl.dynamic.codegen.impl ;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010,2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,32 +40,27 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl ;
+import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo;
+import org.glassfish.pfl.dynamic.codegen.spi.MethodInfo;
+import org.glassfish.pfl.dynamic.codegen.spi.Signature;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.codegen.spi.Variable;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.util.TraceMethodVisitor;
 
-import java.io.PrintStream ;
+import java.io.PrintStream;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import java.lang.reflect.Modifier ;
-
-import java.util.List ;
-import java.util.Map ;
-import java.util.HashMap ;
-import java.util.Collections ;
-import java.util.ArrayList ;
-import java.util.Comparator ;
-
-import org.glassfish.pfl.dynamic.codegen.spi.Type ;
-import org.glassfish.pfl.dynamic.codegen.spi.Signature ;
-import org.glassfish.pfl.dynamic.codegen.spi.Variable ;
-import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo ;
-import org.glassfish.pfl.dynamic.codegen.spi.MethodInfo ;
-
-import org.glassfish.pfl.objectweb.asm.MethodVisitor ;
-import org.glassfish.pfl.objectweb.asm.ClassWriter ;
-import org.glassfish.pfl.objectweb.asm.Label ;
-import org.glassfish.pfl.objectweb.asm.util.TraceMethodVisitor ;
-
-import static java.lang.reflect.Modifier.* ;
-import static org.glassfish.pfl.objectweb.asm.Opcodes.* ;
+import static java.lang.reflect.Modifier.ABSTRACT;
+import static org.objectweb.asm.Opcodes.*;
 
 /** Class that is responsible for low-level bytecode generation using ASM.
  * It provides methods that directly generate bytecode in a MethodVisitor.
@@ -305,8 +302,8 @@ public final class ByteCodeUtility {
 	} else if (type.equals(Type._Class())) {
 	    // value is a Type, so get a corresponding ASM type.
 	    Type vtype = Type.class.cast( value ) ;
-	    org.glassfish.pfl.objectweb.asm.Type atype =
-		org.glassfish.pfl.objectweb.asm.Type.getType( vtype.signature() ) ;
+	    org.objectweb.asm.Type atype =
+		org.objectweb.asm.Type.getType( vtype.signature() ) ;
 	    mv.visitLdcInsn( atype ) ;
 	} else if (type.equals( Type._String())) {
 	    mv.visitLdcInsn( value ) ;

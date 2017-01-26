@@ -1,7 +1,9 @@
+package org.glassfish.pfl.dynamic.codegen.impl ;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010,2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,22 +40,19 @@
  * holder.
  */
 
-package org.glassfish.pfl.dynamic.codegen.impl ;
-
 import org.glassfish.pfl.basic.func.UnaryVoidFunction;
-import java.util.BitSet ;
-import java.util.List ;
-import java.util.ArrayList ;
-import java.util.Iterator ;
+import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo;
+import org.glassfish.pfl.dynamic.codegen.spi.FieldInfo;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.codegen.spi.Variable;
+import org.objectweb.asm.MethodVisitor;
 
-import org.glassfish.pfl.dynamic.codegen.spi.Type ;
-import org.glassfish.pfl.dynamic.codegen.spi.Variable ;
-import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo ;
-import org.glassfish.pfl.dynamic.codegen.spi.FieldInfo ;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.List;
 
-import org.glassfish.pfl.objectweb.asm.MethodVisitor ;
-
-import static org.glassfish.pfl.objectweb.asm.Opcodes.* ;
+import static org.objectweb.asm.Opcodes.*;
 
 /** This class provides methods that allow the construction of an 
  * object that can later be used to emit a bytecode.  This is useful 
@@ -537,13 +536,11 @@ public final class EmitterFactory {
 	private String name ;
 	private String desc ;
 
-	/** The opcode must be one of the PUT/GET FIELD/STATIC 
-	 * instructions.
-	 * @param Owner is the class name containing the field.
+	/** The opcode must be one of the PUT/GET FIELD/STATIC instructions.
+	 * @param opcode is the opcode to check.
+	 * @param owner is the class name containing the field.
 	 * This is constructed from ASMUtil.bcName( cgen.name() ).
-	 * @param Name is the name of the field.
-	 * @param Desc is the field's descriptor.  This is obtained from the
-	 * Type.signature() method.
+	 * @param name is the name of the field.
 	 */
 	public FieldInsnEmitter( int opcode, String owner, String name, 
 	    String desc ) {

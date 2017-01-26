@@ -1,7 +1,9 @@
+package org.glassfish.pfl.tf.spi;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010,2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,9 +40,13 @@
  * holder.
  */
 
-package org.glassfish.pfl.tf.spi;
-
 import org.glassfish.pfl.tf.spi.annotation.TFEnhanced;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,11 +54,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.glassfish.pfl.objectweb.asm.Opcodes;
-import org.glassfish.pfl.objectweb.asm.Type;
-import org.glassfish.pfl.objectweb.asm.tree.AnnotationNode;
-import org.glassfish.pfl.objectweb.asm.tree.ClassNode;
-import org.glassfish.pfl.objectweb.asm.tree.MethodNode;
 
 public class EnhancedClassDataASMImpl extends EnhancedClassDataBase {
     private final ClassNode currentClass ;
