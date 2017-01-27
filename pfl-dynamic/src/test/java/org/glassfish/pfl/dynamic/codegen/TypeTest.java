@@ -1,3 +1,5 @@
+package org.glassfish.pfl.dynamic.codegen;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -38,22 +40,17 @@
  * holder.
  */
 
-package dynamic.codegen ;
-
-
+import junit.framework.TestCase;
 import org.glassfish.pfl.dynamic.codegen.spi.Type;
-import junit.framework.TestCase ;
 
-import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
-
-public class TypeTestSuite extends TestCase {
+public class TypeTest extends TestCase {
     private static final boolean DEBUG = false ;
 
-    public TypeTestSuite() {
+    public TypeTest() {
 	super() ;
     }
 
-    public TypeTestSuite( String name ) {
+    public TypeTest(String name ) {
 	super( name ) ;
     }
 

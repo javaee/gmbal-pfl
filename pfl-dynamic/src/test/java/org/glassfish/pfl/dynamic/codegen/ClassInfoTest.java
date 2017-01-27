@@ -1,3 +1,5 @@
+package org.glassfish.pfl.dynamic.codegen;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -38,27 +40,23 @@
  * holder.
  */
 
-package dynamic.codegen ;
-
+import junit.framework.TestCase;
+import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo;
 import org.glassfish.pfl.dynamic.codegen.spi.FieldInfo;
 import org.glassfish.pfl.dynamic.codegen.spi.Type;
-import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo;
-import java.util.Set ;
-import java.util.HashSet ;
-import java.util.Map ;
 
-import junit.framework.TestCase ;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import static java.lang.reflect.Modifier.* ;
+import static java.lang.reflect.Modifier.*;
 
-import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
-
-public class ClassInfoBaseTestSuite extends TestCase {
-    public ClassInfoBaseTestSuite() {
+public class ClassInfoTest extends TestCase {
+    public ClassInfoTest() {
 	super() ;
     }
 
-    public ClassInfoBaseTestSuite( String name ) {
+    public ClassInfoTest(String name ) {
 	super( name ) ;
     }
 

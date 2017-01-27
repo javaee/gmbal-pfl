@@ -1,7 +1,9 @@
+package dynamic.codegen;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,53 +40,37 @@
  * holder.
  */
 
-package dynamic.codegen ;
-
-import org.glassfish.pfl.test.TestCaseTools;
+import dynamic.codegen.lib.Constants;
+import dynamic.codegen.lib.EchoInt;
+import dynamic.codegen.test.Constants_gen;
+import junit.framework.Test;
+import junit.framework.TestCase;
 import org.glassfish.pfl.basic.func.NullaryFunction;
-import org.glassfish.pfl.basic.contain.Pair;
 import org.glassfish.pfl.dynamic.codegen.impl.ASMSetupVisitor;
-import org.glassfish.pfl.dynamic.codegen.impl.TreeWalkerContext;
-import org.glassfish.pfl.dynamic.codegen.impl.ClassGeneratorImpl;
-import org.glassfish.pfl.dynamic.codegen.impl.Identifier;
-import org.glassfish.pfl.dynamic.codegen.impl.CurrentClassLoader;
-import org.glassfish.pfl.dynamic.codegen.impl.NodeBase;
-import org.glassfish.pfl.dynamic.codegen.impl.Node;
 import org.glassfish.pfl.dynamic.codegen.impl.Attribute;
-import org.glassfish.pfl.dynamic.codegen.spi.GenericClass;
+import org.glassfish.pfl.dynamic.codegen.impl.ClassGeneratorImpl;
+import org.glassfish.pfl.dynamic.codegen.impl.CurrentClassLoader;
+import org.glassfish.pfl.dynamic.codegen.impl.Node;
+import org.glassfish.pfl.dynamic.codegen.impl.NodeBase;
+import org.glassfish.pfl.dynamic.codegen.impl.TreeWalkerContext;
 import org.glassfish.pfl.dynamic.codegen.spi.ClassInfo;
+import org.glassfish.pfl.dynamic.codegen.spi.GenericClass;
 import org.glassfish.pfl.dynamic.codegen.spi.Type;
 import org.glassfish.pfl.dynamic.copyobject.spi.DefaultCopier;
+import org.glassfish.pfl.test.TestCaseTools;
 
-import java.rmi.RemoteException ;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import java.util.Set ;
-import java.util.HashSet ;
-import java.util.List ;
-import java.util.Arrays ;
-import java.util.ArrayList ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.*;
 
-import java.lang.reflect.Method ;
-import java.lang.reflect.Constructor ;
-import java.lang.reflect.InvocationHandler ;
-import java.lang.reflect.Proxy ;
-
-import javax.ejb.EJBException ;
-
-import junit.framework.TestCase ;
-import junit.framework.Test ;
-import junit.framework.TestResult ;
-import junit.framework.TestSuite ;
-
-import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
-
-import dynamic.codegen.lib.EchoInt ;
-import dynamic.codegen.lib.Constants ;
-import dynamic.codegen.test.Constants_gen ;
-
-import static dynamic.codegen.ControlBase.moa ;
-
-/** Test for the ASM-based codegen library.  
+/**
+ * Test for the ASM-based codegen library.
  * Initial steps to test:
  * <OL>
  * <LI>Test the _DImpl_Tie_gen code
@@ -98,7 +84,7 @@ import static dynamic.codegen.ControlBase.moa ;
  * <LI>
  * These will be unified behind a simple CodeGenerator interface.
  * All tests will be written at the Wrapper level.
- * <P>
+ * <p>
  * Other required tests:
  * <UL>
  * <LI>ClassInfo/MethodInfo for Classes
@@ -109,430 +95,353 @@ import static dynamic.codegen.ControlBase.moa ;
  * </UL>
  */
 public class ClientTest extends TestCase {
-    private static final boolean DEBUG = false ;
+    private static final boolean DEBUG = false;
 
     // Make sure that ControlBase is loaded in the ClassLoader
     // that loaded Client, otherwise it could first be
     // loaded in a TestClassLoader (see GenerationTestSuiteBase)
     // rather than in the parent to which TestClassLoader delegates.
-    private static final Object cb = new ControlBase() ;
+    private static final Object cb = new ControlBase();
 
     public ClientTest() {
     }
 
-    public ClientTest( String name ) {
-	super( name ) ;
+    public ClientTest(String name) {
+        super(name);
     }
 
     private ClassLoader makeClassLoader() {
-	ClassLoader cl = new GenerationTestSuiteBase.TestClassLoader(
-	    this.getClass().getClassLoader() ) ;
-	return cl ;
+        ClassLoader cl = new GenerationTestSuiteBase.TestClassLoader(
+                this.getClass().getClassLoader());
+        return cl;
     }
 
     public void testTieSource() {
-	JavaCodeGenerator gen = new JavaCodeGenerator( 
-	    ClassGeneratorFactoryRegistry.get( "_DImpl_Tie" )) ;
-	Class<?> cls = gen.generate( makeClassLoader() ) ;
+        JavaCodeGenerator gen = new JavaCodeGenerator(
+                ClassGeneratorFactoryRegistry.get("_DImpl_Tie"));
+        Class<?> cls = gen.generate(makeClassLoader());
         // if (DEBUG)
-            gen.reportTimes() ;
-	assertNotNull( cls ) ;
+        gen.reportTimes();
+        assertNotNull(cls);
     }
 
-    private ClassInfo getClassInfo( SimpleCodeGenerator cg ) {
-	ClassLoader cl = makeClassLoader() ;
-	Class<?> cls = cg.generate( cl ) ;
+    private ClassInfo getClassInfo(SimpleCodeGenerator cg) {
+        ClassLoader cl = makeClassLoader();
+        Class<?> cls = cg.generate(cl);
         // if (DEBUG)
-            cg.reportTimes() ;
-	assertNotNull( cls ) ;
-	Type type = Type.type( cls ) ;
-	return type.classInfo() ;
+        cg.reportTimes();
+        assertNotNull(cls);
+        Type type = Type.type(cls);
+        return type.classInfo();
     }
 
     public void testEJBRemoteInterface() {
-	ClassGeneratorFactory myRemoteFactory = 
-	    ClassGeneratorFactoryRegistry.get( "MyRemote" ) ;
+        ClassGeneratorFactory myRemoteFactory =
+                ClassGeneratorFactoryRegistry.get("MyRemote");
 
-	JavaCodeGenerator jgen = new JavaCodeGenerator( myRemoteFactory ) ;
-	ClassInfo jci = getClassInfo( jgen ) ;
+        JavaCodeGenerator jgen = new JavaCodeGenerator(myRemoteFactory);
+        ClassInfo jci = getClassInfo(jgen);
 
-	ByteCodeGenerator bgen = new ByteCodeGenerator(myRemoteFactory, 
-	    GenerationTestSuiteBase.getByteCodeGenerationProperties( DEBUG )) ;
-	ClassInfo bci = getClassInfo( bgen ) ;
+        ByteCodeGenerator bgen = new ByteCodeGenerator(myRemoteFactory,
+                GenerationTestSuiteBase.getByteCodeGenerationProperties(DEBUG));
+        ClassInfo bci = getClassInfo(bgen);
 
-	assertEquals( jci, bci ) ;
+        assertEquals(jci, bci);
     }
 
     public void testEJBAdapterSource() {
-	JavaCodeGenerator gen = new JavaCodeGenerator( 
-	    ClassGeneratorFactoryRegistry.get( "MyRemote__Adapter" ) ) ;
-	Class<?> cls = gen.generate( makeClassLoader() ) ;
+        JavaCodeGenerator gen = new JavaCodeGenerator(
+                ClassGeneratorFactoryRegistry.get("MyRemote__Adapter"));
+        Class<?> cls = gen.generate(makeClassLoader());
         // if (DEBUG)
-            gen.reportTimes() ;
-	assertNotNull( cls ) ;
+        gen.reportTimes();
+        assertNotNull(cls);
     }
 
     public void testEJBRemoteGenerator() {
-        System.out.println( "Testing EJBRemote generator" ) ;
-	ClassGeneratorFactory factory = 
-	    ClassGeneratorFactoryRegistry.get( "dynamic.codegen.lib.Hello_Wrapper" ) ;
+        ClassGeneratorFactory factory =
+                ClassGeneratorFactoryRegistry.get("dynamic.codegen.lib.Hello_Wrapper");
 
-	JavaCodeGenerator jgen = new JavaCodeGenerator( factory ) ;
-	ClassInfo jci = getClassInfo( jgen ) ;
+        JavaCodeGenerator jgen = new JavaCodeGenerator(factory);
+        ClassInfo jci = getClassInfo(jgen);
 
-	ByteCodeGenerator bgen = new ByteCodeGenerator( factory, 
-	    GenerationTestSuiteBase.getByteCodeGenerationProperties( DEBUG )) ;
-	ClassInfo bci = getClassInfo( bgen ) ;
+        ByteCodeGenerator bgen = new ByteCodeGenerator(factory,
+                GenerationTestSuiteBase.getByteCodeGenerationProperties(DEBUG));
+        ClassInfo bci = getClassInfo(bgen);
 
-	assertEquals( jci, bci ) ;
+        assertEquals(jci, bci);
 
-        Class cls = bgen.generate( this.getClass().getClassLoader() ) ;
+        Class cls = bgen.generate(this.getClass().getClassLoader());
 
-        Constructor[] constructors = cls.getConstructors() ;
-        System.out.println( "Generated EJB adapter has " + constructors.length + " constructors" ) ;
+        Constructor[] constructors = cls.getConstructors();
     }
 
     public void testConstantGeneration() {
-	ClassGeneratorFactory constantsFactory = 
-	    ClassGeneratorFactoryRegistry.get( "ConstantsImpl" ) ;
+        ClassGeneratorFactory constantsFactory =
+                ClassGeneratorFactoryRegistry.get("ConstantsImpl");
 
-	constantsFactory.evaluate() ;
+        constantsFactory.evaluate();
 
-	GenericClass<Constants> genClass = null ;
+        GenericClass<Constants> genClass = null;
 
-	try {
-            genClass = _generate( Constants.class,
-		GenerationTestSuiteBase.getByteCodeGenerationProperties( DEBUG )) ;
-	} catch (Exception exc) {
-	    fail( "Unexpected exception " + exc + " in _generate for Constants" ) ;
-	}
+        try {
+            genClass = _generate(Constants.class,
+                    GenerationTestSuiteBase.getByteCodeGenerationProperties(DEBUG));
+        } catch (Exception exc) {
+            fail("Unexpected exception " + exc + " in _generate for Constants");
+        }
 
-	Constants constants = genClass.create() ;
+        Constants constants = genClass.create();
 
-	for (Method m : constants.getClass().getDeclaredMethods()) {
-	    String name = m.getName() ;
-	    int expectedValue = Constants_gen.getValue( name ) ;
+        for (Method m : constants.getClass().getDeclaredMethods()) {
+            String name = m.getName();
+            int expectedValue = Constants_gen.getValue(name);
 
-	    try {
-		int actualValue = (Integer)m.invoke( constants ) ;
-		assertEquals( expectedValue, actualValue ) ;
-	    } catch (Exception exc) {
-		fail( "Unexpected exception " + exc + " in call to " + m ) ;
-	    }
-	}
+            try {
+                int actualValue = (Integer) m.invoke(constants);
+                assertEquals(expectedValue, actualValue);
+            } catch (Exception exc) {
+                fail("Unexpected exception " + exc + " in call to " + m);
+            }
+        }
     }
 
     public static class DynamicAttributeTestSuite extends TestCase {
-	public DynamicAttributeTestSuite() {
-	    super() ;
-	}
+        public DynamicAttributeTestSuite() {
+            super();
+        }
 
-	public DynamicAttributeTestSuite( String name ) {
-	    super( name ) ;
-	}
+        public DynamicAttributeTestSuite(String name) {
+            super(name);
+        }
 
-	// Declare some attributes of different types
-	private static final Attribute<String> foo = 
-	    new Attribute<String>( String.class, "foo", "" ) ;
+        // Declare some attributes of different types
+        private static final Attribute<String> foo =
+                new Attribute<String>(String.class, "foo", "");
 
-	private static final Attribute<Integer> bar = 
-	    new Attribute<Integer>( Integer.class, "bar", 1 ) ;
+        private static final Attribute<Integer> bar =
+                new Attribute<Integer>(Integer.class, "bar", 1);
 
-	private interface StringList extends List<String> { } 
+        private interface StringList extends List<String> {
+        }
 
-	private static class StringArrayList extends ArrayList<String> 
-	    implements StringList {
+        private static class StringArrayList extends ArrayList<String>
+                implements StringList {
 
-	    public StringArrayList() {
-		super() ;
-	    }
+            public StringArrayList() {
+                super();
+            }
 
-	    public StringArrayList( List<String> list ) {
-		super( list ) ;
-	    }
-	}
+            public StringArrayList(List<String> list) {
+                super(list);
+            }
+        }
 
-	private static final NullaryFunction<StringList> rgbl =
-	    new NullaryFunction<StringList>() {
-		public StringList evaluate() {
-		    return new StringArrayList( Arrays.asList( 
-			"red", "blue", "green" ) ) ;
-		} 
-	    };
+        private static final NullaryFunction<StringList> rgbl =
+                new NullaryFunction<StringList>() {
+                    public StringList evaluate() {
+                        return new StringArrayList(Arrays.asList(
+                                "red", "blue", "green"));
+                    }
+                };
 
-	private static final Attribute<Integer> notUsed = 
-	    new Attribute<Integer>( Integer.class, "notUsed", 0 ) ;
+        private static final Attribute<Integer> notUsed =
+                new Attribute<Integer>(Integer.class, "notUsed", 0);
 
-	private static final Attribute<StringList> baz = 
-	    new Attribute<StringList>( StringList.class, "baz", rgbl ) ;
+        private static final Attribute<StringList> baz =
+                new Attribute<StringList>(StringList.class, "baz", rgbl);
 
-	// Create a single node, set/get the attributes
-	public void testSimpleNode() {
-	    Node node = new NodeBase( null ) ;
-	    assertEquals( foo.get(node), "" ) ;
-	    assertEquals( bar.get(node), Integer.valueOf(1) ) ;
-	    assertEquals( baz.get(node), rgbl.evaluate() ) ;
+        // Create a single node, set/get the attributes
+        public void testSimpleNode() {
+            Node node = new NodeBase(null);
+            assertEquals(foo.get(node), "");
+            assertEquals(bar.get(node), Integer.valueOf(1));
+            assertEquals(baz.get(node), rgbl.evaluate());
 
-	    foo.set(node, "Raining") ;
-	    assertEquals( foo.get(node), "Raining" ) ;
+            foo.set(node, "Raining");
+            assertEquals(foo.get(node), "Raining");
 
-	    bar.set(node, 42) ;
-	    assertEquals( bar.get(node), new Integer(42) ) ;
+            bar.set(node, 42);
+            assertEquals(bar.get(node), new Integer(42));
 
-	    StringList tval = new StringArrayList( Arrays.asList( 
-		"yellow", "orange" ) ) ;
-	    baz.set(node, tval) ;
-	    assertEquals( baz.get(node), tval ) ;
+            StringList tval = new StringArrayList(Arrays.asList(
+                    "yellow", "orange"));
+            baz.set(node, tval);
+            assertEquals(baz.get(node), tval);
 
-	    Set<Attribute<?>> expectedAttrs = 
-		new HashSet<Attribute<?>>() ;
-	    expectedAttrs.add( foo ) ;
-	    expectedAttrs.add( bar ) ;
-	    expectedAttrs.add( baz ) ;
+            Set<Attribute<?>> expectedAttrs =
+                    new HashSet<Attribute<?>>();
+            expectedAttrs.add(foo);
+            expectedAttrs.add(bar);
+            expectedAttrs.add(baz);
 
-	    assertEquals( expectedAttrs, 
-		Attribute.getAttributes(node)) ;
+            assertEquals(expectedAttrs,
+                    Attribute.getAttributes(node));
 
-	    // GenerationTestSuiteBase.displayNode( "Simple node", node ) ;
-	}
-	
-	// Create a node with a delegate, set/get the attrs
-	public void testNodeWithDelegate() {
-	    // Create node1, set some attributes
-	    NodeBase node1 = new NodeBase( null ) ;
-	    foo.set(node1, "Raining") ;
-	    bar.set(node1, 42) ;
+            // GenerationTestSuiteBase.displayNode( "Simple node", node ) ;
+        }
 
-	    // Copy node1 and then set some more attributes
-	    NodeBase node2 = DefaultCopier.copy( node1, NodeBase.class ) ;
-	    bar.set(node2, 13) ;
-	    StringList tval = new StringArrayList( Arrays.asList( 
-		"yellow", "orange" ) ) ;
-	    baz.set(node2, tval) ;
+        // Create a node with a delegate, set/get the attrs
+        public void testNodeWithDelegate() {
+            // Create node1, set some attributes
+            NodeBase node1 = new NodeBase(null);
+            foo.set(node1, "Raining");
+            bar.set(node1, 42);
 
-	    // make sure that we get the correct value for bar
-	    assertEquals( foo.get(node2), "Raining" ) ;
-	    assertEquals( bar.get(node2), Integer.valueOf(13) ) ;
-	    assertEquals( baz.get(node2), tval ) ;
-	    
-	    // set bar on node1 to a different value
-	    bar.set(node1, 52) ;
-	    assertEquals( bar.get(node2), Integer.valueOf(13) ) ;
-	    
-	    // set bar on node2 to a different value
-	    bar.set(node2, 137) ;
-	    assertEquals( bar.get(node2), Integer.valueOf(137) ) ;
-	    assertEquals( bar.get(node1), Integer.valueOf(52) ) ;
+            // Copy node1 and then set some more attributes
+            NodeBase node2 = DefaultCopier.copy(node1, NodeBase.class);
+            bar.set(node2, 13);
+            StringList tval = new StringArrayList(Arrays.asList(
+                    "yellow", "orange"));
+            baz.set(node2, tval);
 
-	    // GenerationTestSuiteBase.displayNode( "Delegating node", node2 ) ;
-	}
+            // make sure that we get the correct value for bar
+            assertEquals(foo.get(node2), "Raining");
+            assertEquals(bar.get(node2), Integer.valueOf(13));
+            assertEquals(baz.get(node2), tval);
+
+            // set bar on node1 to a different value
+            bar.set(node1, 52);
+            assertEquals(bar.get(node2), Integer.valueOf(13));
+
+            // set bar on node2 to a different value
+            bar.set(node2, 137);
+            assertEquals(bar.get(node2), Integer.valueOf(137));
+            assertEquals(bar.get(node1), Integer.valueOf(52));
+
+            // GenerationTestSuiteBase.displayNode( "Delegating node", node2 ) ;
+        }
     }
 
     public void testClassInfo() {
-	// This works by first creating a simple class using the
-	// framework and the java compiler, then getting ClassInfo
-	// from the resulting class and comparing the ClassInfo
-	// from the ClassGeneratorImpl with the ClassInfo from the
-	// generated Class.  We'll just reuse the Tie generator
-	// here.
-	ClassLoader cl = makeClassLoader() ;
-	CurrentClassLoader.set( cl ) ;
-	JavaCodeGenerator gen = new JavaCodeGenerator( 
-	    ClassGeneratorFactoryRegistry.get( "_DImpl_Tie" ) ) ;
-	Class<?> cls = gen.generate( cl ) ;
+        // This works by first creating a simple class using the
+        // framework and the java compiler, then getting ClassInfo
+        // from the resulting class and comparing the ClassInfo
+        // from the ClassGeneratorImpl with the ClassInfo from the
+        // generated Class.  We'll just reuse the Tie generator
+        // here.
+        ClassLoader cl = makeClassLoader();
+        CurrentClassLoader.set(cl);
+        JavaCodeGenerator gen = new JavaCodeGenerator(
+                ClassGeneratorFactoryRegistry.get("_DImpl_Tie"));
+        Class<?> cls = gen.generate(cl);
         // if (DEBUG)
-            gen.reportTimes() ;
-	assertNotNull( cls ) ;
+        gen.reportTimes();
+        assertNotNull(cls);
 
-	ClassInfo cinfo = _classGenerator() ;
-	ClassInfo clinfo = null ;
+        ClassInfo cinfo = _classGenerator();
+        ClassInfo clinfo = null;
 
-	try {
-	    clinfo = Type.type( cls ).classInfo();
-	} catch (Exception exc) {
-	    fail( "Caught exception " + exc ) ;
-	}
+        try {
+            clinfo = Type.type(cls).classInfo();
+        } catch (Exception exc) {
+            fail("Caught exception " + exc);
+        }
 
-	// While the last assertEquals( cinfo, clinfo ) implies
-	// the other statements, leave this as is so that 
-	// an equals failure is easier to diagnose.
-	assertEquals( cinfo.thisType(), clinfo.thisType() ) ;
-	assertEquals( cinfo.isInterface(), clinfo.isInterface() ) ;
-	assertEquals( cinfo.modifiers(), clinfo.modifiers() ) ;
-	assertEquals( cinfo.name(), clinfo.name() ) ;
-	assertEquals( cinfo.superType(), clinfo.superType() ) ;
-	assertEquals( cinfo.impls(), clinfo.impls() ) ;
-	assertEquals( cinfo.fieldInfo(), clinfo.fieldInfo() ) ;
-	assertEquals( cinfo.methodInfoByName(), clinfo.methodInfoByName() ) ;
-	assertEquals( cinfo.constructorInfo(), clinfo.constructorInfo() ) ;
-	assertEquals( cinfo.thisType(), clinfo.thisType() ) ;
-	assertEquals( cinfo, clinfo ) ;	
-    }
-
-    // Simple tests for Identifier
-    public static class IdentifierTestSuite extends TestCase {
-	public IdentifierTestSuite() {
-	    super() ;
-	}
-
-	public IdentifierTestSuite( String name ) {
-	    super( name ) ;
-	}
-
-	public void testIdentifier00() {
-	    assertTrue( Identifier.isValidIdentifier( "frobenius" ) ) ;
-	}
-
-	public void testIdentifier01() {
-	    assertTrue( Identifier.isValidIdentifier( "frob_123" ) ) ;
-	}
-
-	public void testIdentifier02() {
-	    assertTrue( Identifier.isValidIdentifier( "_12_frob_123" ) ) ;
-	}
-
-	public void testIdentifier03() {
-	    assertFalse( Identifier.isValidIdentifier( "2_frob_123" ) ) ;
-	}
-
-	public void testIdentifier04() {
-	    assertTrue( Identifier.isValidFullIdentifier( "frobenius" ) ) ;
-	}
-
-	public void testIdentifier05() {
-	    assertTrue( Identifier.isValidFullIdentifier( "frobenius.ert" ) ) ;
-	}
-
-	public void testIdentifier06() {
-	    assertTrue( Identifier.isValidFullIdentifier( "a.b.c.d.e.f" ) ) ;
-	}
-
-	public void testIdentifier07() {
-	    assertFalse( Identifier.isValidFullIdentifier( "2_frob_123" ) ) ;
-	}
-
-	public void testIdentifier08() {
-	    assertFalse( Identifier.isValidFullIdentifier( "a..b" ) ) ;
-	}
-
-	public void testIdentifier09() {
-	    assertFalse( Identifier.isValidFullIdentifier( "a.b." ) ) ;
-	}
-
-	public void testIdentifier10() {
-	    assertFalse( Identifier.isValidFullIdentifier( ".a.b" ) ) ;
-	}
-
-	public void testIdentifier11() {
-	    assertEquals( Identifier.makeFQN( "a.b", "c" ), "a.b.c" ) ;
-	}
-
-	public void testIdentifier12() {
-	    assertEquals( Identifier.makeFQN( "", "c" ), "c" ) ;
-	}
-
-	public void testIdentifier13() {
-	    assertEquals( Identifier.makeFQN( null, "c" ), "c" ) ;
-	}
-
-	public void testIdentifier14() {
-	    assertEquals( Identifier.splitFQN( "a.b.c" ),
-		new Pair( "a.b", "c" ) ) ;
-	}
-
-	public void testIdentifier15() {
-	    assertEquals( Identifier.splitFQN( "c" ),
-		new Pair( "", "c" ) ) ;
-	}
+        // While the last assertEquals( cinfo, clinfo ) implies
+        // the other statements, leave this as is so that
+        // an equals failure is easier to diagnose.
+        assertEquals(cinfo.thisType(), clinfo.thisType());
+        assertEquals(cinfo.isInterface(), clinfo.isInterface());
+        assertEquals(cinfo.modifiers(), clinfo.modifiers());
+        assertEquals(cinfo.name(), clinfo.name());
+        assertEquals(cinfo.superType(), clinfo.superType());
+        assertEquals(cinfo.impls(), clinfo.impls());
+        assertEquals(cinfo.fieldInfo(), clinfo.fieldInfo());
+        assertEquals(cinfo.methodInfoByName(), clinfo.methodInfoByName());
+        assertEquals(cinfo.constructorInfo(), clinfo.constructorInfo());
+        assertEquals(cinfo.thisType(), clinfo.thisType());
+        assertEquals(cinfo, clinfo);
     }
 
     // 4. Validate ASMSetupVisitor before trying it out result
     //    on ASMByteCodeVisitor
     //
     public void testASMSetupVisitor() {
-	_clear() ;
-	ClassGeneratorFactory generator = 
-	    ClassGeneratorFactoryRegistry.get( "_DImpl_Tie" ) ;
-	ClassLoader cl = makeClassLoader() ;
-	CurrentClassLoader.set( cl ) ;
-	ClassGeneratorImpl cgen = (ClassGeneratorImpl)generator.evaluate() ;
+        _clear();
+        ClassGeneratorFactory generator =
+                ClassGeneratorFactoryRegistry.get("_DImpl_Tie");
+        ClassLoader cl = makeClassLoader();
+        CurrentClassLoader.set(cl);
+        ClassGeneratorImpl cgen = (ClassGeneratorImpl) generator.evaluate();
 
-	// GenerationTestSuiteBase.displayNode( 
-	//     "Dump of _DImpl_Tie AST:", cgen ) ;
+        // GenerationTestSuiteBase.displayNode(
+        //     "Dump of _DImpl_Tie AST:", cgen ) ;
 
-	TreeWalkerContext twc = new TreeWalkerContext() ;
-	ASMSetupVisitor visitor = new ASMSetupVisitor( twc ) ;
-	cgen.accept( visitor ) ;
+        TreeWalkerContext twc = new TreeWalkerContext();
+        ASMSetupVisitor visitor = new ASMSetupVisitor(twc);
+        cgen.accept(visitor);
 
-	// GenerationTestSuiteBase.displayNode( 
-	//     "Dump of _DImpl_Tie AST after ASMSetupVisitor:", cgen ) ;
+        // GenerationTestSuiteBase.displayNode(
+        //     "Dump of _DImpl_Tie AST after ASMSetupVisitor:", cgen ) ;
 
-	twc = new TreeWalkerContext() ;
-	visitor = new ASMSetupVisitor( twc, ASMSetupVisitor.Mode.VERIFY ) ;
-	cgen.accept( visitor ) ;
-	List<ASMSetupVisitor.ErrorReport> errors = visitor.getVerificationErrors() ;
-	if (errors.size() > 0) {
-	    for (ASMSetupVisitor.ErrorReport report : errors) {
-		System.out.println( "Error on " + report.node + ":" + report.msg ) ;
-	    }
-	    fail() ;
-	}
+        twc = new TreeWalkerContext();
+        visitor = new ASMSetupVisitor(twc, ASMSetupVisitor.Mode.VERIFY);
+        cgen.accept(visitor);
+        List<ASMSetupVisitor.ErrorReport> errors = visitor.getVerificationErrors();
+        if (errors.size() > 0) {
+            StringBuilder sb = new StringBuilder("failed:");
+            for (ASMSetupVisitor.ErrorReport report : errors) {
+                sb.append("\n  Error on ").append(report.node).append(":").append(report.msg);
+            }
+            fail(sb.toString());
+        }
     }
 
     public static abstract class DefaultPackageTestSuiteBase extends GenerationTestSuiteBase {
-	private Class<?> testClass ;
-	private EchoInt echo ;
+        private Class<?> testClass;
+        private EchoInt echo;
 
-	private void init() {
-	    testClass = getClass( "DefaultPackageTest" ) ;
-	    try {
-		Object obj = testClass.newInstance() ;
-		echo = EchoInt.class.cast( obj ) ;
-	    } catch (Exception exc)  {
-		throw new RuntimeException( exc ) ;
-	    }
-	}
+        private void init() {
+            testClass = getClass("DefaultPackageTest");
+            try {
+                Object obj = testClass.newInstance();
+                echo = EchoInt.class.cast(obj);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
 
-	public DefaultPackageTestSuiteBase( boolean gbc, boolean debug ) {
-	    super( gbc, debug ) ;
-	    init() ;
-	}
+        public DefaultPackageTestSuiteBase(boolean gbc, boolean debug) {
+            super(gbc, debug);
+            init();
+        }
 
-	public DefaultPackageTestSuiteBase( String name, boolean gbc, boolean debug ) {
-	    super( name, gbc, debug ) ;
-	    init() ;
-	}
+        public DefaultPackageTestSuiteBase(String name, boolean gbc, boolean debug) {
+            super(name, gbc, debug);
+            init();
+        }
 
-	public void testInvoke() {
-	    assertEquals( echo.echo( 3 ), 3 ) ;
-	}
+        public void testInvoke() {
+            assertEquals(echo.echo(3), 3);
+        }
     }
 
     // Test code generation by generating source code and compiling it.
     // This is mainly to validate the test itself, but also provides additional
     // testing of the source code generation process.
     public static class DefaultPackageTestSuite extends DefaultPackageTestSuiteBase {
-	public DefaultPackageTestSuite( String name ) {
-	    super( name, false, DEBUG ) ;
-	}
-	
-	public DefaultPackageTestSuite() {
-	    super( false, DEBUG ) ;
-	}
-    }	
+        public DefaultPackageTestSuite(String name) {
+            super(name, false, DEBUG);
+        }
+
+        public DefaultPackageTestSuite() {
+            super(false, DEBUG);
+        }
+    }
 
     // The main test suite for code generation.  This tests all of the different
     // patterns of code generation.
     public static class BytecodeGenerationDefaultPackageTestSuite extends DefaultPackageTestSuiteBase {
-	public BytecodeGenerationDefaultPackageTestSuite( String name ) {
-	    super( name, true, DEBUG ) ;
-	}
-	
-	public BytecodeGenerationDefaultPackageTestSuite() {
-	    super( true, DEBUG ) ;
-	}
-    }	
-    
+        public BytecodeGenerationDefaultPackageTestSuite(String name) {
+            super(name, true, DEBUG);
+        }
+
+        public BytecodeGenerationDefaultPackageTestSuite() {
+            super(true, DEBUG);
+        }
+    }
+
     // Bytecode generator testing (and work list)
     //
     // There is a lot that needs testing here.  One test is simply
@@ -643,412 +552,52 @@ public class ClientTest extends TestCase {
     //    branch, rest moves into core?
     // 4. Need to refactor a bit for this.
 
-    // The basic code generation test suite, which can be used for either source
-    // or direct byte code generation.  Testing source code generation this way
-    // is useful both for testing the source code generation (which is fairly simple),
-    // and for testing the test cases.  Testing the direct bytecode generation
-    // is where we expect to see the most problems, so debugging the tests themselves
-    // first is important.
-    public static abstract class FlowTestSuiteBase extends GenerationTestSuiteBase {
-	private Class<?> flowClass ;
-	private ControlBase cb ;
-
-	private void init() {
-	    flowClass = getClass( "Flow" ) ;
-	    try { 
-		Object obj = flowClass.newInstance() ;
-		cb = ControlBase.class.cast( obj ) ;
-	    } catch (Exception exc) {
-		throw new RuntimeException( exc ) ;
-	    }
-	}
-
-	public FlowTestSuiteBase( boolean generateBytecode, boolean debug ) {
-	    super( generateBytecode, debug ) ;
-	    init() ;
-	}
-
-	public FlowTestSuiteBase( String name, boolean generateBytecode, boolean debug ) {
-	    super( name, generateBytecode, debug ) ;
-	    init() ;
-	}
-
-	private void defineTest( Object... args ) {
-	    cb.defineTest( args ) ;
-	}
-
-	// All that we know statically about inner.get() is that it is 
-	// an instance of ControlBase.  However, the class actually has
-	// many void no-args methods that we need to invoke reflectively
-	// for the test cases.
-	private void invoke( String name ) {
-	    super.invoke( cb, name ) ;
-	}
-
-	private void expectException( String methodName,
-	    Class<? extends RuntimeException> exClass ) {
-	
-	    super.expectException( exClass, cb, methodName ) ;
-	}
-
-	// Each test case takes the same form:
-	// 1. Call defineTest with an expected sequence of operations 
-	//    (see ControlBase for the encoding details).
-	// 2. Invoke a particular test method.  If the test method does
-	//    not follow the expected operation sequence, it will throw
-	//    an exception, causing the test to fail.
-	
-	public void testSimpleIf1() {
-	    defineTest( 1, 2, 4 ) ;
-	    invoke( "simpleIf" ) ;
-	}
-
-	public void testSimpleIf2() {
-	    defineTest( moa( 1, false ), 3, 4 ) ;
-	    invoke( "simpleIf" ) ;
-	}
-
-	// The complexIf tests can be described as all possible combinations
-	// of T/F on the if conditionals, which correspond to trace calls
-	// with the arguments 1 2 6 8 12 and 15.  Of course, if one conditional
-	// prevents another conditional from executing, the value of the 
-	// conditional is a don't care state.  We can summarize this as follows:
-	//
-	// Tests: 1  2  6  8 12 15
-	//	  T  T  T  T  -  -
-	//	  T  T  T  F  -  -
-	//	  T  T  F  -  -  -
-	//	  T  F  T  T  -  -
-	//	  T  F  T  F  -  -
-	//	  T  F  F  -  -  -
-	//	  F  -  -  -  T  -
-	//	  F  -  -  -  F  T
-	//	  F  -  -  -  F  F
-	//
-
-	public void testComplexIf1() {
-	    defineTest( 1, 2, 3, 5, 6, 7, 8, 9, 18 ) ;
-	    invoke( "complexIf" ) ;
-	}
-	
-	public void testComplexIf2() {
-	    defineTest( 1, 2, 3, 5, 6, 7, moa(8, false), 10, 18 ) ;
-	    invoke( "complexIf" ) ;
-	}
-
-	public void testComplexIf3() {
-	    defineTest( 1, 2, 3, 5, moa(6, false), 11, 18 )  ;
-	    invoke( "complexIf" ) ;
-	}
-
-	public void testComplexIf4() {
-	    defineTest( 1, moa( 2, false ), 4, 5, 6, 7, 8, 9, 18 )  ;
-	    invoke( "complexIf" ) ;
-	}
-
-	public void testComplexIf5() {
-	    defineTest( 1, moa( 2, false ), 4, 5, 6, 7, moa(8, false ), 10, 18 )  ;
-	    invoke( "complexIf" ) ;
-	}
-
-	public void testComplexIf6() {
-	    defineTest( 1, moa( 2, false ), 4, 5, moa(6, false ), 11, 18 )  ;
-	    invoke( "complexIf" ) ;
-	}
-
-	public void testComplexIf7() {
-	    defineTest( moa(1, false), 12, 13, 18 ) ;
-	    invoke( "complexIf" ) ;
-	}
-
-	public void testComplexIf8() {
-	    defineTest( moa(1, false), moa(12, false), 14, 15, 16, 18 ) ;
-	    invoke( "complexIf" ) ;
-	}
-
-	public void testComplexIf9() {
-	    defineTest( moa(1, false), moa(12, false), 14, moa(15, false), 17, 18 ) ;
-	    invoke( "complexIf" ) ;
-	}
-	
-	public void testSimpleTryCatch1() {
-	    defineTest( 1, 2, 3, 6 ) ;
-	    invoke( "simpleTryCatch" ) ;
-	}
-
-	public void testSimpleTryCatch2() {
-	    defineTest( moa( 1, FirstException.class ), null ) ;
-	    expectException( "simpleTryCatch", FirstException.class ) ;
-	}
-	
-	public void testSimpleTryCatch3() {
-	    defineTest( 1, moa( 2, FirstException.class ), 4, 5, 6 ) ;
-	    invoke( "simpleTryCatch" ) ;
-	}
-	
-	public void testSimpleTryCatch4() {
-	    defineTest( 1, 2, moa( 3, FirstException.class ), 4, 5, 6 ) ;
-	    invoke( "simpleTryCatch" ) ;
-	}
-	
-	public void testSimpleTryCatch5() {
-	    defineTest( 1, 2, moa( 3, FirstException.class ), 4, 
-		moa( 5, SecondException.class ) ) ;
-	    expectException( "simpleTryCatch", SecondException.class ) ;
-	}
-
-	public void testSimpleTryCatch6() {
-	    defineTest( 1, moa( 2, SecondException.class ) ) ;
-	    expectException( "simpleTryCatch", SecondException.class ) ;
-	}
-    }
-
-    // Test code generation by generating source code and compiling it.
-    // This is mainly to validate the test itself, but also provides additional
-    // testing of the source code generation process.
-    public static class SourceGenerationFlowTestSuite extends FlowTestSuiteBase {
-	public SourceGenerationFlowTestSuite( String name ) {
-	    super( name, false, DEBUG ) ;
-	}
-	
-	public SourceGenerationFlowTestSuite() {
-	    super( false, DEBUG ) ;
-	}
-    }	
-
-    // The main test suite for code generation.  This tests all of the different
-    // patterns of code generation.
-    public static class BytecodeGenerationFlowTestSuite extends FlowTestSuiteBase {
-	public BytecodeGenerationFlowTestSuite( String name ) {
-	    super( name, true, DEBUG ) ;
-	}
-	
-	public BytecodeGenerationFlowTestSuite() {
-	    super( true, DEBUG ) ;
-	}
-    }	
-
-    // Base class for testing EJBAdapter code generation.
-    // Setup: 
-    //	    myRemoteClass is the Class representing a remote interface
-    //		that corresponds to the business interface MyBusinessIntf
-    //	    myRemote__AdapterClass is the Class representing an adapter
-    //		that implements MyBusinessIntf and delegates to myRemoteClass
-    //
-    // The tests:
-    //	    Basically, inject test vector, invoke method, and check results.
-    //	    However, the test vector is injected into an implementation of
-    //	    myRemoteClass, which must be implemented using a Proxy.  
-    //	    We create an instance of the adapter which delegates to the Proxy.
-    //	    So, the tests are written as follows:
-    //	    1. Inject a test vector into the Proxy, which uses a ControlBase for
-    //	       that purpose.
-    //	    2. Create an instance of the adapter that delegates to the Proxy.
-    //	    3. Invoke a method on the adapter, and verify that the correct result
-    //	       is observed.
-    //
-    //	Details:
-    //	    void doSomething():
-    //		1. test (1): completes normally
-    //		2. test (1, RemoteException): throws EJBException with the given exception
-    //		   as cause.
-    //	        3. test (1, RuntimeException): throws the RuntimeException
-    //	    int doSomethingElse():
-    //		1. test (1,1): expect result 1.
-    //	    int echo( int ):
-    //		2. test (1)
-    //		   invoke with 1, proxy returns 1, verify result is 1.
-    public static class EJBAdapterTestSuiteBase extends GenerationTestSuiteBase {
-	private Class<?> myRemoteClass = getClass( "MyRemote" ) ;
-	private Constructor<?> adapterConstructor ;
-	private Object invokee ; // object of type given by adapter class
-
-	private static class MyRemoteProxyHandler implements InvocationHandler {
-	    private ControlBase cb ;
-
-	    public MyRemoteProxyHandler( Object... args ) {
-		cb = new ControlBase() ;
-		cb.defineTest( args ) ;
-	    }
-
-	    public Object invoke( Object proxy, Method method, 
-		Object[] args ) throws Throwable {
-
-		// Action depends on method sig:
-		// void(): just call traceInt(1)
-		// int(): return traceInt(1) 
-		// int(int): return traceInt(arg)
-		Class<?> returnType = method.getReturnType() ;
-		Class<?>[] argTypes = method.getParameterTypes() ;
-		if (argTypes.length > 1)
-		    throw new IllegalStateException(
-			"Only methods with 0 or 1 parameters are supported in this test" ) ;
-
-		int value = 1 ;
-		if (argTypes.length == 1) {
-		    if (argTypes[0] != int.class)
-			throw new IllegalStateException(
-			    "Argument type (if any) must be int" ) ;
-
-		    value = Integer.class.cast( args[0] ) ;
-		}
-
-		int result = cb.traceInt( value ) ;
-
-		if (returnType == int.class)
-		    return result ;
-		else 
-		    return null ;
-	    }
-	}
-
-	private void defineTest( Object... args ) {
-	    InvocationHandler handler = new MyRemoteProxyHandler( args ) ;
-	    Class<?>[] interfaces = { myRemoteClass } ;
-	    Object proxy = Proxy.newProxyInstance( myRemoteClass.getClassLoader(),
-		interfaces, handler ) ;
-
-	    try {
-		invokee = adapterConstructor.newInstance( proxy ) ;  
-	    } catch (Exception exc) {
-		throw new RuntimeException( exc ) ;
-	    }
-	}
-
-	private Object invoke( String name, Object... args ) {
-	    return super.invoke( invokee, name, args ) ;
-	}
-
-	private Throwable expectException( String methodName,
-	    Class<? extends Throwable> exClass, Object... args ) {
-	    return super.expectException( exClass, invokee, methodName, args ) ;
-	}
-
-	public void testDoSomething1() {
-	    defineTest( moa( 1, 1 ), null ) ;
-	    invoke( "doSomething" ) ;
-	}
-
-	public void testDoSomething2() {
-	    defineTest( moa( 1, IllegalStateException.class ), null ) ;
-	    expectException( "doSomething", RuntimeException.class ) ;
-	}
-
-	public void testDoSomething3() {
-	    defineTest( moa( 1, RemoteException.class ), null ) ;
-	    EJBException ejbex = EJBException.class.cast( 
-		expectException( "doSomething", EJBException.class ) ) ;
-	    Exception exc = ejbex.getCausedByException() ;
-	    assertEquals( RemoteException.class, exc.getClass() ) ;
-	}
-
-	public void testDoSomethingElse1() {
-	    defineTest( moa( 1, 1 ), null ) ;
-	    assertEquals( invoke( "doSomethingElse" ), 1 ) ;
-	}
-
-	public void testEcho() {
-	    defineTest( moa( 42, 357 ), null ) ;
-	    int result = Integer.class.cast( invoke( "echo", 42 ) ) ;
-	    assertEquals( result, 357 ) ;
-	}
-
-	public EJBAdapterTestSuiteBase( String className, String name, 
-	    boolean generateByteCode, boolean debug ) {
-	    super( name, generateByteCode, debug ) ;
-	    init( className ) ;
-	}
-
-	private void init( String className ) {
-	    try {
-		final Class<?> myRemote__AdapterClass = getClass( className ) ;
-		adapterConstructor = myRemote__AdapterClass.getConstructor(
-		    myRemoteClass ) ;
-	    } catch (Exception exc) {
-		throw new RuntimeException( exc ) ;
-	    }
-	}
-
-	public EJBAdapterTestSuiteBase( String className, 
-	    boolean generateByteCode, boolean debug ) {
-	    super( generateByteCode, debug ) ;
-	    init( className ) ;
-	}
-    }
-    
-    // Test code generation by generating source code and compiling it.
-    // This is mainly to validate the test itself, but also provides additional
-    // testing of the source code generation process.
+    /**
+     * Test code generation by generating source code and compiling it. This is mainly to validate the test itself,
+     * but also provides additional testing of the source code generation process.
+     */
     public static class EJBAdapterSourceTestSuite extends EJBAdapterTestSuiteBase {
-	public EJBAdapterSourceTestSuite( String name ) {
-	    super( "MyRemote__Adapter", name, false, DEBUG ) ;
-	}
-
-	public EJBAdapterSourceTestSuite( ) {
-	    super( "MyRemote__Adapter", false, DEBUG ) ;
-	}
+        public EJBAdapterSourceTestSuite() {
+            super("MyRemote__Adapter", false, false);
+        }
     }
 
-    // Test code generation by generating byte code directly.  
+    // Test code generation by generating byte code directly.
     public static class EJBAdapterBytecodeTestSuite extends EJBAdapterTestSuiteBase {
-	public EJBAdapterBytecodeTestSuite( String name ) {
-	    super( "MyRemote__Adapter", name, true, DEBUG ) ;
-	}
+        public EJBAdapterBytecodeTestSuite(String name) {
+            super("MyRemote__Adapter", name, true, DEBUG);
+        }
 
-	public EJBAdapterBytecodeTestSuite( ) {
-	    super( "MyRemote__Adapter", true, DEBUG ) ;
-	}
+        public EJBAdapterBytecodeTestSuite() {
+            super("MyRemote__Adapter", true, DEBUG);
+        }
     }
 
     // Test code generation by generating source code and compiling it.
     // This is mainly to validate the test itself, but also provides additional
     // testing of the source code generation process.
     public static class EJBAdapterSimplifiedSourceTestSuite extends EJBAdapterTestSuiteBase {
-	public EJBAdapterSimplifiedSourceTestSuite( String name ) {
-	    super( "MyRemote__Adapter_Simplified", name, false, DEBUG ) ;
-	}
+        public EJBAdapterSimplifiedSourceTestSuite(String name) {
+            super("MyRemote__Adapter_Simplified", name, false, DEBUG);
+        }
 
-	public EJBAdapterSimplifiedSourceTestSuite( ) {
-	    super( "MyRemote__Adapter_Simplified", false, DEBUG ) ;
-	}
+        public EJBAdapterSimplifiedSourceTestSuite() {
+            super("MyRemote__Adapter_Simplified", false, DEBUG);
+        }
     }
 
     // Test code generation by generating byte code directly.  
     public static class EJBAdapterSimplifiedBytecodeTestSuite extends EJBAdapterTestSuiteBase {
-	public EJBAdapterSimplifiedBytecodeTestSuite( String name ) {
-	    super( "MyRemote__Adapter_Simplified", name, true, DEBUG ) ;
-	}
+        public EJBAdapterSimplifiedBytecodeTestSuite(String name) {
+            super("MyRemote__Adapter_Simplified", name, true, DEBUG);
+        }
 
-	public EJBAdapterSimplifiedBytecodeTestSuite( ) {
-	    super( "MyRemote__Adapter_Simplified", true, DEBUG ) ;
-	}
+        public EJBAdapterSimplifiedBytecodeTestSuite() {
+            super("MyRemote__Adapter_Simplified", true, DEBUG);
+        }
     }
 
-    public static Test suite() 
-    {
-	TestSuite main = TestCaseTools.makeTestSuite( ClientTest.class,
-	    TestCaseTools.TestSuiteType.SINGLE ) ;
-
-	TestSuite suite = TestCaseTools.makeTestSuite( TypeTestSuite.class ) ;
-	main.addTest( suite ) ;
-
-	suite = TestCaseTools.makeTestSuite( ClassInfoBaseTestSuite.class ) ;
-	main.addTest( suite ) ;
-
-	return main ;
-    }
-
-    public static void main( String[] args ) {
-	ClientTest test = new ClientTest() ;
-	TestResult result = junit.textui.TestRunner.run( 
-	    test.suite() ) ;
-
-	if (result.errorCount() + result.failureCount() > 0) {
-	    System.out.println( 
-		"Error: failures or errors in JUnit test" ) ;
-	    System.exit( 1 ) ;
-	} else {
-	    System.exit( 0 ) ;
-	}
+    public static Test suite() {
+        return TestCaseTools.makeTestSuite(ClientTest.class, TestCaseTools.TestSuiteType.SINGLE);
     }
 }
