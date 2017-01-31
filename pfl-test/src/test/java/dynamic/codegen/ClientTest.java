@@ -555,12 +555,13 @@ public class ClientTest extends TestCase {
     /**
      * Test code generation by generating source code and compiling it. This is mainly to validate the test itself,
      * but also provides additional testing of the source code generation process.
-     */
+     *
     public static class EJBAdapterSourceTestSuite extends EJBAdapterTestSuiteBase {
         public EJBAdapterSourceTestSuite() {
             super("MyRemote__Adapter", false, false);
         }
     }
+    /**/
 
     // Test code generation by generating byte code directly.
     public static class EJBAdapterBytecodeTestSuite extends EJBAdapterTestSuiteBase {
@@ -573,9 +574,10 @@ public class ClientTest extends TestCase {
         }
     }
 
-    // Test code generation by generating source code and compiling it.
-    // This is mainly to validate the test itself, but also provides additional
-    // testing of the source code generation process.
+    /**
+     * Test code generation by generating source code and compiling it. This is mainly to validate the test itself,
+     * but also provides additional testing of the source code generation process.
+     *
     public static class EJBAdapterSimplifiedSourceTestSuite extends EJBAdapterTestSuiteBase {
         public EJBAdapterSimplifiedSourceTestSuite(String name) {
             super("MyRemote__Adapter_Simplified", name, false, DEBUG);
@@ -585,6 +587,7 @@ public class ClientTest extends TestCase {
             super("MyRemote__Adapter_Simplified", false, DEBUG);
         }
     }
+    /**/
 
     // Test code generation by generating byte code directly.  
     public static class EJBAdapterSimplifiedBytecodeTestSuite extends EJBAdapterTestSuiteBase {

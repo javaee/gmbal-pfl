@@ -40,19 +40,17 @@
 
 package dynamic.codegen ;
 
+import junit.framework.TestCase;
 import org.glassfish.pfl.dynamic.codegen.spi.ClassGenerator;
-import java.lang.reflect.Method ;
-import java.lang.reflect.InvocationTargetException ;
 
-import java.io.File ;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
-import java.util.Properties ;
-import java.util.Map ;
-import java.util.HashMap ;
-
-import junit.framework.TestCase ;
-
-import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.*;
 
 /** Base class used to define code generator test suites.
  * A subclass of this class is created that contains all of the
@@ -66,7 +64,7 @@ import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
  * use Java source code generation or direct bytecode generation to
  * create the class.
  */
-public class GenerationTestSuiteBase extends TestCase {
+public abstract class GenerationTestSuiteBase extends TestCase {
     private boolean generateByteCode ;
     private boolean debug ;
     private Inner inner = new Inner() ;

@@ -42,6 +42,7 @@ package org.glassfish.pfl.tf.spi;
 
 import org.glassfish.pfl.tf.spi.annotation.InfoMethod;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.PrintStream;
@@ -55,6 +56,7 @@ import java.io.PrintStream;
  * Basic test: have server run on JDK ORB (or GF with noEnumDesc configuration), and
  * then see if the client can correctly receive an echoed enum from the server.
  */
+@Ignore("see README")
 public class TfTest
 {
     private static final boolean DEBUG = false ;

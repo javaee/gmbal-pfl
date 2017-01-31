@@ -41,7 +41,7 @@ import static dynamic.codegen.ControlBase.moa;
  *		2. test (1)
  *		   invoke with 1, proxy returns 1, verify result is 1.
  */
-public class EJBAdapterTestSuiteBase extends GenerationTestSuiteBase {
+public abstract class EJBAdapterTestSuiteBase extends GenerationTestSuiteBase {
     private Class<?> myRemoteClass = getClass("MyRemote");
     private Constructor<?> adapterConstructor;
     private Object invokee; // object of type given by adapter class
