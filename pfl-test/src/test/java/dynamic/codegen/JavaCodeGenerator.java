@@ -40,17 +40,16 @@
 
 package dynamic.codegen ;
 
-import java.io.File ;
-import java.io.IOException ;
-import java.io.FileInputStream ;
-import java.io.PrintStream ;
-
-import java.lang.reflect.Method ;
-import java.lang.reflect.Constructor ;
-
 import org.glassfish.pfl.dynamic.codegen.impl.CodeGeneratorUtil;
 
-import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper._sourceCode;
 
 public class JavaCodeGenerator extends CodeGeneratorBase {
     private File directory ;
@@ -99,11 +98,11 @@ public class JavaCodeGenerator extends CodeGeneratorBase {
 	directory = new File( baseDir, dirName ) ;
 	directory.mkdir() ; // may fail because it already exists, which is OK.
 
-	// Make sure the directory for the generated source 
+	// Make sure the directory for the generated source
 	// and compiled class file exists.
 	String cn = containerName() ;
 	File classDir ;
-	if (cn.equals( "" )) 
+	if (cn.equals( "" ))
 	    classDir = directory ;
 	else
 	    classDir = new File( directory, containerName() ) ;
@@ -111,20 +110,20 @@ public class JavaCodeGenerator extends CodeGeneratorBase {
 	classDir.mkdirs() ; // may fail because it already exists, which is OK.
     }
 
-    /** Compile the java source file for the named class in the 
+    /** Compile the java source file for the named class in the
      * directory.  File are compiled in the same directory as
      * their source.
      */
     private int compileClass( File dir, String name ) {
 	// Classpath also needs the gen directory!
-	String classpath = directory + System.getProperty( "path.separator" ) 
+	String classpath = directory + System.getProperty( "path.separator" )
 	    + System.getProperty( "java.class.path" ) ;
 
 	String[] args = new String[] {
 	    "-g",
 	    "-classpath",
 	    classpath,
-	    (new File( dir, name )).toString() 
+	    (new File( dir, name )).toString()
 	} ;
 
 	// This peculiar construction is done deliberately
@@ -139,8 +138,8 @@ public class JavaCodeGenerator extends CodeGeneratorBase {
 	    Object main = cons.newInstance( "TestCompiler" ) ;
 	    Method compile = compilerMain.getMethod( "compile",
 		String[].class ) ;
-	    int result = Integer.class.cast(
-		compile.invoke( main, (Object)args ) ) ;
+		Object invocationResult = compile.invoke(main, (Object) args);
+		int result = toIntegerResult(invocationResult);
 	    if (result != 0)
 		System.out.println( "Compilation of class " + name +
 		    " failed with result " + result ) ;
@@ -153,15 +152,26 @@ public class JavaCodeGenerator extends CodeGeneratorBase {
 	}
     }
 
-    /** Load the class file for the named class from the file.
+	private Integer toIntegerResult(Object invocationResult) {
+    	if (invocationResult instanceof Integer)
+    		return Integer.class.cast(invocationResult);
+    	else if (invocationResult instanceof Boolean)
+    		return Boolean.class.cast(invocationResult) ? 0: 1;
+    	else if (invocationResult.getClass().isEnum())
+    	    return Enum.class.cast(invocationResult).ordinal();
+		else
+			return 1;
+	}
+
+	/** Load the class file for the named class from the file.
      */
-    private Class<?> loadClass( ClassLoader cl, File cfile, 
+    private Class<?> loadClass( ClassLoader cl, File cfile,
 	String className ) {
 	FileInputStream fis = null ;
 
 	try {
 	    fis = new FileInputStream( cfile ) ;
-	    int fileSize = fis.available() ; 
+	    int fileSize = fis.available() ;
 	    byte[] cdata = new byte[fileSize] ;
 	    fis.read( cdata ) ;
 	    return CodeGeneratorUtil.makeClass( className, cdata, null, cl ) ;
@@ -202,10 +212,10 @@ public class JavaCodeGenerator extends CodeGeneratorBase {
 	long start = System.nanoTime() ;
 	try {
 	    if (compileClass( directory, sourceName()) != 0)
-		throw new RuntimeException( "Compilation of " + sourceName() 
+		throw new RuntimeException( "Compilation of " + sourceName()
 		    + " failed." ) ;
 
-	    return loadClass( loader, 
+	    return loadClass( loader,
 		new File( directory, classFileName()), className() ) ;
 	} finally {
 	    compilationTime = (System.nanoTime() - start)/1000 ;
