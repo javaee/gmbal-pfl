@@ -42,12 +42,12 @@ package dynamic.codegen ;
 
 import org.glassfish.pfl.dynamic.codegen.impl.CodeGeneratorUtil;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper._sourceCode;
 
@@ -114,53 +114,22 @@ public class JavaCodeGenerator extends CodeGeneratorBase {
      * directory.  File are compiled in the same directory as
      * their source.
      */
-    private int compileClass( File dir, String name ) {
-	// Classpath also needs the gen directory!
-	String classpath = directory + System.getProperty( "path.separator" )
-	    + System.getProperty( "java.class.path" ) ;
+	private int compileClass(File dir, String name) {
+		String classpath = directory + System.getProperty("path.separator") + System.getProperty("java.class.path");
 
-	String[] args = new String[] {
-	    "-g",
-	    "-classpath",
-	    classpath,
-	    (new File( dir, name )).toString()
-	} ;
+		String[] args = new String[] { "-g", "-classpath", classpath, new File(dir, name).toString() };
 
-	// This peculiar construction is done deliberately
-	// to defeat the ORB renaming mechanism.
-	try {
-	    // Non-portable, but works on all Sun JDKs >= 5.
-	    String compilerMainClass = "com.sun." + "tools.javac." +
-		"main.Main" ;
-	    Class compilerMain = Class.forName( compilerMainClass ) ;
-	    Constructor cons = compilerMain.getConstructor(
-		String.class ) ;
-	    Object main = cons.newInstance( "TestCompiler" ) ;
-	    Method compile = compilerMain.getMethod( "compile",
-		String[].class ) ;
-		Object invocationResult = compile.invoke(main, (Object) args);
-		int result = toIntegerResult(invocationResult);
-	    if (result != 0)
-		System.out.println( "Compilation of class " + name +
-		    " failed with result " + result ) ;
-	    return result ;
-	} catch (Exception exc) {
-	    System.out.println( "Compilation of class " + name +
-		" failed with exception " + exc ) ;
-	    exc.printStackTrace() ;
-	    return 1 ;
-	}
-    }
-
-	private Integer toIntegerResult(Object invocationResult) {
-    	if (invocationResult instanceof Integer)
-    		return Integer.class.cast(invocationResult);
-    	else if (invocationResult instanceof Boolean)
-    		return Boolean.class.cast(invocationResult) ? 0: 1;
-    	else if (invocationResult.getClass().isEnum())
-    	    return Enum.class.cast(invocationResult).ordinal();
-		else
+		try {
+			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+			int result = compiler.run(null, null, null, args);
+			if (result != 0)
+				System.out.println("Compilation of class " + name + " failed with result " + result);
+			return result;
+		} catch (Exception exc) {
+			System.out.println("Compilation of class " + name + " failed with exception " + exc);
+			exc.printStackTrace();
 			return 1;
+		}
 	}
 
 	/** Load the class file for the named class from the file.
