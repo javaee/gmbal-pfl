@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,7 @@ import java.security.BasicPermission ;
 /** Permission class used to protect access to the sun.corba.Bridge
  * object.  The only name valid here is "getBridge".  The
  * BridgePermission("getBridge") permission must be held by the
- * caller of sun.corba.Bridge.get().
+ * caller of org.glassfish.pfl.basic.reflection.Bridge.get().
  */
 public final class BridgePermission extends BasicPermission
 {

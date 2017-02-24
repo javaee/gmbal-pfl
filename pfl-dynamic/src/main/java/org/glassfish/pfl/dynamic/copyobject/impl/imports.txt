@@ -58,14 +58,6 @@ Needed only in BCELCopierGenerator:
     import org.apache.bcel.classfile.*;
     import org.apache.bcel.generic.*;
 
-Bridge is needed internally (question: can we eliminate now
-    that reflection can handle writing to non-static finals
-    with suppressAccessCheck?) in ClassCopierOrdinaryImpl,
-    BCELCopierBase, and BCELCopierGenerator (and will also
-    be needed in codegen replacements for these classes)
-    import sun.corba.Bridge ;
-    import sun.corba.BridgePermission ;
-
 Moving copyobject into ORB library:
     spi/copyobject
 	CopierManager			orb

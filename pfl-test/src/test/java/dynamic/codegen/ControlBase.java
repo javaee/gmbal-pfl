@@ -40,13 +40,14 @@
 
 package dynamic.codegen ;
 
-import java.util.List ;
-import java.util.ArrayList ;
-import java.util.Iterator ;
 import org.glassfish.pfl.basic.contain.Pair;
 import org.glassfish.pfl.basic.func.NullaryFunction;
+import org.glassfish.pfl.basic.reflection.Bridge;
 
-import sun.corba.Bridge ; // for throwing undeclared checked exceptions 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 
 /**
  * This class provides some base flow control detection primitives

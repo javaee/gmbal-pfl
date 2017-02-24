@@ -41,26 +41,22 @@
 package org.glassfish.pfl.dynamic.copyobject.impl ;
 
 import org.glassfish.pfl.basic.contain.Pair;
+import org.glassfish.pfl.basic.reflection.Bridge;
 import org.glassfish.pfl.dynamic.codegen.spi.Expression;
+import org.glassfish.pfl.dynamic.codegen.spi.Type;
+import org.glassfish.pfl.dynamic.copyobject.spi.ReflectiveCopyException;
 
-import java.lang.reflect.Modifier ;
-import java.lang.reflect.Field ;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
+import java.util.Map;
+import java.util.Properties;
 
-import java.security.AccessController ;
-import java.security.PrivilegedAction ;
-import java.security.ProtectionDomain ;
-
-import java.util.Map ;
-import java.util.Properties ;
-
-import sun.corba.Bridge ;
-
-import org.glassfish.pfl.dynamic.copyobject.spi.ReflectiveCopyException ;
-
-import org.glassfish.pfl.dynamic.codegen.spi.Type ;
-
-import static java.lang.reflect.Modifier.* ;
-import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.* ;
+import static java.lang.reflect.Modifier.PRIVATE;
+import static java.lang.reflect.Modifier.PUBLIC;
+import static org.glassfish.pfl.dynamic.codegen.spi.Wrapper.*;
 
 /** Experimental class that generates a ClassFieldCopier using the codegen library.
  */

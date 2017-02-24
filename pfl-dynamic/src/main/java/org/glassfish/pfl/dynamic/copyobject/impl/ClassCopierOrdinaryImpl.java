@@ -40,32 +40,25 @@
 
 package org.glassfish.pfl.dynamic.copyobject.impl;
 
-import java.io.Serializable ;
-import java.io.Externalizable ;
+import org.glassfish.pfl.basic.reflection.Bridge;
+import org.glassfish.pfl.dynamic.copyobject.spi.Copy;
+import org.glassfish.pfl.dynamic.copyobject.spi.CopyInterceptor;
+import org.glassfish.pfl.dynamic.copyobject.spi.LibraryClassLoader;
+import org.glassfish.pfl.dynamic.copyobject.spi.ReflectiveCopyException;
 
-import java.util.WeakHashMap ;
-import java.util.Map ;
-
-import java.security.ProtectionDomain ;
-import java.security.AccessController ;
-import java.security.PrivilegedAction ;
-import java.security.PrivilegedActionException ;
-import java.security.PrivilegedExceptionAction ;
-
-import java.lang.reflect.Field ;
-import java.lang.reflect.Method ;
-import java.lang.reflect.Modifier ;
-import java.lang.reflect.Constructor ;
-
-import sun.corba.Bridge ;
-
-import org.glassfish.pfl.dynamic.copyobject.spi.ReflectiveCopyException ;
-import org.glassfish.pfl.dynamic.copyobject.spi.Copy ;
-import org.glassfish.pfl.dynamic.copyobject.spi.CopyInterceptor ;
-
-import static org.glassfish.pfl.dynamic.copyobject.spi.CopyType.* ;
-
-import org.glassfish.pfl.dynamic.copyobject.spi.LibraryClassLoader ;
+import java.io.Externalizable;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.security.ProtectionDomain;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 // General Object: use proper constructor, iterate over fields,
 // get/set fields using Unsafe or reflection.  This also handles readResolve,
@@ -214,31 +207,28 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	 * <p>
 	 * Copied from the Merlin java.io.ObjectStreamClass.
 	 */
-	private static Constructor<?> getSerializableConstructor(Class<?> cl)
-	{
-	    Class<?> initCl = cl;
-	    while (Serializable.class.isAssignableFrom(initCl)) {
-		if ((initCl = initCl.getSuperclass()) == null) {
-		    return null;
+	private static Constructor<?> getSerializableConstructor(Class<?> cl) {
+		Class<?> initCl = cl;
+		while (Serializable.class.isAssignableFrom(initCl)) {
+			if ((initCl = initCl.getSuperclass()) == null) {
+				return null;
+			}
 		}
-	    }
 
-	    try {
-		Constructor<?> cons = initCl.getDeclaredConstructor();
-		int mods = cons.getModifiers();
-		if ((mods & Modifier.PRIVATE) != 0 ||
-		    ((mods & (Modifier.PUBLIC | Modifier.PROTECTED)) == 0 &&
-		     !packageEquals(cl, initCl)))
-		{
-		    return null;
+		try {
+			Constructor<?> cons = initCl.getDeclaredConstructor();
+			int mods = cons.getModifiers();
+			if ((mods & Modifier.PRIVATE) != 0 ||
+					((mods & (Modifier.PUBLIC | Modifier.PROTECTED)) == 0 && !packageEquals(cl, initCl))) {
+				return null;
+			}
+			cons = BRIDGE_REF.newConstructorForSerialization(cl, cons);
+			cons.setAccessible(true);
+			return cons;
+		} catch (NoSuchMethodException ex) {
+			// XXX log this!
+			return null;
 		}
-		cons = BRIDGE_REF.newConstructorForSerialization(cl, cons);
-		cons.setAccessible(true);
-		return cons;
-	    } catch (NoSuchMethodException ex) {
-		// XXX log this!
-		return null;
-	    }
 	}
 
 	/** Returns a constructor based on the first no-args constructor in
@@ -275,32 +265,33 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 	}
 
 
-	/** Analyze the class to determine the correct constructor type.
-	 * Returns the appropriate constructor.
-	 */
-	private static Constructor<?> makeConstructor( final Class<?> cls ) {
-	    return AccessController.doPrivileged(
-		new PrivilegedAction<Constructor<?>>() {
-                    @Override
-		    public Constructor<?> run() {
-			Constructor constructor ;
+		/**
+		 * Analyze the class to determine the correct constructor type.
+		 * Returns the appropriate constructor.
+		 */
+		private static Constructor<?> makeConstructor(final Class<?> cls) {
+			return AccessController.doPrivileged(
+					new PrivilegedAction<Constructor<?>>() {
+						@Override
+						public Constructor<?> run() {
+							Constructor constructor;
 
-			// We must check for Externalizable first, since Externalizable
-			// extends Serializable.  
-			if (Externalizable.class.isAssignableFrom( cls )) {
-                            constructor = getExternalizableConstructor(cls);
-                        } else if (Serializable.class.isAssignableFrom( cls )) {
-                            constructor = getSerializableConstructor(cls);
-                        } else {
-                            constructor = getDefaultConstructor(cls);
-                        }
+							// We must check for Externalizable first, since Externalizable
+							// extends Serializable.
+							if (Externalizable.class.isAssignableFrom(cls)) {
+								constructor = getExternalizableConstructor(cls);
+							} else if (Serializable.class.isAssignableFrom(cls)) {
+								constructor = getSerializableConstructor(cls);
+							} else {
+								constructor = getDefaultConstructor(cls);
+							}
 
-			return constructor ;
-		    }
+							return constructor;
+						}
+					}
+			);
 		}
-	    ) ;
 	}
-    }
 
 //******************************************************************************
 // ClassFieldCopiers and all their associated bits
