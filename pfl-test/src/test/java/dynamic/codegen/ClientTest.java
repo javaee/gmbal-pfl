@@ -59,7 +59,6 @@ import org.glassfish.pfl.dynamic.codegen.spi.Type;
 import org.glassfish.pfl.dynamic.copyobject.spi.DefaultCopier;
 import org.glassfish.pfl.test.TestCaseTools;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -156,24 +155,6 @@ public class ClientTest extends TestCase {
         // if (DEBUG)
         gen.reportTimes();
         assertNotNull(cls);
-    }
-
-    public void testEJBRemoteGenerator() {
-        ClassGeneratorFactory factory =
-                ClassGeneratorFactoryRegistry.get("dynamic.codegen.lib.Hello_Wrapper");
-
-        JavaCodeGenerator jgen = new JavaCodeGenerator(factory);
-        ClassInfo jci = getClassInfo(jgen);
-
-        ByteCodeGenerator bgen = new ByteCodeGenerator(factory,
-                GenerationTestSuiteBase.getByteCodeGenerationProperties(DEBUG));
-        ClassInfo bci = getClassInfo(bgen);
-
-        assertEquals(jci, bci);
-
-        Class cls = bgen.generate(this.getClass().getClassLoader());
-
-        Constructor[] constructors = cls.getConstructors();
     }
 
     public void testConstantGeneration() {

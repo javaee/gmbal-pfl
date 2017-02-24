@@ -105,7 +105,7 @@ public abstract class GenerationTestSuiteBase extends TestCase {
 	    options.setProperty( TRACE_BYTE_CODE_GENERATION, "true" ) ;
 	    options.setProperty( USE_ASM_VERIFIER, "true" ) ;
 
-	    String baseName = "gen" + File.separatorChar + JavaCodeGenerator.dirName 
+	    String baseName = "gen" + File.separatorChar + JavaCodeGenerator.getDirName()
 		+ File.separatorChar + "bytecode" + File.separatorChar ;
 	    options.setProperty( CLASS_GENERATION_DIRECTORY, 
 		baseName + "classes" ) ;

@@ -49,29 +49,6 @@
     <artifactId>pfl-test</artifactId>
     <packaging>bundle</packaging>
     <name>PFL Test</name>
-    <dependencyManagement>
-        <dependencies>
-            <!-- REG note: this dependency is required as a workaround for a bug in -->
-            <!-- org.glassfish.main.deployment:javax.enterprise.deploy:jar:3.1.2.2 -->
-            <!-- which fails to specify a version and therefore gets whatever is released last. -->
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>javax.persistence</artifactId>
-                <version>2.0.5</version>
-            </dependency>
-
-            <!-- REG note: this dependency and the profile below are required as a workaround for a bug in -->
-            <!-- org.glassfish.main.flashlight:flashlight-framework:jar:3.1.2.2 which does not handle -->
-            <!-- the Oracle JDK 1.7 and above on OSX -->
-            <dependency>
-                <groupId>com.sun</groupId>
-                <artifactId>tools</artifactId>
-                <version>1.6</version>
-                <scope>system</scope>
-                <systemPath>${tools-jar}</systemPath>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -107,9 +84,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.main.ejb</groupId>
-            <artifactId>ejb-container</artifactId>
-            <version>3.1.2.2</version>
+            <groupId>javax.ejb</groupId>
+            <artifactId>javax.ejb-api</artifactId>
+            <version>3.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -143,29 +120,4 @@
             </plugin>
          </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>standard-jdk</id>
-            <activation>
-                <file>
-                    <exists>${java.home}/../lib/tools.jar</exists>
-                </file>
-            </activation>
-            <properties>
-                <tools-jar>${java.home}/../lib/tools.jar</tools-jar>
-            </properties>
-        </profile>
-        <profile>
-            <id>apple-jdk</id>
-            <activation>
-                <file>
-                    <exists>${java.home}/../Classes/classes.jar</exists>
-                </file>
-            </activation>
-            <properties>
-                <tools-jar>${java.home}/../Classes/classes.jar</tools-jar>
-            </properties>
-        </profile>
-    </profiles>
 </project>

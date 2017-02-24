@@ -40,20 +40,20 @@
 
 package dynamic.codegen ;
 
-import java.util.Map ;
-import java.util.HashMap ;
+import dynamic.codegen.test.Constants_gen;
+import dynamic.codegen.test.DefaultPackageTest_gen;
+import dynamic.codegen.test.Flow_gen;
+import dynamic.codegen.test.MyRemote__Adapter_Simplified_gen;
+import dynamic.codegen.test.MyRemote__Adapter_gen;
+import dynamic.codegen.test.MyRemote_gen;
+import dynamic.codegen.test._DImpl_Tie_gen;
+
+import java.util.HashMap;
+import java.util.Map;
 
 // Import all of the code generators that implement ClassGeneratorFactory here.
 // These are used in the tests.
 // Every ClassGeneratorFactory must be imported here and registered below.
-import dynamic.codegen.test.MyRemote__Adapter_gen ;
-import dynamic.codegen.test.MyRemote__Adapter_Simplified_gen ;
-import dynamic.codegen.test.MyRemote_gen ;
-import dynamic.codegen.test._DImpl_Tie_gen ;
-import dynamic.codegen.test.Flow_gen ;
-import dynamic.codegen.test.Constants_gen ;
-import dynamic.codegen.test.DefaultPackageTest_gen ;
-import dynamic.codegen.test.EJBRemote_gen ;
 
 /** Registry that contains instances of all of the test class generators
  * used in this test.
@@ -72,7 +72,6 @@ public abstract class ClassGeneratorFactoryRegistry {
 	register( new Flow_gen() ) ;
 	register( new Constants_gen() ) ;
 	register( new DefaultPackageTest_gen() ) ;
-	register( new EJBRemote_gen() ) ;
     }
 
     private static void register( ClassGeneratorFactory tcg ) {
