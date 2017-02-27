@@ -1,9 +1,12 @@
 package org.glassfish.pfl.basic.reflection;
 
+import org.glassfish.pfl.basic.testobjects.IntHolder;
+import org.glassfish.pfl.basic.testobjects.TestObjects;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -11,6 +14,7 @@ import java.security.PrivilegedAction;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.fail;
 
 public class BridgeTest {
     private static final byte BYTE_VALUE = (byte) (Math.random() * Byte.MAX_VALUE);
@@ -187,8 +191,25 @@ public class BridgeTest {
     }
 
     @Test
-    public void newConstructorForSerialization() throws Exception {
+    public void whenBridgeCreatesConstructor_canConstructNonPublicExternalizedClass() throws Exception {
+        Class<? extends IntHolder> aClass = TestObjects.getNonPublicExternalizableClass();
+        Constructor<? extends IntHolder> constructor = BRIDGE.newConstructorForExternalization(aClass);
 
+        if (constructor == null) fail("no constructorFound");
+        IntHolder intHolder = constructor.newInstance();
+
+        assertThat(intHolder.getAnInt(), equalTo(TestObjects.INT_FIELD_VALUE));
+    }
+
+    @Test
+    public void whenBridgeCreatesConstructor_nonSerializableBaseClassIsInitialized() throws Exception {
+        Class<? extends IntHolder> aClass = TestObjects.getNonPublicSerializableClass();
+        Constructor<? extends IntHolder> constructor = BRIDGE.newConstructorForSerialization(aClass);
+
+        if (constructor == null) fail("no constructorFound");
+        IntHolder intHolder = constructor.newInstance();
+
+        assertThat(intHolder.getAnInt(), equalTo(TestObjects.INT_FIELD_VALUE));
     }
 
 }
