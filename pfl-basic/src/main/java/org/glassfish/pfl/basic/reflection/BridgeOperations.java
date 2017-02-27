@@ -186,16 +186,23 @@ public interface BridgeOperations {
     void throwException(Throwable ee);
 
     /**
-     * Obtain a constructor for Class cl using constructor cons which
-     * may be the constructor defined in a superclass of cl.  This is
-     * used to create a constructor for Serializable classes that
-     * constructs an instance of the Serializable class using the
-     * no args constructor of the first non-Serializable superclass
-     * of the Serializable class.
-     *
-     * @param cl the class for which a constructor should be returned.
-     * @param cons
+     * Return a constructor that can be used to create an instance of the class for externalization.
+     * @param cl the class
      */
-    @SuppressWarnings("unchecked")
-    <T> Constructor<T> newConstructorForSerialization(Class<T> cl, Constructor<?> cons);
+    <T> Constructor<?> newConstructorForExternalization(Class<T> cl);
+
+    /**
+     * Return a no-arg constructor for the specified class which invokes the specified constructor.
+     *
+     * @param aClass the class for which a constructor should be returned.
+     * @param cons the default constructor on which to model the new constructor.
+     */
+    <T> Constructor<T> newConstructorForSerialization(Class<T> aClass, Constructor<?> cons);
+
+    /**
+     * Return a no-arg constructor for the specified class, based on the default constructor
+     * for its nearest non-serializable base class.
+     * @param aClass the class for which a constructor should be returned.
+     */
+    <T> Constructor<T> newConstructorForSerialization(Class<T> aClass);
 }
