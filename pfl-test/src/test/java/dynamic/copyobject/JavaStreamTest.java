@@ -41,7 +41,7 @@
 package dynamic.copyobject  ;
 
 
-import junit.framework.Test ;
+import junit.framework.Test;
 import org.glassfish.pfl.dynamic.copyobject.spi.CopyobjectDefaults;
 import org.glassfish.pfl.dynamic.copyobject.spi.ObjectCopierFactory;
 
@@ -60,8 +60,8 @@ public class JavaStreamTest extends Client
     private static final String[] EXCLUDE_LIST = new String[] {
 	"testObject", "testTimedObject", "testObjects", "testComplexClassArray",
 	"testComplexClassAliasedArray", "testComplexClassGraph",
-	"testUserException", 
-	"testRemoteStub", "testCORBAObject", "testInnerClass", 
+	"testUserException",
+	"testRemoteStub", "testCORBAObject", "testInnerClass",
 	"testExtendedInnerClass", "testNestedClass", "testLocalInner",
 	"testAnonymousLocalInner", "testDynamicProxy", "testIdentityHashMap",
 	"testExternalizable", "testTransientNonSerializableField1", 

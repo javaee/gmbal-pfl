@@ -40,6 +40,8 @@
 
 package org.glassfish.pfl.test ;
 
+import org.glassfish.pfl.basic.reflection.FieldValueHelper;
+
 import java.security.PrivilegedAction;
 import java.security.AccessController;
 import java.security.Permission;
@@ -641,79 +643,59 @@ public final class ObjectUtility {
 	}
     }
 
-    private static boolean equalsObjectFields( Map counterpart, Set considered,
-	Class cls, java.lang.Object obj1, java.lang.Object obj2 ) 
-    {
-	Field[] fields = cls.getDeclaredFields() ;
-	for (int ctr=0; ctr<fields.length; ctr++) {
-	    try {
-		final Field field = fields[ctr] ;
-		// Ignore static fields
-		if (!Modifier.isStatic( field.getModifiers())) {
-		    AccessController.doPrivileged(new PrivilegedAction() {
-			public Object run() {
-			    field.setAccessible( true ) ;
-			    return null ;
-			} 
-		    } ) ;
-
-		    java.lang.Object value1 = field.get( obj1 ) ;
-		    java.lang.Object value2 = field.get( obj2 ) ;
-		    if (!equalsHelper( counterpart, considered, value1, 
-			value2 ))
-			return false ;
+	private static boolean equalsObjectFields(Map counterpart, Set considered, Class cls, Object obj1, Object obj2) {
+		Field[] fields = cls.getDeclaredFields();
+		for (Field field : fields) {
+			try {
+				if (!Modifier.isStatic(field.getModifiers())) { // Ignore static fields
+					Object value1 = FieldValueHelper.getFieldValue(obj1, field);
+					Object value2 = FieldValueHelper.getFieldValue(obj2, field);
+					if (!equalsHelper(counterpart, considered, value1, value2)) return false;
+				}
+			} catch (IllegalAccessException exc) {
+				return false;
+			}
 		}
-	    } catch (IllegalAccessException exc) {
-		return false ;
-	    }
+
+		return true;
 	}
 
-	return true ;
-    }
+	private static boolean equalArrays(Map counterpart, Set considered,
+									   java.lang.Object[] arr1, java.lang.Object[] arr2) {
+		int len = arr1.length;
+		if (len != arr2.length)
+			return false;
 
-    private static boolean equalArrays( Map counterpart, Set considered,
-	java.lang.Object[] arr1, java.lang.Object[] arr2 ) 
-    {
-	int len = arr1.length ;
-	if (len != arr2.length)
-	    return false ;
+		for (int ctr = 0; ctr < len; ctr++)
+			if (!equalsHelper(counterpart, considered, arr1[ctr], arr2[ctr]))
+				return false;
 
-	for (int ctr = 0; ctr<len; ctr++ )
-	    if (!equalsHelper( counterpart, considered, arr1[ctr], arr2[ctr] ))
-		return false ;
+		return true;
+	}
 
-	return true ;
-    }
+	private static boolean equalMaps(Map counterpart, Set considered, Map map1, Map map2) {
+		if (map2.size() != map1.size())
+			return false;
 
-    private static boolean equalMaps( Map counterpart, Set considered,
-	Map map1, Map map2 )
-    {
-	if (map2.size() != map1.size())
-	    return false;
+		try {
+			for (Object o : map1.entrySet()) {
+				Entry e = (Entry) o;
+				Object key = e.getKey();
+				Object value = e.getValue();
+				if (value == null) {
+					if (!(map2.get(key) == null && map2.containsKey(key)))
+						return false;
+				} else {
+					if (!equalsHelper(counterpart, considered, value, map2.get(key)))
+						return false;
+				}
+			}
+		} catch (ClassCastException | NullPointerException unused) {
+			return false;
+		}
 
-        try {
-            Iterator i = map1.entrySet().iterator();
-            while (i.hasNext()) {
-                Entry e = (Entry) i.next();
-                java.lang.Object key = e.getKey();
-                java.lang.Object value = e.getValue();
-                if (value == null) {
-                    if (!(map2.get(key)==null && map2.containsKey(key)))
-                        return false;
-                } else {
-                    if (!equalsHelper( counterpart, considered, 
-			value, map2.get(key)))
-                        return false;
-                }
-            }
-        } catch(ClassCastException unused)   {
-            return false;
-        } catch(NullPointerException unused) {
-            return false;
-        }
-
-	return true;
-    }
+		return true;
+	}
 
     // Obviously this is an inefficient quadratic algorithm.
     // This is taken pretty directly from AbstractSet and AbstractCollection

@@ -42,6 +42,7 @@ package org.glassfish.pfl.basic.reflection;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.security.ProtectionDomain;
 
 public interface BridgeOperations {
     /**
@@ -205,4 +206,13 @@ public interface BridgeOperations {
      * @param aClass the class for which a constructor should be returned.
      */
     <T> Constructor<T> newConstructorForSerialization(Class<T> aClass);
+
+    /**
+     * Defines a class is a specified classloader.
+     * @param className the name of the class
+     * @param classBytes the byte code for the class
+     * @param classLoader the classloader in which it is to be defined
+     * @param protectionDomain
+     */
+    Class<?> defineClass(String className, byte[] classBytes, ClassLoader classLoader, ProtectionDomain protectionDomain);
 }

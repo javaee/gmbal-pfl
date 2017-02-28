@@ -41,7 +41,7 @@
 package org.glassfish.pfl.basic.algorithm;
 
 import org.glassfish.pfl.basic.contain.Pair;
-import org.glassfish.pfl.basic.reflection.Bridge;
+import org.glassfish.pfl.basic.reflection.FieldValueHelper;
 
 import javax.management.ObjectName;
 import javax.management.openmbean.ArrayType;
@@ -54,8 +54,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -74,8 +72,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * General object related utilities.
  */
 public final class ObjectUtility {
-    private static final Bridge bridge = Bridge.get();
-    
+
     interface ObjectPrinter {
         void print(IdentityHashMap printed, ObjectWriter buff, Object obj);
 
@@ -431,7 +428,7 @@ public final class ObjectUtility {
                     result.startElement();
                     result.append(fld.getName());
                     result.append("=");
-                    Object value = getFieldValue(obj, fld);
+                    Object value = FieldValueHelper.getFieldValue(obj, fld);
 
                     if (fld.isAnnotationPresent(DumpToString.class)) {
                         toStringPrinter.print(printed, result, value);
@@ -446,62 +443,6 @@ public final class ObjectUtility {
             // Just ignore the exception here
             result.append(obj.toString());
         }
-    }
-
-    /**
-     * Returns the value of a field in an object.
-     * @param obj the object holding the field
-     * @param field the field whose value is to be returned.
-     * @throws IllegalAccessException if the field cannot directly be accessed.
-     */
-    private Object getFieldValue(Object obj, final Field field) throws IllegalAccessException {
-        if (field.isAccessible())
-            return field.get(obj);
-        else
-            return getPrivateFieldValue(obj, field);
-    }
-
-    private Object getPrivateFieldValue(Object obj, final Field field) throws IllegalAccessException {
-        try {
-            makeFieldAccessible(field);
-            return field.get(obj);
-        } catch(Throwable t) {
-            return getInacessibleFieldValue(obj, field);
-        }
-    }
-
-    private static void makeFieldAccessible(final Field field) {
-        AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run() {
-                field.setAccessible(true);
-                return null;
-            }
-        });
-    }
-
-    private Object getInacessibleFieldValue(Object obj, Field field) {
-        long offset = bridge.objectFieldOffset(field);
-        
-        if (!field.getType().isPrimitive())
-            return bridge.getObject(obj, offset);
-        else if (field.getType() == Integer.TYPE)
-            return bridge.getInt(obj, offset);
-        else if (field.getType() == Byte.TYPE)
-            return bridge.getByte(obj, offset);
-        else if (field.getType() == Long.TYPE)
-            return bridge.getLong(obj, offset);
-        else if (field.getType() == Float.TYPE)
-            return bridge.getFloat(obj, offset);
-        else if (field.getType() == Double.TYPE)
-            return bridge.getDouble(obj, offset);
-        else if (field.getType() == Short.TYPE)
-            return bridge.getShort(obj, offset);
-        else if (field.getType() == Character.TYPE)
-            return bridge.getChar(obj, offset);
-        else if (field.getType() == Boolean.TYPE)
-            return bridge.getBoolean(obj, offset);
-        else
-            return null;
     }
 
     private void handleArray(IdentityHashMap printed, ObjectWriter result,

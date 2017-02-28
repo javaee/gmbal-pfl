@@ -135,7 +135,11 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
                             return null;
                         }
 
-                        meth.setAccessible(true);
+                        try {
+                            meth.setAccessible(true);
+                        } catch (Exception e) {
+                            return null;
+                        }
 
                         int mods = meth.getModifiers();
                         if ((mods & (Modifier.STATIC | Modifier.ABSTRACT)) != 0) {

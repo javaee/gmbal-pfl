@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,6 @@ import org.glassfish.pfl.dynamic.codegen.test.Flow_gen;
 import org.glassfish.pfl.dynamic.codegen.test.MyRemote__Adapter_Simplified_gen;
 import org.glassfish.pfl.dynamic.codegen.test.MyRemote__Adapter_gen;
 import org.glassfish.pfl.dynamic.codegen.test.MyRemote_gen;
-import org.glassfish.pfl.dynamic.codegen.test._DImpl_Tie_gen;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +67,6 @@ public abstract class ClassGeneratorFactoryRegistry {
 	register( new MyRemote_gen() ) ;
 	register( new MyRemote__Adapter_gen() ) ;
 	register( new MyRemote__Adapter_Simplified_gen() ) ;
-	register( new _DImpl_Tie_gen() ) ;
 	register( new Flow_gen() ) ;
 	register( new Constants_gen() ) ;
 	register( new DefaultPackageTest_gen() ) ;

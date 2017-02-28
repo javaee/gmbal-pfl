@@ -5,6 +5,7 @@ import sun.misc.Unsafe;
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
 
 public abstract class BridgeBase implements BridgeOperations {
     private final Unsafe unsafe = AccessController.doPrivileged(
@@ -123,5 +124,10 @@ public abstract class BridgeBase implements BridgeOperations {
     @Override
     public final void throwException(Throwable ee) {
         unsafe.throwException(ee);
+    }
+
+    @Override
+    public final Class<?> defineClass(String className, byte[] classBytes, ClassLoader classLoader, ProtectionDomain protectionDomain) {
+        return unsafe.defineClass(className, classBytes, 0, classBytes.length, classLoader, null);
     }
 }
