@@ -1,4 +1,11 @@
-To build: 
+As of Java 9, pfl-basic produces a multi-release jar. The main code
+is compiled in JDK 1.7 or 1.8, and additional code is compiled using Java 9. For this to work,
+the code uses the toolchains plugin to select different compilers. You will need
+a toolchains.xml in your .m2 directory.
+
+See <https://maven.apache.org/guides/mini/guide-using-toolchains.html>
+
+To build:
 mvn clean install
 
 To test:

@@ -47,27 +47,83 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>pfl-basic</artifactId>
-    <packaging>bundle</packaging>
     <name>PFL Basic</name>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${project.name}</Bundle-Name>
-                        <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>
-                            !org.glassfish.pfl.basic.tools.*,                   
-                            org.glassfish.pfl.basic.*  
-                        </Export-Package>             
-                    </instructions>
-                </configuration>
-            </plugin>
-         </plugins>
-    </build>
+
+    <properties>
+        <java9.sourceDirectory>${project.basedir}/src/main/java9</java9.sourceDirectory>
+        <java9.build.outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</java9.build.outputDirectory>
+    </properties>
+    
+    <profiles>
+        <profile>
+            <id>osgi</id>
+            <activation>
+                <jdk>[1.7,1.9)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>maven-bundle-plugin</artifactId>
+                        <version>2.3.7</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <instructions>
+                                <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                                <Bundle-Name>${project.name}</Bundle-Name>
+                                <Bundle-Version>${project.version}</Bundle-Version>
+                                <Export-Package>
+                                    !org.glassfish.pfl.basic.tools.*,
+                                    org.glassfish.pfl.basic.*
+                                </Export-Package>
+                            </instructions>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+            <id>multi-release</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>compile-java9</id>
+                                <phase>compile</phase>
+                                <configuration>
+                                    <tasks>
+                                        <mkdir dir="${java9.build.outputDirectory}" />
+                                        <javac srcdir="${java9.sourceDirectory}" destdir="${java9.build.outputDirectory}"
+                                               classpath="${project.build.outputDirectory}" includeantruntime="false" />
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Multi-Release>true</Multi-Release>
+                                    <Main-Class>com.example.Main</Main-Class>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                 </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

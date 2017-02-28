@@ -40,20 +40,13 @@
 
 package org.glassfish.pfl.basic.reflection;
 
-import sun.misc.Unsafe;
 import sun.reflect.ReflectionFactory;
 
-import java.io.ObjectInputStream;
-import java.io.Serializable;
+import java.io.OptionalDataException;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.security.Permission;
-import java.security.PrivilegedAction;
-import java.util.Objects;
 
 /**
  * This class provides the methods for fundamental JVM operations
@@ -90,39 +83,11 @@ public final class Bridge extends BridgeBase {
     private static final Permission getBridgePermission = new BridgePermission("getBridge");
     private static Bridge bridge = null;
 
-    // latestUserDefinedLoader() is a private static method
-    // in ObjectInputStream in JDK 1.3 through 1.5.
-    // We use reflection in a doPrivileged block to get a
-    // Method reference and make it accessible.
-    private final Method latestUserDefinedLoaderMethod;
-
     private final ReflectionFactory reflectionFactory;
 
-    private Method getLatestUserDefinedLoaderMethod() {
-        return AccessController.doPrivileged(
-                new PrivilegedAction<Method>() {
-                    @SuppressWarnings("unchecked")
-                    public Method run() {
-                        Method result;
-
-                        try {
-                            Class io = ObjectInputStream.class;
-                            result = io.getDeclaredMethod("latestUserDefinedLoader");
-                            result.setAccessible(true);
-                        } catch (NoSuchMethodException nsme) {
-                            throw new Error("java.io.ObjectInputStream latestUserDefinedLoader " + nsme, nsme);
-                        }
-
-                        return result;
-                    }
-                }
-        );
-    }
 
 
-    @SuppressWarnings("unchecked")
     private Bridge() {
-        latestUserDefinedLoaderMethod = getLatestUserDefinedLoaderMethod();
         reflectionFactory = ReflectionFactory.getReflectionFactory();
     }
 
@@ -154,75 +119,75 @@ public final class Bridge extends BridgeBase {
 
     @Override
     public final ClassLoader getLatestUserDefinedLoader() {
-        try {
-            // Invoke the ObjectInputStream.latestUserDefinedLoader method
-            return (ClassLoader) latestUserDefinedLoaderMethod.invoke(null);
-        } catch (InvocationTargetException | IllegalAccessException ite) {
-            throw new Error(getClass().getName() + ".latestUserDefinedLoader: " + ite, ite);
-        }
+        throw new RuntimeException("Not supported yet in JDK9" ); // return jdk.internal.misc.VM.latestUserDefinedLoader();
+    }
+
+    /**
+     * Returns the offset of a static field.
+     */
+    public final long staticFieldOffset(Field f) {
+        return getUnsafe().staticFieldOffset( f ) ;
+    }
+
+    /**
+     * Ensure that the class has been initalized.
+     * @param cl the class to ensure is initialized
+     */
+    public final void ensureClassInitialized(Class<?> cl) {
+        getUnsafe().ensureClassInitialized(cl);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public final <T> Constructor<T> newConstructorForExternalization(Class<T> cl) {
-        try {
-            Constructor<?> cons = cl.getDeclaredConstructor();
-            cons.setAccessible(true);
-            return isPublic(cons) ? (Constructor<T>) cons : null;
-        } catch (NoSuchMethodException ex) {
-            return null;
-        }
-    }
-
-    private static boolean isPublic(Constructor<?> cons) {
-        return (cons.getModifiers() & Modifier.PUBLIC) != 0;
+        return (Constructor<T>) reflectionFactory.newConstructorForExternalization( cl );
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public final <T> Constructor<T> newConstructorForSerialization(Class<T> aClass, Constructor<?> cons) {
-        Constructor newConstructor = reflectionFactory.newConstructorForSerialization(aClass, cons);
-        newConstructor.setAccessible(true);
-        return (Constructor<T>) newConstructor;
+        return (Constructor<T>) reflectionFactory.newConstructorForSerialization(aClass, cons);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> Constructor<T> newConstructorForSerialization(Class<T> aClass) {
-        Class<?> baseClass = getNearestNonSerializableBaseClass(aClass);
-        if (baseClass == null) return null;
-
-        try {
-            Constructor<?> cons = baseClass.getDeclaredConstructor();
-            if (isPrivate(cons) || !isAccessibleFromSubclass(cons, aClass, baseClass)) return null;
-
-            return newConstructorForSerialization(aClass, cons);
-        } catch (NoSuchMethodException ex) {
-            return null;
-        }
+        return (Constructor<T>) reflectionFactory.newConstructorForSerialization( aClass );
     }
 
-    private static <T> Class<?> getNearestNonSerializableBaseClass(Class<T> clazz) {
-        Class<?> baseClass = clazz;
-
-        while (Serializable.class.isAssignableFrom(baseClass))
-            if ((baseClass = baseClass.getSuperclass()) == null) return null;
-
-        return baseClass;
+    /**
+     * Returns true if the given class defines a static initializer method,
+     * false otherwise.
+     */
+    public final boolean hasStaticInitializerForSerialization(Class<?> cl) {
+        return reflectionFactory.hasStaticInitializerForSerialization(cl);
     }
 
-    private static boolean isAccessibleFromSubclass(Constructor<?> constructor, Class<?> clazz, Class<?> baseClass) {
-        return isPublicOrProtected(constructor) || inSamePackage(clazz, baseClass);
+    public final MethodHandle writeObjectForSerialization(Class<?> cl) {
+        return reflectionFactory.writeObjectForSerialization(cl);
     }
 
-    private static boolean inSamePackage(Class<?> clazz, Class<?> baseClass) {
-        return Objects.equals(clazz.getPackage(), baseClass.getPackage());
+    public final MethodHandle readObjectForSerialization(Class<?> cl) {
+        return reflectionFactory.readObjectForSerialization(cl);
     }
 
-    private static boolean isPublicOrProtected(Constructor<?> constructor) {
-        return (constructor.getModifiers() & (Modifier.PUBLIC | Modifier.PROTECTED)) != 0;
+    public final MethodHandle readObjectNoDataForSerialization(Class<?> cl) {
+        return reflectionFactory.readObjectNoDataForSerialization(cl);
     }
 
-    private static boolean isPrivate(Constructor<?> cons) {
-        return (cons.getModifiers() & Modifier.PRIVATE) != 0;
+    public final MethodHandle readResolveForSerialization(Class<?> cl) {
+        return reflectionFactory.readResolveForSerialization(cl);
+    }
+
+    public final MethodHandle writeReplaceForSerialization(Class<?> cl) {
+        return reflectionFactory.writeReplaceForSerialization(cl);
+    }
+
+    /**
+     * Return a new OptionalDataException instance.
+     * @return a new OptionalDataException instance
+     */
+    public final OptionalDataException newOptionalDataExceptionForSerialization(boolean bool) {
+        return reflectionFactory.newOptionalDataExceptionForSerialization(bool);
     }
 }
