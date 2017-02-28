@@ -46,7 +46,11 @@ import java.io.OptionalDataException;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.security.AccessController;
 import java.security.Permission;
+import java.security.PrivilegedAction;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * This class provides the methods for fundamental JVM operations
@@ -117,9 +121,30 @@ public final class Bridge extends BridgeBase {
         return bridge;
     }
 
+    private final StackWalker stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+
+    // New implementation for Java 9, supplied by Alan Bateman
     @Override
     public final ClassLoader getLatestUserDefinedLoader() {
-        throw new RuntimeException("Not supported yet in JDK9" ); // return jdk.internal.misc.VM.latestUserDefinedLoader();
+        // requires getClassLoader permission => needs doPrivileged.
+        PrivilegedAction<ClassLoader> pa = () ->
+                stackWalker.walk(this::getLatestUserDefinedLoaderFrame)
+                        .map(sf -> sf.getDeclaringClass().getClassLoader())
+                        .orElseGet(ClassLoader::getPlatformClassLoader);
+        return AccessController.doPrivileged(pa);
+    }
+
+    private Optional<StackWalker.StackFrame> getLatestUserDefinedLoaderFrame(Stream<StackWalker.StackFrame> stream) {
+        return stream.filter(this::isUserLoader).findFirst();
+    }
+
+    private boolean isUserLoader(StackWalker.StackFrame sf) {
+        ClassLoader cl = sf.getDeclaringClass().getClassLoader();
+        if (cl == null) return false;
+
+        ClassLoader platformClassLoader = ClassLoader.getPlatformClassLoader();
+        while (platformClassLoader != null && cl != platformClassLoader) platformClassLoader = platformClassLoader.getParent();
+        return cl != platformClassLoader;
     }
 
     /**
