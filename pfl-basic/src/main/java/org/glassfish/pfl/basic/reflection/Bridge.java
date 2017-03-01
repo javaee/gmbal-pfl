@@ -40,19 +40,23 @@
 
 package org.glassfish.pfl.basic.reflection;
 
-import sun.misc.Unsafe;
 import sun.reflect.ReflectionFactory;
 
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
+import java.io.OptionalDataException;
 import java.io.Serializable;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.Permission;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedExceptionAction;
 import java.util.Objects;
 
 /**
@@ -87,7 +91,7 @@ import java.util.Objects;
  * instance is obtained through the Bridge.get() method.
  */
 public final class Bridge extends BridgeBase {
-    private static final Permission getBridgePermission = new BridgePermission("getBridge");
+    private static final Permission GET_BRIDGE_PERMISSION = new BridgePermission("getBridge");
     private static Bridge bridge = null;
 
     // latestUserDefinedLoader() is a private static method
@@ -95,6 +99,11 @@ public final class Bridge extends BridgeBase {
     // We use reflection in a doPrivileged block to get a
     // Method reference and make it accessible.
     private final Method latestUserDefinedLoaderMethod;
+
+    // Since java.io.OptionalDataException's constructors are
+    // package private, but we need to throw it in some special
+    // cases, we try to do it by reflection.
+    private final Constructor<OptionalDataException> optionalDataExceptionConstructor;
 
     private final ReflectionFactory reflectionFactory;
 
@@ -119,11 +128,38 @@ public final class Bridge extends BridgeBase {
         );
     }
 
+    // Grab the OptionalDataException boolean ctor and make it accessible.
+    @SuppressWarnings("unchecked")
+    private Constructor<OptionalDataException> getOptDataExceptionCtor() {
+        try {
+            Constructor result = AccessController.doPrivileged(
+                new PrivilegedExceptionAction<Constructor>() {
+                    public Constructor run()
+                        throws NoSuchMethodException, SecurityException {
+                        Constructor constructor = OptionalDataException.class.getDeclaredConstructor(Boolean.TYPE);
+                        constructor.setAccessible(true);
+                        return constructor;
+                    }
+                }
+            );
+
+            if (result == null) {
+                throw new Error("Unable to find OptionalDataException constructor");
+            }
+
+            return (Constructor<OptionalDataException>) result;
+
+        } catch (Exception ex) {
+            throw new Error("Unable to find OptionalDataException constructor");
+        }
+    }
+
 
     @SuppressWarnings("unchecked")
     private Bridge() {
         latestUserDefinedLoaderMethod = getLatestUserDefinedLoaderMethod();
         reflectionFactory = ReflectionFactory.getReflectionFactory();
+        optionalDataExceptionConstructor = getOptDataExceptionCtor();
     }
 
     /**
@@ -142,7 +178,7 @@ public final class Bridge extends BridgeBase {
     public static synchronized Bridge get() {
         SecurityManager sman = System.getSecurityManager();
         if (sman != null) {
-            sman.checkPermission(getBridgePermission);
+            sman.checkPermission(GET_BRIDGE_PERMISSION);
         }
 
         if (bridge == null) {
@@ -224,5 +260,57 @@ public final class Bridge extends BridgeBase {
 
     private static boolean isPrivate(Constructor<?> cons) {
         return (cons.getModifiers() & Modifier.PRIVATE) != 0;
+    }
+
+    private static Method hasStaticInitializerMethod = null;
+
+    @Override
+    public boolean hasStaticInitializerForSerialization(Class<?> cl) {
+        try {
+            return (Boolean) getHasStaticInitializerMethod().invoke(null, cl);
+        } catch (Exception ex) {
+            throw new Error("Cannot invoke 'hasStaticInitializer' method on " + ObjectStreamClass.class.getName());
+        }
+    }
+
+    private static Method getHasStaticInitializerMethod() throws NoSuchMethodException {
+        if (hasStaticInitializerMethod == null) {
+            hasStaticInitializerMethod = ObjectStreamClass.class.getDeclaredMethod("hasStaticInitializer", Class.class);
+            hasStaticInitializerMethod.setAccessible(true);
+        }
+
+        return hasStaticInitializerMethod;
+    }
+
+    @Override
+    public MethodHandle writeObjectForSerialization(Class<?> cl) {
+        return createAccessibleMethodHandle(cl, "writeObject", ObjectOutputStream.class);
+    }
+
+    private static MethodHandle createAccessibleMethodHandle(Class<?> cl, String name, Class<?>... args) {
+        try {
+            Method method = cl.getDeclaredMethod(name, args);
+            method.setAccessible(true);
+
+            MethodHandle methodHandle = MethodHandles.lookup().unreflect(method);
+            method.setAccessible(false);
+            return methodHandle;
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public MethodHandle readObjectForSerialization(Class<?> cl) {
+        return createAccessibleMethodHandle(cl, "readObject", ObjectInputStream.class);
+    }
+
+    @Override
+    public OptionalDataException newOptionalDataExceptionForSerialization(boolean endOfData) {
+        try {
+            return optionalDataExceptionConstructor.newInstance(endOfData);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new Error("Unable to create OptionalDataException");
+        }
     }
 }

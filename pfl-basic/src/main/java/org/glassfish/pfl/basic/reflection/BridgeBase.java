@@ -122,6 +122,11 @@ public abstract class BridgeBase implements BridgeOperations {
     }
 
     @Override
+    public final long staticFieldOffset(Field f) {
+        return unsafe.staticFieldOffset(f);
+    }
+
+    @Override
     public final void throwException(Throwable ee) {
         unsafe.throwException(ee);
     }

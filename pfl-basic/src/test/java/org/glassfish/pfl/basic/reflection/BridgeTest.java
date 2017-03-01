@@ -1,19 +1,27 @@
 package org.glassfish.pfl.basic.reflection;
 
+import org.glassfish.pfl.basic.testobjects.ClassWithStaticInitializer;
 import org.glassfish.pfl.basic.testobjects.IntHolder;
+import org.glassfish.pfl.basic.testobjects.SerializableClass1;
+import org.glassfish.pfl.basic.testobjects.SerializableClass2;
 import org.glassfish.pfl.basic.testobjects.TestObjects;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 public class BridgeTest {
@@ -35,6 +43,8 @@ public class BridgeTest {
                 }
             }
     );
+    private final ByteArrayOutputStream rawOutputStream = new ByteArrayOutputStream();
+    private ObjectOutputStream objectOutputStream;
 
     private static class MultiFieldClass {
         private byte aByte;
@@ -212,4 +222,60 @@ public class BridgeTest {
         assertThat(intHolder.getAnInt(), equalTo(TestObjects.INT_FIELD_VALUE));
     }
 
+    @Test
+    public void whenClassHasNoStaticInitializer_hasStaticInitializerReturnsFalse() throws Exception {
+        assertThat(BRIDGE.hasStaticInitializerForSerialization(SerializableClass1.class), is(false));
+    }
+
+    @Test
+    public void whenClassHasStaticInitializer_hasStaticInitializerReturnsTrue() throws Exception {
+        assertThat(BRIDGE.hasStaticInitializerForSerialization(ClassWithStaticInitializer.class), is(true));
+    }
+
+    @Test
+    public void whenClassHasNoReadObjectMethod_returnNull() throws Exception {
+        assertThat(BRIDGE.readObjectForSerialization(SerializableClass1.class), nullValue());
+    }
+
+    @Test
+    public void whenClassHasNoWriteObjectMethod_returnNull() throws Exception {
+        assertThat(BRIDGE.writeObjectForSerialization(SerializableClass1.class), nullValue());
+    }
+
+    @Test
+    public void whenClassHasReadObjectMethod_mayInvokeViaHandle() throws Throwable {
+        MethodHandle methodHandle = BRIDGE.readObjectForSerialization(SerializableClass2.class);
+
+        SerializableClass2 obj = new SerializableClass2();
+        createObjectOutputStream().writeLong(123L);
+        methodHandle.invoke(obj, createObjectInputStream());
+
+        assertThat(obj.getALong(), equalTo(123L));
+    }
+
+    private ObjectOutputStream createObjectOutputStream() throws IOException {
+        objectOutputStream = new ObjectOutputStream(rawOutputStream);
+        return objectOutputStream;
+    }
+
+    private ObjectInputStream createObjectInputStream() throws IOException {
+        objectOutputStream.close();
+        ByteArrayInputStream bais = new ByteArrayInputStream(rawOutputStream.toByteArray());
+        return new ObjectInputStream(bais);
+    }
+
+    @Test
+    public void whenClassHasWriteObjectMethod_mayInvokeViaHandle() throws Throwable {
+        MethodHandle methodHandle = BRIDGE.writeObjectForSerialization(SerializableClass2.class);
+
+        SerializableClass2 obj = new SerializableClass2(456L);
+        methodHandle.invoke(obj, createObjectOutputStream());
+
+        assertThat(createObjectInputStream().readLong(), equalTo(456L));
+    }
+
+    @Test(expected = OptionalDataException.class)
+    public void createOptionalDataException() throws Exception {
+        throw BRIDGE.newOptionalDataExceptionForSerialization(true);
+    }
 }

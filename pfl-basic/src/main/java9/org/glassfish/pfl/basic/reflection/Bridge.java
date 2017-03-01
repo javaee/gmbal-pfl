@@ -148,14 +148,7 @@ public final class Bridge extends BridgeBase {
     }
 
     /**
-     * Returns the offset of a static field.
-     */
-    public final long staticFieldOffset(Field f) {
-        return getUnsafe().staticFieldOffset( f ) ;
-    }
-
-    /**
-     * Ensure that the class has been initalized.
+     * Ensure that the class has been initialized.
      * @param cl the class to ensure is initialized
      */
     public final void ensureClassInitialized(Class<?> cl) {
@@ -184,14 +177,17 @@ public final class Bridge extends BridgeBase {
      * Returns true if the given class defines a static initializer method,
      * false otherwise.
      */
+    @Override
     public final boolean hasStaticInitializerForSerialization(Class<?> cl) {
         return reflectionFactory.hasStaticInitializerForSerialization(cl);
     }
 
+    @Override
     public final MethodHandle writeObjectForSerialization(Class<?> cl) {
         return reflectionFactory.writeObjectForSerialization(cl);
     }
 
+    @Override
     public final MethodHandle readObjectForSerialization(Class<?> cl) {
         return reflectionFactory.readObjectForSerialization(cl);
     }
@@ -208,10 +204,7 @@ public final class Bridge extends BridgeBase {
         return reflectionFactory.writeReplaceForSerialization(cl);
     }
 
-    /**
-     * Return a new OptionalDataException instance.
-     * @return a new OptionalDataException instance
-     */
+    @Override
     public final OptionalDataException newOptionalDataExceptionForSerialization(boolean bool) {
         return reflectionFactory.newOptionalDataExceptionForSerialization(bool);
     }

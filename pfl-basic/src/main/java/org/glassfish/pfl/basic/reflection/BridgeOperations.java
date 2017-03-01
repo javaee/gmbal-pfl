@@ -40,6 +40,8 @@
 
 package org.glassfish.pfl.basic.reflection;
 
+import java.io.OptionalDataException;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.security.ProtectionDomain;
@@ -180,6 +182,8 @@ public interface BridgeOperations {
      */
     long objectFieldOffset(Field f);
 
+    long staticFieldOffset(Field f);
+
     /**
      * Throw the exception.
      * The exception may be an undeclared checked exception.
@@ -212,7 +216,31 @@ public interface BridgeOperations {
      * @param className the name of the class
      * @param classBytes the byte code for the class
      * @param classLoader the classloader in which it is to be defined
-     * @param protectionDomain
+     * @param protectionDomain the domain in which the class should be defined
      */
     Class<?> defineClass(String className, byte[] classBytes, ClassLoader classLoader, ProtectionDomain protectionDomain);
+
+    /**
+     * Returns true if the given class defines a static initializer method,
+     * false otherwise.
+     */
+    boolean hasStaticInitializerForSerialization(Class<?> cl);
+
+    /**
+     * Returns a method handle to allow invocation of the specified class's writeObject method.
+     * @param cl the class containing the method
+     */
+    MethodHandle writeObjectForSerialization(Class<?> cl) throws NoSuchMethodException, IllegalAccessException;
+
+    /**
+     * Returns a method handle to allow invocation of the specified class's readObject method.
+     * @param cl the class containing the method
+     */
+    MethodHandle readObjectForSerialization(Class<?> cl) throws NoSuchMethodException, IllegalAccessException;
+
+    /**
+     * Return a new OptionalDataException instance.
+     * @return a new OptionalDataException instance
+     */
+    OptionalDataException newOptionalDataExceptionForSerialization(boolean bool);
 }
