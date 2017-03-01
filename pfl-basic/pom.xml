@@ -43,7 +43,7 @@
     <parent>
         <groupId>org.glassfish.pfl</groupId>
         <artifactId>pfl</artifactId>
-        <version>4.0.0-b005-SNAPSHOT</version>
+        <version>4.0.0-b005</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>pfl-basic</artifactId>
@@ -120,8 +120,7 @@
                                 <configuration>
                                     <tasks>
                                         <mkdir dir="${java9.build.outputDirectory}" />
-                                        <javac srcdir="${java9.sourceDirectory}" destdir="${java9.build.outputDirectory}"
-                                               classpath="${project.build.outputDirectory}" includeantruntime="false" />
+                                        <javac srcdir="${java9.sourceDirectory}" destdir="${java9.build.outputDirectory}" classpath="${project.build.outputDirectory}" includeantruntime="false" />
                                     </tasks>
                                 </configuration>
                                 <goals>
