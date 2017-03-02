@@ -239,6 +239,18 @@ public interface BridgeOperations {
     MethodHandle readObjectForSerialization(Class<?> cl) throws NoSuchMethodException, IllegalAccessException;
 
     /**
+     * Returns a method handle to allow invocation of the specified class's readResolve method.
+     * @param cl the class containing the method
+     */
+    MethodHandle readResolveForSerialization(Class<?> cl);
+
+    /**
+     * Returns a method handle to allow invocation of the specified class's writeReplace method.
+     * @param cl the class containing the method
+     */
+    MethodHandle writeReplaceForSerialization(Class<?> cl);
+
+    /**
      * Return a new OptionalDataException instance.
      * @return a new OptionalDataException instance
      */

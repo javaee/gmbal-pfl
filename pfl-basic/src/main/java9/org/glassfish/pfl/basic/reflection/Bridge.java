@@ -45,7 +45,6 @@ import sun.reflect.ReflectionFactory;
 import java.io.OptionalDataException;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.Permission;
 import java.security.PrivilegedAction;
@@ -147,14 +146,6 @@ public final class Bridge extends BridgeBase {
         return cl != platformClassLoader;
     }
 
-    /**
-     * Ensure that the class has been initialized.
-     * @param cl the class to ensure is initialized
-     */
-    public final void ensureClassInitialized(Class<?> cl) {
-        getUnsafe().ensureClassInitialized(cl);
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public final <T> Constructor<T> newConstructorForExternalization(Class<T> cl) {
@@ -196,10 +187,12 @@ public final class Bridge extends BridgeBase {
         return reflectionFactory.readObjectNoDataForSerialization(cl);
     }
 
+    @Override
     public final MethodHandle readResolveForSerialization(Class<?> cl) {
         return reflectionFactory.readResolveForSerialization(cl);
     }
 
+    @Override
     public final MethodHandle writeReplaceForSerialization(Class<?> cl) {
         return reflectionFactory.writeReplaceForSerialization(cl);
     }

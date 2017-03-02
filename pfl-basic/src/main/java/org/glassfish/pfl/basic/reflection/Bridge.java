@@ -306,6 +306,16 @@ public final class Bridge extends BridgeBase {
     }
 
     @Override
+    public MethodHandle readResolveForSerialization(Class<?> cl) {
+        return null;
+    }
+
+    @Override
+    public MethodHandle writeReplaceForSerialization(Class<?> cl) {
+        return null;
+    }
+
+    @Override
     public OptionalDataException newOptionalDataExceptionForSerialization(boolean endOfData) {
         try {
             return optionalDataExceptionConstructor.newInstance(endOfData);

@@ -135,4 +135,12 @@ public abstract class BridgeBase implements BridgeOperations {
     public final Class<?> defineClass(String className, byte[] classBytes, ClassLoader classLoader, ProtectionDomain protectionDomain) {
         return unsafe.defineClass(className, classBytes, 0, classBytes.length, classLoader, null);
     }
+
+    /**
+     * Ensure that the class has been initialized.
+     * @param cl the class to ensure is initialized
+     */
+    public final void ensureClassInitialized(Class<?> cl) {
+        getUnsafe().ensureClassInitialized(cl);
+    }
 }
