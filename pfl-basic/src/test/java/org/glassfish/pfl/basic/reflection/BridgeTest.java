@@ -238,6 +238,36 @@ public class BridgeTest {
     }
 
     @Test
+    public void whenReadObjectMethodIsStatic_returnNull() throws Exception {
+        assertThat(BRIDGE.readObjectForSerialization(ClassWithStaticReadObject.class), nullValue());
+    }
+
+    private static class ClassWithStaticReadObject {
+        @SuppressWarnings("unused")
+        static private void readObject(ObjectInputStream in) {}
+    }
+
+    @Test
+    public void whenReadObjectMethodIsNotPrivate_returnNull() throws Exception {
+        assertThat(BRIDGE.readObjectForSerialization(ClassWithPublicReadObject.class), nullValue());
+    }
+
+    private static class ClassWithPublicReadObject {
+        @SuppressWarnings("unused")
+        public void readObject(ObjectInputStream in) {}
+    }
+
+    @Test
+    public void whenReadObjectMethodHasReturnType_returnNull() throws Exception {
+        assertThat(BRIDGE.readObjectForSerialization(ClassWithReadObjectWithReturnType.class), nullValue());
+    }
+
+    private static class ClassWithReadObjectWithReturnType {
+        @SuppressWarnings("unused")
+        private Object readObject(ObjectInputStream in) { return null; }
+    }
+
+    @Test
     public void whenClassHasNoWriteObjectMethod_returnNull() throws Exception {
         assertThat(BRIDGE.writeObjectForSerialization(SerializableClass1.class), nullValue());
     }
@@ -272,6 +302,36 @@ public class BridgeTest {
         methodHandle.invoke(obj, createObjectOutputStream());
 
         assertThat(createObjectInputStream().readLong(), equalTo(456L));
+    }
+
+    @Test
+    public void whenClassHasNoReadResolveMethod_returnNull() throws Exception {
+        assertThat(BRIDGE.readResolveForSerialization(SerializableClass1.class), nullValue());
+    }
+
+    @Test
+    public void whenClassHasReadResolveMethod_mayInvokeViaHandle() throws Throwable {
+        MethodHandle methodHandle = BRIDGE.readResolveForSerialization(SerializableClass2.class);
+        assert methodHandle != null;
+
+        SerializableClass2 obj = new SerializableClass2();
+
+        assertThat(methodHandle.invoke(obj), sameInstance(SerializableClass2.READ_RESOLVE_VALUE));
+    }
+
+    @Test
+    public void whenClassHasNoWriteReplaceMethod_returnNull() throws Exception {
+        assertThat(BRIDGE.writeReplaceForSerialization(SerializableClass1.class), nullValue());
+    }
+
+    @Test
+    public void whenClassHasWriteReplaceMethod_mayInvokeViaHandle() throws Throwable {
+        MethodHandle methodHandle = BRIDGE.writeReplaceForSerialization(SerializableClass2.class);
+        assert methodHandle != null;
+
+        SerializableClass2 obj = new SerializableClass2();
+
+        assertThat(methodHandle.invoke(obj), sameInstance(SerializableClass2.WRITE_REPLACE_VALUE));
     }
 
     @Test(expected = OptionalDataException.class)

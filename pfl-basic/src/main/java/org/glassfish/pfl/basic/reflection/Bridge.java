@@ -191,7 +191,6 @@ public final class Bridge extends BridgeBase {
     @Override
     public final ClassLoader getLatestUserDefinedLoader() {
         try {
-            // Invoke the ObjectInputStream.latestUserDefinedLoader method
             return (ClassLoader) latestUserDefinedLoaderMethod.invoke(null);
         } catch (InvocationTargetException | IllegalAccessException ite) {
             throw new Error(getClass().getName() + ".latestUserDefinedLoader: " + ite, ite);
@@ -284,14 +283,16 @@ public final class Bridge extends BridgeBase {
 
     @Override
     public MethodHandle writeObjectForSerialization(Class<?> cl) {
-        return createAccessibleMethodHandle(cl, "writeObject", ObjectOutputStream.class);
+        return createAccessibleMethodHandle(cl, "writeObject", Void.TYPE, ObjectOutputStream.class);
     }
 
-    private static MethodHandle createAccessibleMethodHandle(Class<?> cl, String name, Class<?>... args) {
+    private static MethodHandle createAccessibleMethodHandle(Class<?> cl, String name, Class<?> returnType, Class<?>... args) {
         try {
             Method method = cl.getDeclaredMethod(name, args);
-            method.setAccessible(true);
+            if (method.getReturnType() != returnType) return null;
+            if (isStatic(method) || !isPrivate(method)) return null;
 
+            method.setAccessible(true);
             MethodHandle methodHandle = MethodHandles.lookup().unreflect(method);
             method.setAccessible(false);
             return methodHandle;
@@ -300,19 +301,27 @@ public final class Bridge extends BridgeBase {
         }
     }
 
+    private static boolean isStatic(Method method) {
+        return (method.getModifiers() & Modifier.STATIC) != 0;
+    }
+
+    private static boolean isPrivate(Method method) {
+        return (method.getModifiers() & Modifier.PRIVATE) != 0;
+    }
+
     @Override
     public MethodHandle readObjectForSerialization(Class<?> cl) {
-        return createAccessibleMethodHandle(cl, "readObject", ObjectInputStream.class);
+        return createAccessibleMethodHandle(cl, "readObject", Void.TYPE, ObjectInputStream.class);
     }
 
     @Override
     public MethodHandle readResolveForSerialization(Class<?> cl) {
-        return null;
+        return createAccessibleMethodHandle(cl, "readResolve", Object.class);
     }
 
     @Override
     public MethodHandle writeReplaceForSerialization(Class<?> cl) {
-        return null;
+        return createAccessibleMethodHandle(cl, "writeReplace", Object.class);
     }
 
     @Override

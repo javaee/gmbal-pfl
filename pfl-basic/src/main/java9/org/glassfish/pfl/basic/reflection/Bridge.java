@@ -83,7 +83,7 @@ import java.util.stream.Stream;
  * instance is obtained through the Bridge.get() method.
  */
 public final class Bridge extends BridgeBase {
-    private static final Permission getBridgePermission = new BridgePermission("getBridge");
+    private static final Permission GET_BRIDGE_PERMISSION = new BridgePermission("getBridge");
     private static Bridge bridge = null;
 
     private final ReflectionFactory reflectionFactory;
@@ -110,7 +110,7 @@ public final class Bridge extends BridgeBase {
     public static synchronized Bridge get() {
         SecurityManager sman = System.getSecurityManager();
         if (sman != null) {
-            sman.checkPermission(getBridgePermission);
+            sman.checkPermission(GET_BRIDGE_PERMISSION);
         }
 
         if (bridge == null) {
