@@ -116,7 +116,6 @@
                             <archive>
                                 <manifestEntries>
                                     <Multi-Release>true</Multi-Release>
-                                    <Main-Class>com.example.Main</Main-Class>
                                 </manifestEntries>
                             </archive>
                         </configuration>
