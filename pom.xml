@@ -131,16 +131,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.2</version>
-                <configuration>
-                  <!-- During release:perform, enable the "release" profile -->
-                  <releaseProfiles>release</releaseProfiles>
-                </configuration>
-
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
@@ -174,7 +164,7 @@
     <profiles>
         <profile>
             <!-- processing during a release -->
-            <id>release</id>
+            <id>jvnet-release</id>
             <build>
                 <plugins>
                     <!-- build jars with the configured jdk version -->
@@ -197,6 +187,7 @@
                                     <rules>
                                         <requireJavaVersion>
                                             <version>[9,)</version>
+                                            <message>Java 9 is required to create the multi-release pfl-basic jar</message>
                                         </requireJavaVersion>
                                     </rules>
                                 </configuration>
