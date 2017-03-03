@@ -76,8 +76,9 @@ public abstract class BridgeBase {
     /**
      * @see #getInt(Object, long)
      */
-    public final Object getObject(Object o, long offset) {
-        return unsafe.getObject(o, offset);
+    @SuppressWarnings("unchecked")
+    public final <T> T getObject(Object o, long offset) {
+        return (T) unsafe.getObject(o, offset);
     }
 
     /**
