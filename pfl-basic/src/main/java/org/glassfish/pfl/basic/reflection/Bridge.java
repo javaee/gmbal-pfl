@@ -283,20 +283,35 @@ public final class Bridge extends BridgeBase {
 
     @Override
     public MethodHandle writeObjectForSerialization(Class<?> cl) {
-        return createAccessibleMethodHandle(cl, "writeObject", Void.TYPE, ObjectOutputStream.class);
+        return createAccessiblePrivateMethodHandle(cl, "writeObject", Void.TYPE, ObjectOutputStream.class);
     }
 
-    private static MethodHandle createAccessibleMethodHandle(Class<?> cl, String name, Class<?> returnType, Class<?>... args) {
+    private static MethodHandle createAccessiblePrivateMethodHandle(Class<?> cl, String name, Class<?> returnType, Class<?>... args) {
+        Method method = getNonNonstaticMethod(cl, name, returnType, args);
+        if (method == null || !isPrivate(method)) return null;
+
+        return toMethodHandle(method);
+    }
+
+    private static Method getNonNonstaticMethod(Class<?> cl, String name, Class<?> returnType, Class<?>[] args) {
         try {
             Method method = cl.getDeclaredMethod(name, args);
             if (method.getReturnType() != returnType) return null;
-            if (isStatic(method) || !isPrivate(method)) return null;
+            if (isStatic(method)) return null;
+            return method;
+        } catch (NoSuchMethodException | SecurityException e) {
+            return null;
+        }
+    }
 
+    private static MethodHandle toMethodHandle(Method method) {
+        try {
+            if (method == null) return null;
             method.setAccessible(true);
             MethodHandle methodHandle = MethodHandles.lookup().unreflect(method);
             method.setAccessible(false);
             return methodHandle;
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException e) {
+        } catch (SecurityException | IllegalAccessException e) {
             return null;
         }
     }
@@ -311,12 +326,16 @@ public final class Bridge extends BridgeBase {
 
     @Override
     public MethodHandle readObjectForSerialization(Class<?> cl) {
-        return createAccessibleMethodHandle(cl, "readObject", Void.TYPE, ObjectInputStream.class);
+        return createAccessiblePrivateMethodHandle(cl, "readObject", Void.TYPE, ObjectInputStream.class);
     }
 
     @Override
     public MethodHandle readResolveForSerialization(Class<?> cl) {
         return createAccessibleMethodHandle(cl, "readResolve", Object.class);
+    }
+
+    private static MethodHandle createAccessibleMethodHandle(Class<?> cl, String name, Class<?> returnType, Class<?>... args) {
+        return toMethodHandle(getNonNonstaticMethod(cl, name, returnType, args));
     }
 
     @Override

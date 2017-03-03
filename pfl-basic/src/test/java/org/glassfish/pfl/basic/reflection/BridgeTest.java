@@ -310,6 +310,58 @@ public class BridgeTest {
     }
 
     @Test
+    public void whenReadResolveMethodIsStatic_returnNull() throws Exception {
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithStaticReadResolve.class), nullValue());
+    }
+
+    private static class ClassWithStaticReadResolve {
+        @SuppressWarnings("unused")
+        static Object readObject() { return null; }
+    }
+
+    @Test
+    public void whenReadResolveMethodLacksObjectReturnType_returnNull() throws Exception {
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithReadResolveWithNoReturnType.class), nullValue());
+    }
+
+    private static class ClassWithReadResolveWithNoReturnType {
+        @SuppressWarnings("unused")
+        private void readResolve() {}
+    }
+
+    @Test
+    public void whenReadResolveMethodHasAnyAccess_returnMethodHandle() throws Exception {
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithPublicResolveAndReplace.class), notNullValue());
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithPackagePrivateResolveAndReplace.class), notNullValue());
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithProtectedResolveAndReplace.class), notNullValue());
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithPrivateResolveAndReplace.class), notNullValue());
+    }
+
+    @SuppressWarnings("unused")
+    private static class ClassWithPublicResolveAndReplace {
+        public Object readResolve() { return null; }
+        public Object writeReplace() { return null; }
+    }
+
+    @SuppressWarnings("unused")
+    private static class ClassWithPackagePrivateResolveAndReplace {
+        Object readResolve() { return null; }
+        Object writeReplace() { return null; }
+    }
+
+    @SuppressWarnings("unused")
+    private static class ClassWithProtectedResolveAndReplace {
+        protected Object readResolve() { return null; }
+        protected Object writeReplace() { return null; }
+    }
+
+    @SuppressWarnings("unused")
+    private static class ClassWithPrivateResolveAndReplace {
+        private Object readResolve() { return null; }
+        private Object writeReplace() { return null; }
+    }
+
+    @Test
     public void whenClassHasReadResolveMethod_mayInvokeViaHandle() throws Throwable {
         MethodHandle methodHandle = BRIDGE.readResolveForSerialization(SerializableClass2.class);
         assert methodHandle != null;
@@ -322,6 +374,14 @@ public class BridgeTest {
     @Test
     public void whenClassHasNoWriteReplaceMethod_returnNull() throws Exception {
         assertThat(BRIDGE.writeReplaceForSerialization(SerializableClass1.class), nullValue());
+    }
+
+    @Test
+    public void whenWriteReplaceMethodHasAnyAccess_returnMethodHandle() throws Exception {
+        assertThat(BRIDGE.writeReplaceForSerialization(ClassWithPublicResolveAndReplace.class), notNullValue());
+        assertThat(BRIDGE.writeReplaceForSerialization(ClassWithPackagePrivateResolveAndReplace.class), notNullValue());
+        assertThat(BRIDGE.writeReplaceForSerialization(ClassWithProtectedResolveAndReplace.class), notNullValue());
+        assertThat(BRIDGE.writeReplaceForSerialization(ClassWithPrivateResolveAndReplace.class), notNullValue());
     }
 
     @Test
