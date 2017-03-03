@@ -90,6 +90,13 @@
             </activation>
             <build>
                 <plugins>
+                    <!-- compile main portion of jar with configured JDK -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-toolchains-plugin</artifactId>
+                    </plugin>
+
+                    <!-- use ant to compile the Java 9 classes -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
@@ -109,6 +116,8 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <!-- add the multi-release:true manifest entry -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
