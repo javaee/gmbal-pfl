@@ -283,25 +283,7 @@ public final class Bridge extends BridgeBase {
 
     @Override
     public MethodHandle writeObjectForSerialization(Class<?> cl) {
-        return createAccessiblePrivateMethodHandle(cl, "writeObject", Void.TYPE, ObjectOutputStream.class);
-    }
-
-    private static MethodHandle createAccessiblePrivateMethodHandle(Class<?> cl, String name, Class<?> returnType, Class<?>... args) {
-        Method method = getNonNonstaticMethod(cl, name, returnType, args);
-        if (method == null || !isPrivate(method)) return null;
-
-        return toMethodHandle(method);
-    }
-
-    private static Method getNonNonstaticMethod(Class<?> cl, String name, Class<?> returnType, Class<?>[] args) {
-        try {
-            Method method = cl.getDeclaredMethod(name, args);
-            if (method.getReturnType() != returnType) return null;
-            if (isStatic(method)) return null;
-            return method;
-        } catch (NoSuchMethodException | SecurityException e) {
-            return null;
-        }
+        return toMethodHandle(getPrivateMethod(cl, "writeObject", Void.TYPE, ObjectOutputStream.class));
     }
 
     private static MethodHandle toMethodHandle(Method method) {
@@ -315,32 +297,79 @@ public final class Bridge extends BridgeBase {
             return null;
         }
     }
+    private static Method getPrivateMethod(Class<?> cl, String name, Class<?> returnType, Class<?>... argTypes ) {
+        try {
+            Method method = cl.getDeclaredMethod(name, argTypes);
+            return ((method.getReturnType() == returnType) && isPrivate(method) && !isStatic(method)) ? method : null;
+        } catch (NoSuchMethodException ex) {
+            return null;
+        }
+    }
 
     private static boolean isStatic(Method method) {
-        return (method.getModifiers() & Modifier.STATIC) != 0;
+        return Modifier.isStatic(method.getModifiers());
     }
 
     private static boolean isPrivate(Method method) {
-        return (method.getModifiers() & Modifier.PRIVATE) != 0;
+        return Modifier.isPrivate(method.getModifiers());
     }
 
     @Override
     public MethodHandle readObjectForSerialization(Class<?> cl) {
-        return createAccessiblePrivateMethodHandle(cl, "readObject", Void.TYPE, ObjectInputStream.class);
+        return toMethodHandle(getPrivateMethod(cl, "readObject", Void.TYPE, ObjectInputStream.class));
     }
 
     @Override
     public MethodHandle readResolveForSerialization(Class<?> cl) {
-        return createAccessibleMethodHandle(cl, "readResolve", Object.class);
+        return toMethodHandle(getInheritableMethod(cl, "readResolve", Object.class));
     }
 
-    private static MethodHandle createAccessibleMethodHandle(Class<?> cl, String name, Class<?> returnType, Class<?>... args) {
-        return toMethodHandle(getNonNonstaticMethod(cl, name, returnType, args));
+    private static Method getInheritableMethod(Class<?> cl, String name, Class<?> returnType, Class<?>... argTypes ) {
+        Method method = getMatchingMethod(cl, name, returnType, argTypes);
+
+        return (method != null && isMethodInheritableBy(cl, method)) ? method : null;
+    }
+
+    private static Method getMatchingMethod(Class<?> cl, String name, Class<?> returnType, Class<?>[] argTypes) {
+        Class<?> aClass = cl;
+        while (aClass != null) {
+            try {
+                Method method = aClass.getDeclaredMethod(name, argTypes);
+                return method.getReturnType() == returnType ? method : null;
+            } catch (NoSuchMethodException ex) {
+                aClass = aClass.getSuperclass();
+            }
+        }
+        return null;
+    }
+
+    private static boolean isMethodInheritableBy(Class<?> callingClass, Method method) {
+        Class<?> baseClass = method.getDeclaringClass();
+
+        int mods = method.getModifiers();
+        if ((mods & (Modifier.STATIC | Modifier.ABSTRACT)) != 0) {
+            return false;
+        } else if ((mods & (Modifier.PUBLIC | Modifier.PROTECTED)) != 0) {
+            return true;
+        } else if ((mods & Modifier.PRIVATE) != 0) {
+            return (callingClass == baseClass);
+        } else {
+            return packageEquals(callingClass, baseClass);
+        }
+    }
+
+    /**
+     * Returns true if classes are defined in the same package, false
+     * Copied from the Merlin java.io.ObjectStreamClass.
+     */
+    private static boolean packageEquals(Class<?> cl1, Class<?> cl2) {
+        Package pkg1 = cl1.getPackage(), pkg2 = cl2.getPackage();
+        return ((pkg1 == pkg2) || ((pkg1 != null) && (pkg1.equals(pkg2))));
     }
 
     @Override
     public MethodHandle writeReplaceForSerialization(Class<?> cl) {
-        return createAccessibleMethodHandle(cl, "writeReplace", Object.class);
+        return toMethodHandle(getInheritableMethod(cl, "writeReplace", Object.class));
     }
 
     @Override

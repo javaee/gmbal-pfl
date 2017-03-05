@@ -1,6 +1,7 @@
 package org.glassfish.pfl.basic.reflection;
 
 import org.glassfish.pfl.basic.testobjects.ClassWithStaticInitializer;
+import org.glassfish.pfl.basic.testobjects.ForeignClassWithPackagePrivateResolveAndReplace;
 import org.glassfish.pfl.basic.testobjects.IntHolder;
 import org.glassfish.pfl.basic.testobjects.SerializableClass1;
 import org.glassfish.pfl.basic.testobjects.SerializableClass2;
@@ -333,6 +334,7 @@ public class BridgeTest {
     public void whenReadResolveMethodHasAnyAccess_returnMethodHandle() throws Exception {
         assertThat(BRIDGE.readResolveForSerialization(ClassWithPublicResolveAndReplace.class), notNullValue());
         assertThat(BRIDGE.readResolveForSerialization(ClassWithPackagePrivateResolveAndReplace.class), notNullValue());
+        assertThat(BRIDGE.readResolveForSerialization(ForeignClassWithPackagePrivateResolveAndReplace.class), notNullValue());
         assertThat(BRIDGE.readResolveForSerialization(ClassWithProtectedResolveAndReplace.class), notNullValue());
         assertThat(BRIDGE.readResolveForSerialization(ClassWithPrivateResolveAndReplace.class), notNullValue());
     }
@@ -360,6 +362,34 @@ public class BridgeTest {
         private Object readResolve() { return null; }
         private Object writeReplace() { return null; }
     }
+
+    @Test
+    public void whenParentReadResolveMethodIsAccessible_returnMethodHandle() throws Exception {
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithSuperclassPublicResolveAndReplace.class), notNullValue());
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithSuperclassPackagePrivateResolveAndReplace.class), notNullValue());
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithSuperclassProtectedResolveAndReplace.class), notNullValue());
+    }
+
+    @SuppressWarnings("unused")
+    private static class ClassWithSuperclassPublicResolveAndReplace extends ClassWithPublicResolveAndReplace {}
+
+    @SuppressWarnings("unused")
+    private static class ClassWithSuperclassPackagePrivateResolveAndReplace extends ClassWithPackagePrivateResolveAndReplace {}
+
+    @SuppressWarnings("unused")
+    private static class ClassWithSuperclassProtectedResolveAndReplace extends ClassWithProtectedResolveAndReplace {}
+
+    @Test
+    public void whenParentReadResolveMethodIsNotAccessible_returnNull() throws Exception {
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithSuperclassPrivateResolveAndReplace.class), nullValue());
+        assertThat(BRIDGE.readResolveForSerialization(ClassWithForeignSuperclassPackagePrivateResolveAndReplace.class), nullValue());
+    }
+
+    @SuppressWarnings("unused")
+    private static class ClassWithSuperclassPrivateResolveAndReplace extends ClassWithPrivateResolveAndReplace {}
+
+    @SuppressWarnings("unused")
+    private static class ClassWithForeignSuperclassPackagePrivateResolveAndReplace extends ForeignClassWithPackagePrivateResolveAndReplace {}
 
     @Test
     public void whenClassHasReadResolveMethod_mayInvokeViaHandle() throws Throwable {

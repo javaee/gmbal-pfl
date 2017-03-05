@@ -48,9 +48,9 @@ import org.glassfish.pfl.dynamic.copyobject.spi.ReflectiveCopyException;
 
 import java.io.Externalizable;
 import java.io.Serializable;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -90,71 +90,10 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
             }
     );
 
-    /**
-     * Returns true if classes are defined in the same package, false
-     * otherwise.
-     * <p>
-     * Copied from the Merlin java.io.ObjectStreamClass.
-     */
-    private static boolean packageEquals(Class<?> cl1, Class<?> cl2) {
-        Package pkg1 = cl1.getPackage(), pkg2 = cl2.getPackage();
-        return ((pkg1 == pkg2) || ((pkg1 != null) && (pkg1.equals(pkg2))));
-    }
-
 
 //******************************************************************************
 // Method access utilities
 //******************************************************************************
-
-    /**
-     * Returns non-static, non-abstract method with given signature provided it
-     * is defined by or accessible (via inheritance) by the given class, or
-     * null if no match found.  Access checks are disabled on the returned
-     * method (if any).
-     * <p>
-     * Copied from the Merlin java.io.ObjectStreamClass.
-     */
-    private static Method getInheritableMethod(final Class<?> cl, final String name,
-                                               final Class<?> returnType, final Class<?>... argTypes) {
-        return AccessController.doPrivileged(
-                new PrivilegedAction<Method>() {
-                    @Override
-                    public Method run() {
-                        Method meth = null;
-                        Class<?> defCl = cl;
-                        while (defCl != null) {
-                            try {
-                                meth = defCl.getDeclaredMethod(name, argTypes);
-                                break;
-                            } catch (NoSuchMethodException ex) {
-                                defCl = defCl.getSuperclass();
-                            }
-                        }
-
-                        if ((meth == null) || (meth.getReturnType() != returnType)) {
-                            return null;
-                        }
-
-                        try {
-                            meth.setAccessible(true);
-                        } catch (Exception e) {
-                            return null;
-                        }
-
-                        int mods = meth.getModifiers();
-                        if ((mods & (Modifier.STATIC | Modifier.ABSTRACT)) != 0) {
-                            return null;
-                        } else if ((mods & (Modifier.PUBLIC | Modifier.PROTECTED)) != 0) {
-                            return meth;
-                        } else if ((mods & Modifier.PRIVATE) != 0) {
-                            return (cl == defCl) ? meth : null;
-                        } else {
-                            return packageEquals(cl, defCl) ? meth : null;
-                        }
-                    }
-                }
-        );
-    }
 
     private Object resolve(Object obj) {
         if (readResolveMethod != null) {
@@ -1026,7 +965,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
     private Constructor<?> constructor;
 
     // Null unless the class defines a readResolve() method.
-    private Method readResolveMethod;
+    private MethodHandle readResolveMethod;
 
 //******************************************************************************
 // Implementation
@@ -1038,8 +977,7 @@ public class ClassCopierOrdinaryImpl extends ClassCopierBase {
 
         classFieldCopier = getClassFieldCopier(cls, ccf);
         constructor = ConstructorFactory.makeConstructor(cls);
-        readResolveMethod = getInheritableMethod(cls,
-                "readResolve", Object.class);
+        readResolveMethod = BRIDGE_REF.readResolveForSerialization(cls);
 
         // XXX handle custom marshalled objects.
     }
