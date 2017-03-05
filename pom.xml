@@ -48,7 +48,7 @@
 
     <groupId>org.glassfish.pfl</groupId>
     <artifactId>pfl</artifactId>
-    <version>4.0.0-b007-SNAPSHOT</version>
+    <version>4.0.0-b007</version>
     <packaging>pom</packaging>
     
     <name>pfl</name>
@@ -81,7 +81,7 @@
         <connection>scm:hg:https://hg.java.net/hg/gmbal~pfl</connection>
         <developerConnection>scm:hg:https://hg.java.net/hg/gmbal~pfl</developerConnection>
         <url>http://java.net/projects/gmbal/sources/pfl/show</url>
-      <tag>HEAD</tag>
+      <tag>pfl-4.0.0-b007</tag>
   </scm>
     
     <issueManagement>
