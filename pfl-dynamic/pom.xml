@@ -47,13 +47,18 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>pfl-dynamic</artifactId>
-    <packaging>bundle</packaging>
     <name>PFL Dynamic</name>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>pfl-basic</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>3.3.1</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>javax.ejb</groupId>
@@ -79,7 +84,51 @@
                         </Export-Package>             
                     </instructions>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>manifest</goal>
+                            <goal>install</goal>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-         </plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <artifactSet>
+                        <includes>
+                            <include>asm:asm-all</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.objectweb.asm</pattern>
+                            <shadedPattern>org.glassfish.pfl.objectweb.asm</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>
