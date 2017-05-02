@@ -78,13 +78,15 @@
     </licenses>
     
     <scm>
-        <connection>scm:hg:https://hg.java.net/hg/gmbal~pfl</connection>
-        <developerConnection>scm:hg:https://hg.java.net/hg/gmbal~pfl</developerConnection>
-        <url>http://java.net/projects/gmbal/sources/pfl/show</url>
-      <tag>HEAD</tag>
-  </scm>
+        <connection>scm:git:https://github.com/javaee/gmbal-pfl.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/javaee/gmbal-pfl.git</developerConnection>
+        <url>https://github.com/javaee/gmbal-pfl</url>
+        <tag>HEAD</tag>
+    </scm>
     
     <issueManagement>
+        <system>github</system>
+        <url>https://github.com/javaee/gmbal-pfl/issues/</url>
     </issueManagement>
     
     <mailingLists>
