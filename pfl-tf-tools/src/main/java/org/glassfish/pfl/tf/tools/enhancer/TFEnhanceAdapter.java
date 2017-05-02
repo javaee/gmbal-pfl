@@ -1,9 +1,7 @@
-package org.glassfish.pfl.tf.tools.enhancer;
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010,2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,16 +38,18 @@ package org.glassfish.pfl.tf.tools.enhancer;
  * holder.
  */
 
+package org.glassfish.pfl.tf.tools.enhancer;
+
 import org.glassfish.pfl.tf.spi.EnhancedClassData;
 import org.glassfish.pfl.tf.spi.TraceEnhancementException;
 import org.glassfish.pfl.tf.spi.annotation.TFEnhanced;
 import org.glassfish.pfl.tf.spi.annotation.TraceEnhanceLevel;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
+import org.glassfish.pfl.objectweb.asm.AnnotationVisitor;
+import org.glassfish.pfl.objectweb.asm.ClassAdapter;
+import org.glassfish.pfl.objectweb.asm.ClassVisitor;
+import org.glassfish.pfl.objectweb.asm.FieldVisitor;
+import org.glassfish.pfl.objectweb.asm.MethodVisitor;
+import org.glassfish.pfl.objectweb.asm.Type;
 
 /**
  *
