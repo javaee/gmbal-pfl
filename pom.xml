@@ -51,8 +51,8 @@
     <version>4.0.0-b008-SNAPSHOT</version>
     <packaging>pom</packaging>
     
-    <name>pfl</name>
-    <description>Primitive Function Library</description>
+    <name>Primitive Function Library (PFL)</name>
+    <description>A library of simple utilities used by Glassfish</description>
     <url>http://java.net/projects/gmbal</url>
     
     <developers>
@@ -89,6 +89,14 @@
         <url>https://github.com/javaee/gmbal-pfl/issues/</url>
     </issueManagement>
     
+    <distributionManagement>
+        <site>
+            <id>github</id>
+            <url>scm:git:https://github.com/javaee/gmbal-pfl.git</url>
+        </site>
+    </distributionManagement>
+
+
     <mailingLists>
     </mailingLists>
 
@@ -128,6 +136,11 @@
                         </toolchains>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>2.9</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         
@@ -144,6 +157,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
