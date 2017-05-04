@@ -11,5 +11,5 @@ For publishing the site do the following:
 
 ```
 cd target/checkout
-mvn verify site site:stage scm-publish:publish-scm
+mvn -Psite verify site site:stage scm-publish:publish-scm
 ```

@@ -191,7 +191,7 @@
             <!-- use the scm publish plugin to deploy to GitHub -->
             <plugin>
                 <artifactId>maven-scm-publish-plugin</artifactId>
-                <version>1.0-beta-2</version>
+                <version>1.1</version>
                 <configuration>
                     <scmBranch>gh-pages</scmBranch>
                     <pubScmUrl>scm:git:https://github.com/javaee/gmbal-pfl.git</pubScmUrl>
@@ -224,10 +224,83 @@
         </dependency>
     </dependencies>
 
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.6</version>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate-project-info</id>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>index</report>
+                            <report>license</report>
+                            <report>issue-tracking</report>
+                            <report>scm</report>
+                            <report>distribution-management</report>
+                            <report>project-team</report>
+                            <report>summary</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+<!--
+
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-changes-plugin</artifactId>
+              <version>2.11</version>
+              <reportSets>
+                <reportSet>
+                  <reports>
+                    <report>changes-report</report>
+                  </reports>
+                </reportSet>
+              </reportSets>
+            </plugin>
+-->
+
+        </plugins>
+    </reporting>
+
     <profiles>
+
+        <!-- ignore javadoc lint checks, enabled by default in JDK 1.8 -->
+        <profile>
+            <id>disable-java8-doclint</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
+
+        <profile>
+            <!-- processing during site generation -->
+            <id>site</id>
+            <properties>
+                <additionalparam/>
+            </properties>
+            <build>
+                <plugins>
+                    <!-- build javadoc with the configured jdk version to ensure cross-module consistency -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-toolchains-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <!-- processing during a release -->
             <id>jvnet-release</id>
+            <properties>
+                <additionalparam/>
+            </properties>
             <build>
                 <plugins>
                     <!-- build jars with the configured jdk version -->
