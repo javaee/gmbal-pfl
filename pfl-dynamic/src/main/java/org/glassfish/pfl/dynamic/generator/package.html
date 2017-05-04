@@ -11,7 +11,7 @@
       data members to support delegation.
 
       An interface or abstract class that contains at least one abstract method
-      annotated @Value or at least one field annotated @Delegate is a client
+      annotated &#64;Value or at least one field annotated &#64;Delegate is a client
       class.  The resulting implementation produced automatically as described
       below is the enhanced class.
 
@@ -23,21 +23,21 @@
       framework.
 
       Annotations used:
-        @Value: defines a property accessor method (optional value representing
+        &#64;Value: defines a property accessor method (optional value representing
             ID, default is derived from method name)
-        @Delegate: defines a data member used to handle all methods on an
+        &#64;Delegate: defines a data member used to handle all methods on an
             implemented interface (optional value representing ID,
             default is field name)
-        @Factory: used on a class that contains abstract methods that
-            are annotated as @Builder with return type matching the
-            value of the @Factory annotation (required Class value that
-            gives the client class for which @Builder methods are supplied.
-        @Builder: used on a method of a @Factory class
+        &#64;Factory: used on a class that contains abstract methods that
+            are annotated as &#64;Builder with return type matching the
+            value of the &#64;Factory annotation (required Class value that
+            gives the client class for which &#64;Builder methods are supplied.
+        &#64;Builder: used on a method of a &#64;Factory class
             that acts as a builder for an enhanced
             class.  Builders may also be enhanced. (optional String[]
             value mapping builder value ids to enhanced class value
             or delegate ids).
-        @Id: used on a parameter in a builder method to indicate what
+        &#64;Id: used on a parameter in a builder method to indicate what
             id in the result the parameter value initializes.
             (required String value parameter).
 
@@ -50,39 +50,39 @@
 
       Interface case:
       - All we really need in the generated class is a constructor that takes
-        a Map<String,Object> as an argument.
+        a Map&lt;String,Object&gt; as an argument.
 
       Abstract class case:
       - This is more complex.  It would seem to make sense to require that for
         each constructor in the client class, there is a corresponding constructor
-        in the enhanced class, which takes a Map<String,Object> as an extra argument
+        in the enhanced class, which takes a Map&lt;String,Object&gt; as an extra argument
         (probably at the end of the arg list). The implementation just calls
         super on the correspding parent class constructor, and then uses the
-        Map<String,Object> to initialize the delegates and values.
+        Map&lt;String,Object&gt; to initialize the delegates and values.
 
       So we need a way to indicate that a particular method in a builder class
       can be used to initialize a particular delegate or property value in
       the builder's target class.  We can do this by property ID.  For example,
-      the @Builder annotation can have a String[] value, in which each element
+      the &#64;Builder annotation can have a String[] value, in which each element
       takes the form
 
-      "(bid)->(ecid)"
+      "(bid)-&gt;(ecid)"
 
       where bid is an id for a value in the builder, and ecid is an id
       for a value or delegate in the enhanced class.
 
       Basic dynamic initialization:
-      Object create( Pair<String,Object>... )
-      Object create( Map<String,Object> )
+      Object create( Pair&lt;String,Object&gt;... )
+      Object create( Map&lt;String,Object&gt; )
       Here the map key/first element is either a String (for a Value) or
       a Class (for a Delegate).
 
       How does a builder method work?
-      A builder method is any abstract method in a @Builder class that returns
-      the type of the @Builder annotation value.  The interesting problem here
+      A builder method is any abstract method in a &#64;Builder class that returns
+      the type of the &#64;Builder annotation value.  The interesting problem here
       is how to pick an appropriate constructor to use.  Basic idea:
-      - all parameters NOT annotated with @Id must match a particular constructor.
-      - all ID parameters are used to create a Map<String,Object> that is
+      - all parameters NOT annotated with &#64;Id must match a particular constructor.
+      - all ID parameters are used to create a Map&lt;String,Object&gt; that is
         passed to the corresponding derived constructor in the enhanced class.
   </body>
 </html>

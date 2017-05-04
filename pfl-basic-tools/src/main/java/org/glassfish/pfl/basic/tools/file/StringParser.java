@@ -87,7 +87,7 @@ public class StringParser {
     }
 
     /** skip over str, if str is at the current position.
-     * @param string to skip (must be at current position)
+     * @param str to skip (must be at current position)
      * @return whether or not str was at current position
      */
     public boolean skipString( String str ) {

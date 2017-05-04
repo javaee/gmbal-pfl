@@ -39,11 +39,11 @@
  */
 package org.glassfish.pfl.basic.tools.file ;
 
-import java.util.List ;
-import java.util.ArrayList ;
-
-import java.io.IOException ;
 import org.glassfish.pfl.basic.func.BinaryFunction;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Utility class used to convert FileWrappers into (lists of) Blocks.
  */
@@ -79,7 +79,7 @@ public class BlockParser {
      * Such blocks are given the tag COMMENT_BLOCK_TAG.  
      * <li>Blocks in which no line starts with prefix.
      * Such blocks are not tagged.
-     * <ul>
+     * </ul>
      */
     public static List<Block> parseBlocks( final FileWrapper fw, 
 	final String prefix ) throws IOException {
@@ -148,7 +148,7 @@ public class BlockParser {
      * and end with a String containing end.  Such blocks are given the
      * tag COMMENT_BLOCK_TAG.  
      * <li>Blocks that do not contain start or end anywhere
-     * <ul>
+     * </ul>
      */
     public static List<Block> parseBlocks( final FileWrapper fw, 
 	final String start, final String end ) throws IOException {

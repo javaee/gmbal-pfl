@@ -110,8 +110,9 @@ public abstract class ClassCopierBase implements ClassCopier {
      * <li>createCopy( source ) is called to create a new copy of source.
      * <li>The new copy is placed in oldToNew with source as its key.
      * <li>doCopy is called to complete the copy.
-     * <ol>
-     * <p>This split into two phases isolates all subclasses from the need to
+     * </ol>
+     *
+     * This split into two phases isolates all subclasses from the need to
      * update oldToNew. It accommodates simple cases (arrays of primitives
      * for example) that only need to define createCopy, as well as more complex
      * case (general objects) that must first create the copy, update oldToNew,

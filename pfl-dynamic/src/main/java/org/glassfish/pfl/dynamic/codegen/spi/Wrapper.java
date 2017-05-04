@@ -40,45 +40,26 @@
 
 package org.glassfish.pfl.dynamic.codegen.spi;
 
-import java.io.PrintStream ;
-import java.io.IOException ;
-
-import java.util.Properties ;
-import java.util.List ;
-import java.util.Stack ;
-
-import static java.util.Arrays.asList ;
-
-import java.security.ProtectionDomain ;
-import java.security.AccessController ;
-import java.security.PrivilegedAction ;
-
-import org.glassfish.pfl.dynamic.copyobject.impl.ClassCopierOrdinaryImpl ;
-
-import org.glassfish.pfl.basic.fsm.State ;
-import org.glassfish.pfl.basic.fsm.Input ;
-import org.glassfish.pfl.basic.fsm.FSM ;
-import org.glassfish.pfl.basic.fsm.FSMImpl ;
-import org.glassfish.pfl.basic.fsm.Runner ;
-import org.glassfish.pfl.basic.fsm.StateEngine ;
-
-import org.glassfish.pfl.dynamic.codegen.impl.BlockStatement ;
-import org.glassfish.pfl.dynamic.codegen.impl.ClassGeneratorImpl ;
-import org.glassfish.pfl.dynamic.codegen.impl.CurrentClassLoader ;
-import org.glassfish.pfl.dynamic.codegen.impl.CodeGenerator ;
-import org.glassfish.pfl.dynamic.codegen.impl.CodeGeneratorUtil ;
-import org.glassfish.pfl.dynamic.codegen.impl.ExpressionFactory ;
-import org.glassfish.pfl.dynamic.codegen.impl.Identifier ;
-import org.glassfish.pfl.dynamic.codegen.impl.ImportListImpl ;
-import org.glassfish.pfl.dynamic.codegen.impl.IfStatement ;
-import org.glassfish.pfl.dynamic.codegen.impl.MethodGenerator ;
-import org.glassfish.pfl.dynamic.codegen.impl.SwitchStatement ;
-import org.glassfish.pfl.dynamic.codegen.impl.TryStatement ;
-import org.glassfish.pfl.dynamic.codegen.impl.Util ;
-import org.glassfish.pfl.dynamic.codegen.impl.FieldGenerator ;
-import org.glassfish.pfl.dynamic.codegen.impl.VariableInternal;
-import org.glassfish.pfl.dynamic.codegen.impl.WhileStatement ;
 import org.glassfish.pfl.basic.contain.Pair;
+import org.glassfish.pfl.basic.fsm.FSM;
+import org.glassfish.pfl.basic.fsm.FSMImpl;
+import org.glassfish.pfl.basic.fsm.Input;
+import org.glassfish.pfl.basic.fsm.Runner;
+import org.glassfish.pfl.basic.fsm.State;
+import org.glassfish.pfl.basic.fsm.StateEngine;
+import org.glassfish.pfl.dynamic.codegen.impl.*;
+import org.glassfish.pfl.dynamic.copyobject.impl.ClassCopierOrdinaryImpl;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
+import java.util.List;
+import java.util.Properties;
+import java.util.Stack;
+
+import static java.util.Arrays.asList;
 
 /** Main API for runtime code generation.
  * This API generates bytecode dynamically at runtime, allowing direct construction
@@ -141,7 +122,7 @@ import org.glassfish.pfl.basic.contain.Pair;
  * _end() ; // of method
  * _end() ; // of class
  * _end() ; // of package
- * Class<?>  newClass = _generate( ... ) ;
+ * Class&lt;?&gt;  newClass = _generate( ... ) ;
  * </PRE>
  * Alternatively, the last line could be
  * <PRE>
@@ -1987,7 +1968,7 @@ public final class Wrapper {
     }
 
     /** Create an expression representing the application of the
-     * < operator to the left and right expressions in the
+     * &lt; operator to the left and right expressions in the
      * form (left op right).
      */
     public static final Expression _lt( Expression left,
@@ -1997,7 +1978,7 @@ public final class Wrapper {
     }
 
     /** Create an expression representing the application of the
-     * > operator to the left and right expressions in the
+     * &gt; operator to the left and right expressions in the
      * form (left op right).
      */
     public static final Expression _gt( Expression left,
@@ -2007,7 +1988,7 @@ public final class Wrapper {
     }
 
     /** Create an expression representing the application of the
-     * <= operator to the left and right expressions in the
+     * &lt;= operator to the left and right expressions in the
      * form (left op right).
      */
     public static final Expression _le( Expression left,
@@ -2017,7 +1998,7 @@ public final class Wrapper {
     }
 
     /** Create an expression representing the application of the
-     * >= operator to the left and right expressions in the
+     * &gt;= operator to the left and right expressions in the
      * form (left op right).
      */
     public static final Expression _ge( Expression left,
@@ -2047,7 +2028,7 @@ public final class Wrapper {
     }
 
     /** Create an expression representing the application of the
-     * && operator to the left and right expressions in the
+     * &amp;&amp; operator to the left and right expressions in the
      * form (left op right).
      */
     public static final Expression _and( Expression left,

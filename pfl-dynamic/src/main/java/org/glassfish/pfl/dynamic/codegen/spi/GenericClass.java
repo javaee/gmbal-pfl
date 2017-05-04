@@ -69,9 +69,7 @@ public class GenericClass<T> {
 
     /** Create a generic of type T for the untyped class cls.
      * Generally cls is a class that has been generated and loaded, so
-     * no compiled code can depend on the class directly.  However, the
-     * generated class probably implements some interface T, represented
-     * here by Class<T>.
+     * no compiled code can depend on the class directly. 
      * @throws IllegalArgumentException if cls is not a subclass of type. 
      */
     public GenericClass( Class<T> type, Class<?> cls ) {
