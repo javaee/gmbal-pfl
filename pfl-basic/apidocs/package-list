@@ -1,0 +1,9 @@
+org.glassfish.pfl.basic.algorithm
+org.glassfish.pfl.basic.concurrent
+org.glassfish.pfl.basic.contain
+org.glassfish.pfl.basic.fsm
+org.glassfish.pfl.basic.func
+org.glassfish.pfl.basic.graph
+org.glassfish.pfl.basic.logex
+org.glassfish.pfl.basic.proxy
+org.glassfish.pfl.basic.reflection

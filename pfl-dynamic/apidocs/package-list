@@ -1,0 +1,5 @@
+org.glassfish.pfl.dynamic.codegen.impl
+org.glassfish.pfl.dynamic.codegen.spi
+org.glassfish.pfl.dynamic.copyobject.impl
+org.glassfish.pfl.dynamic.copyobject.spi
+org.glassfish.pfl.dynamic.generator
