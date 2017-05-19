@@ -70,7 +70,8 @@ public abstract class BridgeBase {
      *                          {@link NullPointerException}
      */
     public final void putInt(Object o, long offset, int x) {
-        unsafe.putInt(o, offset, x);
+        if (offset != INVALID_FIELD_OFFSET)
+            unsafe.putInt(o, offset, x);
     }
 
     /**
@@ -85,7 +86,8 @@ public abstract class BridgeBase {
      * @see #putInt(Object, long, int)
      */
     public final void putObject(Object o, long offset, Object x) {
-        unsafe.putObject(o, offset, x);
+        if (offset != INVALID_FIELD_OFFSET)
+            unsafe.putObject(o, offset, x);
     }
 
     /**
@@ -99,7 +101,8 @@ public abstract class BridgeBase {
      * @see #putInt(Object, long, int)
      */
     public final void putBoolean(Object o, long offset, boolean x) {
-        unsafe.putBoolean(o, offset, x);
+        if (offset != INVALID_FIELD_OFFSET)
+            unsafe.putBoolean(o, offset, x);
     }
 
     /**
@@ -113,7 +116,8 @@ public abstract class BridgeBase {
      * @see #putInt(Object, long, int)
      */
     public final void putByte(Object o, long offset, byte x) {
-        unsafe.putByte(o, offset, x);
+        if (offset != INVALID_FIELD_OFFSET)
+            unsafe.putByte(o, offset, x);
     }
 
     /**
@@ -127,7 +131,8 @@ public abstract class BridgeBase {
      * @see #putInt(Object, long, int)
      */
     public final void putShort(Object o, long offset, short x) {
-        unsafe.putShort(o, offset, x);
+        if (offset != INVALID_FIELD_OFFSET)
+            unsafe.putShort(o, offset, x);
     }
 
     /**
@@ -141,7 +146,8 @@ public abstract class BridgeBase {
      * @see #putInt(Object, long, int)
      */
     public final void putChar(Object o, long offset, char x) {
-        unsafe.putChar(o, offset, x);
+        if (offset != INVALID_FIELD_OFFSET)
+            unsafe.putChar(o, offset, x);
     }
 
     /**
@@ -155,7 +161,8 @@ public abstract class BridgeBase {
      * @see #putInt(Object, long, int)
      */
     public final void putLong(Object o, long offset, long x) {
-        unsafe.putLong(o, offset, x);
+        if (offset != INVALID_FIELD_OFFSET)
+            unsafe.putLong(o, offset, x);
     }
 
     /**
@@ -169,7 +176,8 @@ public abstract class BridgeBase {
      * @see #putInt(Object, long, int)
      */
     public final void putFloat(Object o, long offset, float x) {
-        unsafe.putFloat(o, offset, x);
+        if (offset != INVALID_FIELD_OFFSET)
+            unsafe.putFloat(o, offset, x);
     }
 
     /**
@@ -183,7 +191,8 @@ public abstract class BridgeBase {
      * @see #putInt(Object, long, int)
      */
     public final void putDouble(Object o, long offset, double x) {
-        unsafe.putDouble(o, offset, x);
+        if (offset != INVALID_FIELD_OFFSET)
+            unsafe.putDouble(o, offset, x);
     }
 
     /**
