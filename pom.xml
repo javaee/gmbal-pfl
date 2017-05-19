@@ -48,7 +48,7 @@
 
     <groupId>org.glassfish.pfl</groupId>
     <artifactId>pfl</artifactId>
-    <version>4.0.0-b009-SNAPSHOT</version>
+    <version>4.0.0-b009</version>
     <packaging>pom</packaging>
     
     <name>Primitive Function Library (PFL)</name>
@@ -81,7 +81,7 @@
         <connection>scm:git:https://github.com/javaee/gmbal-pfl.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/javaee/gmbal-pfl.git</developerConnection>
         <url>https://github.com/javaee/gmbal-pfl</url>
-        <tag>HEAD</tag>
+        <tag>pfl-4.0.0-b009</tag>
     </scm>
     
     <issueManagement>
