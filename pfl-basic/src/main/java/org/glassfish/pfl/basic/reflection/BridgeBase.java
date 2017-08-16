@@ -6,6 +6,7 @@ import java.io.OptionalDataException;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
@@ -296,4 +297,26 @@ public abstract class BridgeBase {
      * @return a new OptionalDataException instance
      */
     public abstract OptionalDataException newOptionalDataExceptionForSerialization(boolean bool);
+
+    /**
+     * Returns the specified field after calling setAccessible, if it is accessible from the specified class.
+     * @param field the field to make accessible
+     * @param callingClass the class which wants to access it.
+     * @return the original field, rendered accessible, or null.
+     */
+    public Field toAccessibleField(Field field, Class callingClass) {
+        field.setAccessible(true);
+        return field;
+    }
+
+    /**
+     * Returns the specified method after calling setAccessible, if it is accessible from the specified class.
+     * @param method the method to make accessible
+     * @param callingClass the class which wants to access it.
+     * @return the original method, rendered accessible, or null.
+     */
+    public Method toAccessibleMethod(Method method, Class callingClass) {
+        method.setAccessible(true);
+        return method;
+    }
 }

@@ -45,6 +45,8 @@ import sun.reflect.ReflectionFactory;
 import java.io.OptionalDataException;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.Permission;
 import java.security.PrivilegedAction;
@@ -200,5 +202,25 @@ public final class Bridge extends BridgeBase {
     @Override
     public final OptionalDataException newOptionalDataExceptionForSerialization(boolean bool) {
         return reflectionFactory.newOptionalDataExceptionForSerialization(bool);
+    }
+
+    @Override
+    public Field toAccessibleField(Field field, Class callingClass) {
+        return isClassOpenToModule(field.getDeclaringClass(), callingClass.getModule())
+              ? super.toAccessibleField(field, callingClass)
+              : null;
+    }
+
+    private boolean isClassOpenToModule(Class<?> candidateClass, Module callingModule) {
+        return callingModule.isNamed()
+              ? candidateClass.getModule().isOpen(candidateClass.getPackageName(), callingModule)
+              : candidateClass.getModule().isOpen(candidateClass.getPackageName());
+    }
+
+    @Override
+    public Method toAccessibleMethod(Method method, Class callingClass) {
+        return isClassOpenToModule(method.getDeclaringClass(), callingClass.getModule())
+              ? super.toAccessibleMethod(method, callingClass)
+              : null;
     }
 }

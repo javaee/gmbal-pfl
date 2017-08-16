@@ -41,8 +41,6 @@
 package org.glassfish.pfl.basic.reflection;
 
 import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 public class FieldValueHelper {
     private static final Bridge bridge = Bridge.get();
@@ -61,21 +59,8 @@ public class FieldValueHelper {
     }
 
     private static Object getPrivateFieldValue(Object obj, final Field field) throws IllegalAccessException {
-        try {
-            makeFieldAccessible(field);
-            return field.get(obj);
-        } catch(Throwable t) {
-            return getInacessibleFieldValue(obj, field);
-        }
-    }
-
-    private static void makeFieldAccessible(final Field field) {
-        AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run() {
-                field.setAccessible(true);
-                return null;
-            }
-        });
+        Field privateField = bridge.toAccessibleField(field, FieldValueHelper.class);
+        return (privateField != null) ? privateField.get(obj) : getInacessibleFieldValue(obj, field);
     }
 
     private static Object getInacessibleFieldValue(Object obj, Field field) {
