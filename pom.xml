@@ -152,6 +152,14 @@
                             <version>1.8.1</version>
                         </dependency>
                     </dependencies>
+                    <executions>
+                        <execution>
+                            <id>default-cli</id>
+                            <configuration>
+                                <goals>deploy</goals>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
