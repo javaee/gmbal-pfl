@@ -48,7 +48,7 @@
 
     <groupId>org.glassfish.pfl</groupId>
     <artifactId>pfl</artifactId>
-    <version>4.0.1-b003-SNAPSHOT</version>
+    <version>4.0.1-b002-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <name>Primitive Function Library (PFL)</name>
