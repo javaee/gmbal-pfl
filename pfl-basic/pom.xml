@@ -138,7 +138,10 @@
                                 <configuration>
                                     <tasks>
                                         <mkdir dir="${java9.build.outputDirectory}" />
-                                        <javac srcdir="${java9.sourceDirectory}" destdir="${java9.build.outputDirectory}" classpath="${project.build.outputDirectory}" includeantruntime="false" />
+                                        <javac srcdir="${java9.sourceDirectory}" destdir="${java9.build.outputDirectory}"
+                                               debug="true" debuglevel="lines,vars,source"
+                                               classpath="${project.build.outputDirectory}" includeantruntime="false"
+                                        />
                                     </tasks>
                                 </configuration>
                                 <goals>
