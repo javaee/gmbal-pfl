@@ -1,6 +1,7 @@
 org.glassfish.pfl.basic.algorithm
 org.glassfish.pfl.basic.concurrent
 org.glassfish.pfl.basic.contain
+org.glassfish.pfl.basic.facet
 org.glassfish.pfl.basic.fsm
 org.glassfish.pfl.basic.func
 org.glassfish.pfl.basic.graph
